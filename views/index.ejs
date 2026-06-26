@@ -1,20 +1,12 @@
----
-import Layout from '../layouts/Layout.astro';
-import Converter from '../components/Converter.astro';
+<%- include('partials/header', { lang: 'es', title: title, description: description, canonical: canonical }) %>
 
-const title = "Convertidor YouTube a MP3 Gratis | Descargar Música de YouTube - ConveTube";
-const description = "El mejor convertidor YouTube a MP3 gratis. Convierte videos de YouTube a MP3 en segundos con alta calidad. Fácil, rápido y sin registro en ConveTube.";
-const canonical = "https://convetube.com/";
----
-
-<Layout title={title} description={description} lang="es" canonical={canonical}>
   <div class="container hero-section">
     <div class="hero-content">
       <h1 class="hero-title">Convertidor <span class="text-gradient">YouTube a MP3</span></h1>
       <p class="hero-subtitle">Convierte y descarga tus videos favoritos de YouTube a archivos de audio MP3 en alta calidad de forma gratuita, instantánea y segura.</p>
     </div>
     
-    <Converter lang="es" />
+    <%- include('partials/converter', { lang: 'es' }) %>
   </div>
 
   <section class="seo-section container">
@@ -91,7 +83,6 @@ const canonical = "https://convetube.com/";
       </div>
     </div>
   </section>
-</Layout>
 
 <style>
   .hero-section {
@@ -276,3 +267,5 @@ const canonical = "https://convetube.com/";
     margin: 0;
   }
 </style>
+
+<%- include('partials/footer', { lang: 'es' }) %>

@@ -1,20 +1,12 @@
----
-import Layout from '../layouts/Layout.astro';
-import Converter from '../components/Converter.astro';
+<%- include('partials/header', { lang: 'es', title: title, description: description, canonical: canonical }) %>
 
-const title = "Convertidor de YouTube a MP3 en Alta Calidad | ConveTube";
-const description = "Usa el mejor convertidor de YouTube a MP3 online. Descarga audio MP3 de videos de YouTube de forma rápida, segura y totalmente gratis.";
-const canonical = "https://convetube.com/convertidor-de-youtube-a-mp3/";
----
-
-<Layout title={title} description={description} lang="es" canonical={canonical}>
   <div class="container hero-section">
     <div class="hero-content">
       <h1 class="hero-title"><span class="text-gradient">Convertidor de YouTube a MP3</span></h1>
       <p class="hero-subtitle">Extrae el sonido de cualquier video de YouTube en formato MP3 con la mejor compresión y calidad de audio del mercado.</p>
     </div>
     
-    <Converter lang="es" />
+    <%- include('partials/converter', { lang: 'es' }) %>
   </div>
 
   <section class="seo-section container">
@@ -24,7 +16,7 @@ const canonical = "https://convetube.com/convertidor-de-youtube-a-mp3/";
       <p>Nos enfocamos en darte la mejor experiencia posible, por lo que actualizamos nuestro motor de conversión periódicamente. Todo el proceso es 100% web, lo que significa que puedes usarlo desde cualquier navegador sin importar el sistema operativo.</p>
       <p class="link-paragraph">
         ¿Necesitas aprender el proceso paso a paso con detalles específicos de tu celular? Visita nuestra guía exclusiva: 
-        <a href="/convertidor-de-youtube-a-mp3/convertir-videos-de-youtube-a-mp3/" class="inline-link">Cómo convertir videos de YouTube a MP3</a>.
+        <a href="/convertidor-de-youtube-a-mp3/convertir-videos-de-youtube-a-mp3" class="inline-link">Cómo convertir videos de YouTube a MP3</a>.
       </p>
     </div>
 
@@ -65,7 +57,6 @@ const canonical = "https://convetube.com/convertidor-de-youtube-a-mp3/";
       </div>
     </div>
   </section>
-</Layout>
 
 <style>
   .hero-section {
@@ -220,3 +211,5 @@ const canonical = "https://convetube.com/convertidor-de-youtube-a-mp3/";
     margin: 0;
   }
 </style>
+
+<%- include('partials/footer', { lang: 'es' }) %>

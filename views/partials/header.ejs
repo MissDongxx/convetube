@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Primary Meta Tags -->
+  <title><%= title %></title>
+  <meta name="title" content="<%= title %>">
+  <meta name="description" content="<%= description %>">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="<%= canonical %>">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="<%= canonical %>">
+  <meta property="og:title" content="<%= title %>">
+  <meta property="og:description" content="<%= description %>">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="<%= canonical %>">
+  <meta property="twitter:title" content="<%= title %>">
+  <meta property="twitter:description" content="<%= description %>">
+  
+  <!-- Favicon and Icons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="shortcut icon" href="/favicon.ico">
+  
+  <meta name="robots" content="index, follow">
+  
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="/css/global.css">
+  
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 0%, #151a30 0%, var(--bg-primary) 70%);
+    }
+    
+    #main-content {
+      flex-grow: 1;
+      padding-bottom: 80px;
+    }
+    
+    .main-header {
+      background: rgba(10, 11, 16, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 70px;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: transform var(--transition-fast);
+    }
+
+    .logo:hover {
+      transform: scale(1.02);
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+    }
+
+    .logo-text {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--color-text-primary);
+      letter-spacing: -0.03em;
+    }
+
+    .logo-text-alt {
+      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Lang Selector Dropdown */
+    .lang-selector {
+      position: relative;
+      display: inline-block;
+    }
+
+    .lang-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--color-text-primary);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: var(--font-family);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .lang-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .lang-arrow {
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+    }
+
+    .lang-dropdown {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      background: rgba(15, 17, 26, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      padding: 6px;
+      list-style: none;
+      min-width: 140px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+    }
+
+    .lang-selector:hover .lang-dropdown,
+    .lang-selector:focus-within .lang-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .lang-dropdown li {
+      margin: 2px 0;
+    }
+
+    .lang-dropdown a {
+      display: block;
+      padding: 8px 12px;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border-radius: 8px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .lang-dropdown a:hover,
+    .lang-dropdown a.active {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--color-text-primary);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="main-header">
+    <div class="container header-container">
+      <a href="<%= lang === 'es' ? '/' : '/convertir-youtube-vers-mp3/' %>" class="logo" aria-label="ConveTube Home">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21.4086 9.35258C23.5305 10.5065 23.5305 13.4935 21.4086 14.6474L8.59691 21.615C6.58284 22.7103 4.125 21.2138 4.125 18.9676L4.125 5.0324C4.125 2.7862 6.58284 1.28974 8.59691 2.38501L21.4086 9.35258Z" fill="url(#logo-grad)"/>
+          <defs>
+            <linearGradient id="logo-grad" x1="4.125" y1="12" x2="23" y2="12" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#6366f1" />
+              <stop offset="1" stop-color="#ec4899" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="logo-text">Conve<span class="logo-text-alt">Tube</span></span>
+      </a>
+
+      <nav class="nav-menu" aria-label="Main Navigation">
+        <div class="lang-selector">
+          <button class="lang-btn" aria-haspopup="listbox" aria-expanded="false" id="lang-menu-button">
+            <span class="lang-icon">🌐</span>
+            <span class="lang-label"><%= lang === 'es' ? 'Español' : 'Français' %></span>
+            <span class="lang-arrow">▼</span>
+          </button>
+          <ul class="lang-dropdown" role="listbox" aria-labelledby="lang-menu-button" id="lang-menu">
+            <li role="option" aria-selected="<%= lang === 'es' %>">
+              <a href="/" class="<%= lang === 'es' ? 'active' : '' %>">Español (ES)</a>
+            </li>
+            <li role="option" aria-selected="<%= lang === 'fr' %>">
+              <a href="/convertir-youtube-vers-mp3" class="<%= lang === 'fr' ? 'active' : '' %>">Français (FR)</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">

@@ -1,20 +1,12 @@
----
-import Layout from '../layouts/Layout.astro';
-import Converter from '../components/Converter.astro';
+<%- include('partials/header', { lang: 'fr', title: title, description: description, canonical: canonical }) %>
 
-const title = "Convertir YouTube vers MP3 Gratuit | Télécharger Vidéo YouTube - ConveTube";
-const description = "Convertir YouTube vers MP3 gratuitement et en haute qualité. Télécharger vos musiques et vidéos préférées de YouTube en quelques secondes sur ConveTube.";
-const canonical = "https://convetube.com/convertir-youtube-vers-mp3/";
----
-
-<Layout title={title} description={description} lang="fr" canonical={canonical}>
   <div class="container hero-section">
     <div class="hero-content">
       <h1 class="hero-title">Convertir <span class="text-gradient">YouTube vers MP3</span></h1>
       <p class="hero-subtitle">Convertissez et téléchargez instantanément vos vidéos YouTube préférées en fichiers audio MP3 haute qualité, gratuitement et en toute sécurité.</p>
     </div>
     
-    <Converter lang="fr" />
+    <%- include('partials/converter', { lang: 'fr' }) %>
   </div>
 
   <section class="seo-section container">
@@ -78,7 +70,7 @@ const canonical = "https://convetube.com/convertir-youtube-vers-mp3/";
       <div class="faq-list">
         <div class="faq-item">
           <h3>Le convertisseur est-il vraiment illimité ?</h3>
-          <p>Oui, absolument. Nous ne limitons pas le nombre de conversions quotidiennes. Vous pouvez télécharger autant de musiques YouTube que vous le souhaitez.</p>
+          <p>Oui, absolument. Nous ne limitions pas le nombre de conversions quotidiennes. Vous pouvez télécharger autant de musiques YouTube que vous le souhaitez.</p>
         </div>
         <div class="faq-item">
           <h3>Puis-je l'utiliser sur mon smartphone ?</h3>
@@ -91,7 +83,6 @@ const canonical = "https://convetube.com/convertir-youtube-vers-mp3/";
       </div>
     </div>
   </section>
-</Layout>
 
 <style>
   .hero-section {
@@ -276,3 +267,5 @@ const canonical = "https://convetube.com/convertir-youtube-vers-mp3/";
     margin: 0;
   }
 </style>
+
+<%- include('partials/footer', { lang: 'fr' }) %>
