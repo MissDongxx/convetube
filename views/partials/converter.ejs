@@ -98,8 +98,8 @@ const texts = translations[lang] || translations.es;
             <path d="M9 18V5L21 3V16M9 18C9 19.6569 7.65685 21 6 21C4.34315 21 3 19.6569 3 18C3 16.3431 4.34315 15 6 15C7.65685 15 9 16.3431 9 18ZM21 16C21 17.6569 19.6569 19 18 19C16.3431 19 15 17.6569 15 16C15 14.3431 16.3431 13 18 13C19.6569 13 21 14.3431 21 16Z" stroke="url(#thumb-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <defs>
               <linearGradient id="thumb-grad" x1="3" y1="12" x2="21" y2="12" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#6366f1" />
-                <stop offset="1" stop-color="#ec4899" />
+                <stop stop-color="#C4593D" />
+                <stop offset="1" stop-color="#D4714E" />
               </linearGradient>
             </defs>
           </svg>
@@ -121,6 +121,12 @@ const texts = translations[lang] || translations.es;
             </svg>
             <svg class="pause-svg hidden" viewBox="0 0 24 24" fill="currentColor">
               <path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" />
+            </svg>
+            <svg class="loading-svg hidden" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-opacity="0.2" />
+              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite" />
+              </path>
             </svg>
           </button>
 
@@ -146,10 +152,16 @@ const texts = translations[lang] || translations.es;
 
       <div class="result-actions">
         <a id="download-btn" href="#" class="btn-primary download-link-btn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="download-icon">
             <path d="M4 16V17C4 18.6569 5.34315 20 7 20H17C18.6569 20 20 18.6569 20 17V16M12 4V14M12 14L8 10M12 14L16 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span><%= texts.download %></span>
+          <svg id="download-spinner" class="download-spinner hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-opacity="0.2" />
+            <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite" />
+            </path>
+          </svg>
+          <span id="download-label"><%= texts.download %></span>
         </a>
         <button id="convert-another-btn" class="btn-reset">
           <%= texts.convertAnother %>
@@ -165,6 +177,7 @@ const texts = translations[lang] || translations.es;
     margin-top: 40px;
     position: relative;
     overflow: hidden;
+    border-radius: 24px;
   }
 
   .converter-state {
@@ -246,11 +259,11 @@ const texts = translations[lang] || translations.es;
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    border: 3px solid rgba(99, 102, 241, 0.1);
-    border-top-color: #6366f1;
-    border-right-color: #ec4899;
+    border: 3px solid rgba(196, 89, 61, 0.12);
+    border-top-color: #C4593D;
+    border-right-color: #D4714E;
     animation: spin 1s linear infinite;
-    filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.4));
+    filter: drop-shadow(0 0 8px rgba(196, 89, 61, 0.3));
   }
 
   @keyframes spin {
@@ -267,12 +280,13 @@ const texts = translations[lang] || translations.es;
     font-weight: 600;
     margin-bottom: 16px;
     color: var(--color-text-primary);
+    font-family: var(--font-family);
   }
 
   .progress-bar-container {
     width: 100%;
     height: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(44, 40, 36, 0.06);
     border-radius: 4px;
     overflow: hidden;
     margin-bottom: 8px;
@@ -281,7 +295,7 @@ const texts = translations[lang] || translations.es;
   .progress-bar-fill {
     width: 0%;
     height: 100%;
-    background: linear-gradient(90deg, #6366f1, #ec4899);
+    background: linear-gradient(90deg, #C4593D, #D4714E);
     border-radius: 4px;
     transition: width 0.1s linear;
   }
@@ -308,8 +322,8 @@ const texts = translations[lang] || translations.es;
   .success-icon-badge {
     width: 32px;
     height: 32px;
-    background: rgba(16, 185, 129, 0.15);
-    border: 1px solid rgba(16, 185, 129, 0.2);
+    background: rgba(61, 124, 61, 0.10);
+    border: 1px solid rgba(61, 124, 61, 0.18);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -320,14 +334,15 @@ const texts = translations[lang] || translations.es;
     font-size: 1.2rem;
     font-weight: 700;
     color: var(--color-text-primary);
+    font-family: var(--font-family);
   }
 
   .video-info-card {
     display: flex;
     gap: 16px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
+    background: #F5F0EB;
+    border: 1px solid rgba(44, 40, 36, 0.06);
+    border-radius: 14px;
     padding: 16px;
     align-items: center;
   }
@@ -335,8 +350,8 @@ const texts = translations[lang] || translations.es;
   .video-thumbnail-placeholder {
     width: 100px;
     height: 60px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px dashed rgba(255, 255, 255, 0.1);
+    background: rgba(44, 40, 36, 0.03);
+    border: 1px dashed rgba(44, 40, 36, 0.12);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -363,6 +378,7 @@ const texts = translations[lang] || translations.es;
     overflow: hidden;
     text-overflow: ellipsis;
     margin-bottom: 4px;
+    font-family: var(--font-family);
   }
 
   .video-channel {
@@ -372,9 +388,9 @@ const texts = translations[lang] || translations.es;
 
   /* Custom Audio Player */
   .custom-audio-player {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 12px;
+    background: #F5F0EB;
+    border: 1px solid rgba(44, 40, 36, 0.06);
+    border-radius: 14px;
     padding: 12px 20px;
   }
 
@@ -393,8 +409,8 @@ const texts = translations[lang] || translations.es;
   }
 
   .player-btn {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(44, 40, 36, 0.04);
+    border: 1px solid rgba(44, 40, 36, 0.08);
     color: var(--color-text-primary);
     cursor: pointer;
     display: flex;
@@ -404,8 +420,8 @@ const texts = translations[lang] || translations.es;
   }
 
   .player-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(44, 40, 36, 0.08);
+    border-color: rgba(44, 40, 36, 0.15);
   }
 
   .player-btn.play {
@@ -439,7 +455,7 @@ const texts = translations[lang] || translations.es;
     flex-grow: 1;
     -webkit-appearance: none;
     appearance: none;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(44, 40, 36, 0.1);
     height: 6px;
     border-radius: 3px;
     outline: none;
@@ -458,15 +474,15 @@ const texts = translations[lang] || translations.es;
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: #6366f1;
-    box-shadow: 0 0 5px rgba(99, 102, 241, 0.5);
+    background: #C4593D;
+    box-shadow: 0 0 5px rgba(196, 89, 61, 0.35);
     cursor: pointer;
     margin-top: -4px;
     transition: transform var(--transition-fast), background var(--transition-fast);
   }
 
   .timeline-slider::-webkit-slider-thumb:hover {
-    background: #ec4899;
+    background: #D4714E;
     transform: scale(1.15);
   }
 
@@ -498,7 +514,7 @@ const texts = translations[lang] || translations.es;
   .volume-slider {
     -webkit-appearance: none;
     appearance: none;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(44, 40, 36, 0.1);
     height: 4px;
     border-radius: 2px;
     outline: none;
@@ -517,11 +533,50 @@ const texts = translations[lang] || translations.es;
   }
 
   .volume-slider::-webkit-slider-thumb:hover {
-    background: #6366f1;
+    background: #C4593D;
   }
 
   .hidden {
     display: none !important;
+  }
+
+  /* Play button loading state */
+  .player-btn.play.loading {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .player-btn.play .loading-svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Download button preparing state */
+  .download-link-btn.preparing {
+    opacity: 0.7;
+    cursor: wait;
+    position: relative;
+  }
+
+  .download-link-btn.preparing .download-icon {
+    display: none;
+  }
+
+  .download-link-btn.preparing .download-spinner {
+    display: inline-block !important;
+  }
+
+  /* Shake animation for clicking disabled download */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+  }
+
+  .download-link-btn.shake {
+    animation: shake 0.4s ease;
   }
 
   .result-actions {
@@ -543,11 +598,11 @@ const texts = translations[lang] || translations.es;
   }
 
   .btn-reset {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(44, 40, 36, 0.03);
+    border: 1px solid rgba(44, 40, 36, 0.10);
     color: var(--color-text-secondary);
     padding: 12px 20px;
-    border-radius: 12px;
+    border-radius: 50px;
     font-weight: 600;
     font-size: 0.95rem;
     font-family: var(--font-family);
@@ -556,8 +611,8 @@ const texts = translations[lang] || translations.es;
   }
 
   .btn-reset:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(44, 40, 36, 0.06);
     color: var(--color-text-primary);
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(44, 40, 36, 0.18);
   }
 </style>

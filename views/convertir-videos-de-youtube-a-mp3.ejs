@@ -2,7 +2,7 @@
 
   <div class="container breadcrumb-container">
     <nav class="breadcrumb" aria-label="Breadcrumb">
-      <ol style="list-style: none; display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 8px; font-size: 0.85rem; font-weight: 500;">
+      <ol style="list-style: none; display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--bg-secondary); border: 1px solid rgba(44, 40, 36, 0.06); border-radius: 8px; font-size: 0.85rem; font-weight: 500;">
         <li><a href="/" style="color: var(--color-text-secondary); text-decoration: none;">Inicio</a></li>
         <li><span class="separator" style="color: var(--color-text-muted);">/</span></li>
         <li><a href="/convertidor-de-youtube-a-mp3" style="color: var(--color-text-secondary); text-decoration: none;">Convertidor a MP3</a></li>
@@ -88,9 +88,8 @@
 
   .hero-title {
     font-size: 3rem;
-    font-weight: 800;
     margin-bottom: 20px;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.02em;
     line-height: 1.15;
   }
 
@@ -103,7 +102,7 @@
   .hero-subtitle {
     font-size: 1.15rem;
     color: var(--color-text-secondary);
-    font-weight: 500;
+    font-weight: 400;
     max-width: 600px;
     margin: 0 auto;
   }
@@ -160,7 +159,7 @@
     max-width: 100%;
     height: auto;
     border-radius: 12px;
-    border: 1px solid var(--border-card);
+    border: 1px solid rgba(44, 40, 36, 0.08);
     box-shadow: var(--shadow-lg);
   }
 
@@ -168,6 +167,8 @@
     font-size: 1.1rem;
     color: var(--color-text-primary);
     margin: 16px 0 8px 0;
+    font-family: var(--font-family);
+    font-weight: 600;
   }
 
   .sub-faq h3:first-child {
@@ -186,7 +187,7 @@
   }
 
   .faq-item {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(44, 40, 36, 0.08);
     padding-bottom: 16px;
   }
 
@@ -200,6 +201,7 @@
     font-weight: 600;
     margin-bottom: 8px;
     color: var(--color-text-primary);
+    font-family: var(--font-family);
   }
 
   .faq-item p {

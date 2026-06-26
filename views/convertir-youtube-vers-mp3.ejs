@@ -97,9 +97,8 @@
 
   .hero-title {
     font-size: 3rem;
-    font-weight: 800;
     margin-bottom: 20px;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.02em;
     line-height: 1.15;
   }
 
@@ -112,7 +111,7 @@
   .hero-subtitle {
     font-size: 1.15rem;
     color: var(--color-text-secondary);
-    font-weight: 500;
+    font-weight: 400;
     max-width: 600px;
     margin: 0 auto;
   }
@@ -169,7 +168,7 @@
     max-width: 100%;
     height: auto;
     border-radius: 12px;
-    border: 1px solid var(--border-card);
+    border: 1px solid rgba(44, 40, 36, 0.08);
     box-shadow: var(--shadow-lg);
   }
 
@@ -205,15 +204,16 @@
   }
 
   .feature-item {
-    background: rgba(255, 255, 255, 0.01);
-    border: 1px solid rgba(255, 255, 255, 0.03);
+    background: var(--bg-secondary);
+    border: 1px solid rgba(44, 40, 36, 0.06);
     padding: 20px;
-    border-radius: 12px;
-    transition: transform var(--transition-fast);
+    border-radius: 14px;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
   }
 
   .feature-item:hover {
     transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(44, 40, 36, 0.06);
   }
 
   .feature-icon {
@@ -227,6 +227,7 @@
     font-weight: 600;
     margin-bottom: 8px;
     color: var(--color-text-primary);
+    font-family: var(--font-family);
   }
 
   .feature-item p {
@@ -244,7 +245,7 @@
   }
 
   .faq-item {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(44, 40, 36, 0.08);
     padding-bottom: 16px;
   }
 
@@ -258,6 +259,7 @@
     font-weight: 600;
     margin-bottom: 8px;
     color: var(--color-text-primary);
+    font-family: var(--font-family);
   }
 
   .faq-item p {

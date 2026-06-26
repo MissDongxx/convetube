@@ -38,7 +38,8 @@
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      background: radial-gradient(circle at 50% 0%, #151a30 0%, var(--bg-primary) 70%);
+      background: var(--bg-primary);
+      background-image: radial-gradient(ellipse at 50% 0%, #F0E6D4 0%, var(--bg-primary) 60%);
     }
     
     #main-content {
@@ -47,10 +48,10 @@
     }
     
     .main-header {
-      background: rgba(10, 11, 16, 0.7);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(250, 250, 247, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(44, 40, 36, 0.06);
       position: sticky;
       top: 0;
       z-index: 100;
@@ -87,10 +88,11 @@
       font-weight: 800;
       color: var(--color-text-primary);
       letter-spacing: -0.03em;
+      font-family: var(--font-family);
     }
 
     .logo-text-alt {
-      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+      background: linear-gradient(135deg, #C4593D 0%, #D4714E 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -103,8 +105,8 @@
     }
 
     .lang-btn {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #F5F0EB;
+      border: 1px solid rgba(44, 40, 36, 0.10);
       color: var(--color-text-primary);
       padding: 8px 16px;
       border-radius: 20px;
@@ -119,8 +121,8 @@
     }
 
     .lang-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.15);
+      background: #F0E6D4;
+      border-color: rgba(44, 40, 36, 0.18);
     }
 
     .lang-arrow {
@@ -132,10 +134,10 @@
       position: absolute;
       right: 0;
       top: calc(100% + 8px);
-      background: rgba(15, 17, 26, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #FFFFFF;
+      border: 1px solid rgba(44, 40, 36, 0.08);
       border-radius: 12px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 30px -5px rgba(44, 40, 36, 0.12);
       padding: 6px;
       list-style: none;
       min-width: 140px;
@@ -169,8 +171,8 @@
 
     .lang-dropdown a:hover,
     .lang-dropdown a.active {
-      background: rgba(99, 102, 241, 0.15);
-      color: var(--color-text-primary);
+      background: rgba(196, 89, 61, 0.08);
+      color: #C4593D;
     }
   </style>
 </head>
@@ -183,8 +185,8 @@
           <path d="M21.4086 9.35258C23.5305 10.5065 23.5305 13.4935 21.4086 14.6474L8.59691 21.615C6.58284 22.7103 4.125 21.2138 4.125 18.9676L4.125 5.0324C4.125 2.7862 6.58284 1.28974 8.59691 2.38501L21.4086 9.35258Z" fill="url(#logo-grad)"/>
           <defs>
             <linearGradient id="logo-grad" x1="4.125" y1="12" x2="23" y2="12" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#6366f1" />
-              <stop offset="1" stop-color="#ec4899" />
+              <stop stop-color="#C4593D" />
+              <stop offset="1" stop-color="#D4714E" />
             </linearGradient>
           </defs>
         </svg>

@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const playBtn = document.getElementById('player-play-btn');
   const playSvg = playBtn?.querySelector('.play-svg');
   const pauseSvg = playBtn?.querySelector('.pause-svg');
+  const loadingSvg = playBtn?.querySelector('.loading-svg');
   const timeCurrent = document.getElementById('player-time-current');
   const timeTotal = document.getElementById('player-time-total');
   const timeline = document.getElementById('player-timeline');
@@ -28,9 +29,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const volumeSlider = document.getElementById('player-volume-slider');
   
   const downloadBtn = document.getElementById('download-btn');
+  const downloadSpinner = document.getElementById('download-spinner');
+  const downloadLabel = document.getElementById('download-label');
   const convertAnotherBtn = document.getElementById('convert-another-btn');
   
-  let videoDuration = 0; // Track duration from metadata API
+  let videoDuration = 0;
+  let currentVideoId = null;
+  let cacheReady = false;
+  let cachePollingTimer = null;
+  let isAudioLoading = false;
   
   // Status text mapping based on language
   const isFr = window.location.pathname.includes('convertir-youtube-vers-mp3');
@@ -42,6 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
     ? 'Veuillez saisir une URL YouTube valide.'
     : 'Por favor, introduce una URL de YouTube válida.';
 
+  const preparingText = isFr ? 'Préparation...' : 'Preparando...';
+
   // YouTube URL regex
   const ytRegex = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]{11})/;
 
@@ -50,6 +59,77 @@ document.addEventListener('DOMContentLoaded', () => {
     const m = Math.floor(secs / 60);
     const s = Math.floor(secs % 60);
     return `${m}:${s < 10 ? '0' : ''}${s}`;
+  }
+
+  // Poll cache status until ready
+  function startCachePolling(videoId) {
+    if (cachePollingTimer) clearInterval(cachePollingTimer);
+    cacheReady = false;
+
+    const poll = async () => {
+      try {
+        const resp = await fetch(`/api/cache-status?id=${videoId}`);
+        const data = await resp.json();
+        if (data.ready) {
+          cacheReady = true;
+          if (cachePollingTimer) clearInterval(cachePollingTimer);
+          onCacheReady(videoId);
+        }
+      } catch (e) {
+        // Silently retry
+      }
+    };
+
+    // Poll immediately, then every 2s
+    poll();
+    cachePollingTimer = setInterval(poll, 2000);
+  }
+
+  // Called when cache file is ready on the server
+  function onCacheReady(videoId) {
+    // Swap audio source to cached file for instant playback (supports seeking)
+    if (audio && currentVideoId === videoId) {
+      const currentTime = audio.currentTime;
+      const wasPlaying = !audio.paused;
+
+      audio.src = `/api/stream?id=${videoId}`;
+      audio.preload = 'auto';
+      audio.load();
+
+      // Restore position if user was already playing
+      if (wasPlaying || currentTime > 0) {
+        audio.addEventListener('canplay', function restore() {
+          audio.currentTime = currentTime;
+          if (wasPlaying) audio.play().catch(() => {});
+          audio.removeEventListener('canplay', restore);
+        });
+      }
+    }
+
+    // Update download link — cached files serve with Content-Length for proper progress
+    if (downloadBtn && currentVideoId === videoId) {
+      downloadBtn.href = `/api/download?id=${videoId}&title=${encodeURIComponent(videoTitle.textContent)}`;
+    }
+
+    // Remove preparing indicator from download button
+    if (downloadBtn) {
+      downloadBtn.classList.remove('preparing');
+      if (downloadLabel) downloadLabel.textContent = isFr ? 'Télécharger le MP3' : 'Descargar MP3';
+    }
+  }
+
+  // Show loading state on play button
+  function setPlayLoading(loading) {
+    isAudioLoading = loading;
+    if (loading) {
+      playSvg?.classList.add('hidden');
+      pauseSvg?.classList.add('hidden');
+      loadingSvg?.classList.remove('hidden');
+      playBtn?.classList.add('loading');
+    } else {
+      loadingSvg?.classList.add('hidden');
+      playBtn?.classList.remove('loading');
+    }
   }
 
   // Handle conversion submit
@@ -119,18 +199,29 @@ document.addEventListener('DOMContentLoaded', () => {
               videoThumb.innerHTML = `<img src="${infoData.thumbnail}" alt="${infoData.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" />`;
             }
             
-            // Configure custom Audio Player source
+            // Store video ID and start cache polling
+            currentVideoId = infoData.id;
+            startCachePolling(infoData.id);
+            
+            // Configure audio player source (streaming initially)
             audio.src = `/api/stream?id=${infoData.id}`;
+            audio.preload = 'auto';
             audio.load();
             
-            // Pre-populate slider and total time from metadata to prevent Infinity:NaN
+            // Pre-populate slider and total time from metadata
             timeTotal.textContent = formatTime(videoDuration);
             timeline.max = videoDuration;
             timeline.value = 0;
             
-            // Set download href with title query param
+            // Set download href
             downloadBtn.href = `/api/download?id=${infoData.id}&title=${encodeURIComponent(infoData.title)}`;
             downloadBtn.setAttribute('download', `${sanitizeFilename(infoData.title)}.mp3`);
+
+            // Show "preparing" state on download button if cache not ready
+            if (!cacheReady) {
+              downloadBtn.classList.add('preparing');
+              if (downloadLabel) downloadLabel.textContent = preparingText;
+            }
             
             // Transition to Result view
             stateLoading.classList.remove('active');
@@ -160,20 +251,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Reset function
   function resetUI() {
+    // Stop cache polling
+    if (cachePollingTimer) {
+      clearInterval(cachePollingTimer);
+      cachePollingTimer = null;
+    }
+    cacheReady = false;
+    currentVideoId = null;
+    isAudioLoading = false;
+
     // Reset player
     audio.pause();
     audio.src = '';
     audio.currentTime = 0;
     playSvg?.classList.remove('hidden');
     pauseSvg?.classList.add('hidden');
+    loadingSvg?.classList.add('hidden');
+    playBtn?.classList.remove('loading');
     timeline.value = 0;
     timeCurrent.textContent = '0:00';
+    timeline.style.background = 'rgba(44,40,36,0.1)';
     timeTotal.textContent = '0:00';
     
     // Clear inputs
     input.value = '';
     progressBarFill.style.width = '0%';
     progressPercent.textContent = '0%';
+
+    // Reset download button
+    if (downloadBtn) {
+      downloadBtn.classList.remove('preparing');
+      if (downloadLabel) downloadLabel.textContent = isFr ? 'Télécharger le MP3' : 'Descargar MP3';
+    }
     
     // Switch state
     stateResult.classList.remove('active');
@@ -188,15 +297,33 @@ document.addEventListener('DOMContentLoaded', () => {
   // Custom Audio Player controls
   if (audio && playBtn) {
     playBtn.addEventListener('click', () => {
+      if (isAudioLoading) return; // Don't allow clicks while loading
+
       if (audio.paused) {
+        setPlayLoading(true);
         audio.play().then(() => {
+          setPlayLoading(false);
           playSvg?.classList.add('hidden');
           pauseSvg?.classList.remove('hidden');
-        }).catch(err => console.log('Audio playback failed', err));
+        }).catch(err => {
+          setPlayLoading(false);
+          playSvg?.classList.remove('hidden');
+          pauseSvg?.classList.add('hidden');
+          console.log('Audio playback failed', err);
+        });
       } else {
         audio.pause();
         playSvg?.classList.remove('hidden');
         pauseSvg?.classList.add('hidden');
+      }
+    });
+
+    // When audio can start playing, remove loading indicator
+    audio.addEventListener('canplay', () => {
+      if (isAudioLoading) {
+        setPlayLoading(false);
+        playSvg?.classList.add('hidden');
+        pauseSvg?.classList.remove('hidden');
       }
     });
     
@@ -206,24 +333,39 @@ document.addEventListener('DOMContentLoaded', () => {
       timeTotal.textContent = formatTime(duration);
       timeline.max = duration;
     });
+
+    // Also listen for durationchange to handle streamed audio
+    audio.addEventListener('durationchange', () => {
+      if (audio.duration && audio.duration !== Infinity && !isNaN(audio.duration)) {
+        timeTotal.textContent = formatTime(audio.duration);
+        timeline.max = audio.duration;
+      }
+    });
     
     // Time update progress track
     audio.addEventListener('timeupdate', () => {
       timeCurrent.textContent = formatTime(audio.currentTime);
       timeline.value = audio.currentTime;
+      // Update slider visual progress
+      const percent = (audio.duration && audio.duration !== Infinity) ? (audio.currentTime / audio.duration) * 100 : 0;
+      timeline.style.background = `linear-gradient(to right, #C4593D ${percent}%, rgba(44,40,36,0.1) ${percent}%)`;
     });
     
     // Seeker slider control
     timeline.addEventListener('input', () => {
       audio.currentTime = timeline.value;
+      const percent = (audio.duration && audio.duration !== Infinity) ? (timeline.value / audio.duration) * 100 : 0;
+      timeline.style.background = `linear-gradient(to right, #C4593D ${percent}%, rgba(44,40,36,0.1) ${percent}%)`;
     });
     
     // Reset on end
     audio.addEventListener('ended', () => {
       playSvg?.classList.remove('hidden');
       pauseSvg?.classList.add('hidden');
+      loadingSvg?.classList.add('hidden');
       timeline.value = 0;
       timeCurrent.textContent = '0:00';
+      timeline.style.background = 'rgba(44,40,36,0.1)';
     });
     
     // Volume control slider
@@ -257,5 +399,18 @@ document.addEventListener('DOMContentLoaded', () => {
         volMuteSvg?.classList.add('hidden');
       }
     }
+  }
+
+  // Download button: show loading state when clicked if cache is not ready
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', (e) => {
+      if (downloadBtn.classList.contains('preparing')) {
+        e.preventDefault();
+        // Show a subtle message that it's still preparing
+        downloadBtn.classList.add('shake');
+        setTimeout(() => downloadBtn.classList.remove('shake'), 500);
+        return;
+      }
+    });
   }
 });

@@ -140,7 +140,62 @@ app.get('/convertidor-de-youtube-a-mp3/convertir-videos-de-youtube-a-mp3', (req,
   });
 });
 
+// Sitemap.xml
+app.get('/sitemap.xml', (req, res) => {
+  res.set('Content-Type', 'application/xml');
+  res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemapschemas.org/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  <url>
+    <loc>https://convetube.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/convertir-youtube-vers-mp3/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/convertidor-de-youtube-a-mp3/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/convertidor-de-youtube-a-mp3/convertir-videos-de-youtube-a-mp3/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+</urlset>`);
+});
+
+// Robots.txt
+app.get('/robots.txt', (req, res) => {
+  res.set('Content-Type', 'text/plain');
+  res.send(`User-agent: *\nAllow: /\nSitemap: https://convetube.com/sitemap.xml`);
+});
+
 // --- API Routes ---
+
+// 0. Check if cached MP3 is ready
+app.get('/api/cache-status', (req, res) => {
+  const id = req.query.id;
+  if (!id) {
+    return res.status(400).json({ error: 'Video ID is required' });
+  }
+
+  const cachePath = path.join(cacheDir, `${id}.mp3`);
+  if (fs.existsSync(cachePath)) {
+    const stats = fs.statSync(cachePath);
+    return res.json({ ready: true, size: stats.size });
+  }
+
+  // Check if transcoding is in progress
+  const isTranscoding = activeTranscodes.has(id);
+  return res.json({ ready: false, transcoding: isTranscoding });
+});
 
 // 1. Fetch Video Metadata
 app.get('/api/info', (req, res) => {
