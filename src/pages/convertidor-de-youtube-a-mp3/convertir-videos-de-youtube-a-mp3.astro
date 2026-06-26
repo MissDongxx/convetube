@@ -1,0 +1,252 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Converter from '../../components/Converter.astro';
+
+const title = "Cómo Convertir Videos de YouTube a MP3 Paso a Paso | ConveTube";
+const description = "Guía y herramienta para convertir videos de YouTube a MP3. Descarga música y audio de YouTube a tu dispositivo móvil o PC con la mejor calidad.";
+const canonical = "https://convetube.com/convertidor-de-youtube-a-mp3/convertir-videos-de-youtube-a-mp3/";
+---
+
+<Layout title={title} description={description} lang="es" canonical={canonical}>
+  <div class="container breadcrumb-container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Inicio</a></li>
+        <li><span class="separator">/</span></li>
+        <li><a href="/convertidor-de-youtube-a-mp3/">Convertidor a MP3</a></li>
+        <li><span class="separator">/</span></li>
+        <li aria-current="page" class="active">Convertir Videos de YouTube a MP3</li>
+      </ol>
+    </nav>
+  </div>
+
+  <div class="container hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title"><span class="text-gradient">Convertir Videos de YouTube a MP3</span></h1>
+      <p class="hero-subtitle">La guía definitiva y herramienta interactiva para extraer el audio de tus vídeos favoritos y guardarlo como archivo de sonido.</p>
+    </div>
+    
+    <Converter lang="es" />
+  </div>
+
+  <section class="seo-section container">
+    <div class="seo-card glass-panel">
+      <h2>Cómo Convertir Videos de YouTube a MP3 de Forma Segura</h2>
+      <p>Hoy en día, consumir contenido multimedia es parte de nuestra rutina diaria. Sin embargo, en ocasiones preferimos escuchar únicamente el audio, ya sea para ahorrar batería, evitar el uso de datos móviles, o simplemente escuchar música en segundo plano. Aquí es donde entra en juego nuestra herramienta para <strong>convertir videos de youtube a mp3</strong> de manera sumamente fácil y fluida.</p>
+      <p>A diferencia de otras alternativas lentas y llenas de publicidad invasiva, en ConveTube garantizamos un entorno de descarga seguro y optimizado. El conversor funciona directamente desde tu navegador favorito (Chrome, Safari, Edge, Firefox), sin requerir la instalación de extensiones sospechosas ni realizar molestos registros de perfiles.</p>
+    </div>
+
+    <div class="seo-grid">
+      <div class="seo-card glass-panel">
+        <h2>Guía Completa para Todo Tipo de Dispositivos</h2>
+        <div class="sub-faq">
+          <h3>En Computadoras (Windows & Mac)</h3>
+          <p>Solo necesitas abrir tu navegador web, ir a la página de YouTube, copiar el enlace de la barra de direcciones superior del video que quieres extraer y pegarlo en nuestra caja de búsqueda. Haz clic en "Convertir", espera un instante y descarga el audio directamente a tu disco local.</p>
+          
+          <h3>En Dispositivos Android</h3>
+          <p>Abre la aplicación de YouTube, busca el video deseado y toca en la opción "Compartir" y después en "Copiar enlace". Abre Google Chrome u otro navegador en tu celular, ingresa a ConveTube.com, pega el enlace y descarga tu música gratis en segundos.</p>
+          
+          <h3>En Dispositivos iOS (iPhone & iPad)</h3>
+          <p>El proceso es idéntico al de Android. Copia el enlace desde la aplicación de YouTube, abre el navegador Safari e introduce la dirección. Pega la URL en nuestra herramienta, inicia la conversión y guárdalo cómodamente en tu aplicación de Archivos de Apple.</p>
+        </div>
+      </div>
+
+      <div class="seo-card glass-panel flex-center">
+        <img 
+          src="/images/conversion_steps.png" 
+          alt="Diagrama explicativo para convertir videos de YouTube a MP3" 
+          width="400" 
+          height="400"
+          class="seo-img"
+          loading="lazy"
+        />
+      </div>
+    </div>
+
+    <div class="seo-card glass-panel">
+      <h2>Preguntas Frecuentes sobre la Conversión de Videos</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <h3>¿Cuál es la tasa de bits (calidad) recomendada para MP3?</h3>
+          <p>Para la mayoría de los usuarios, una tasa de bits de 192kbps o superior es excelente. En ConveTube nos esforzamos por ofrecer archivos a 320kbps, que es la máxima calidad de audio en formato MP3, garantizando que el sonido se escuche nítido y claro en cualquier auricular o altavoz.</p>
+        </div>
+        <div class="faq-item">
+          <h3>¿Puedo convertir listas de reproducción completas (playlists)?</h3>
+          <p>Actualmente optimizamos nuestro sistema procesando un video a la vez para mantener el ancho de banda y asegurar que las descargas sean instantáneas y sin caídas para todos nuestros usuarios concurrentes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* Breadcrumbs styling */
+  .breadcrumb-container {
+    padding-top: 24px;
+  }
+
+  .breadcrumb ol {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .breadcrumb a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .breadcrumb a:hover {
+    color: #6366f1;
+  }
+
+  .breadcrumb .separator {
+    color: var(--color-text-muted);
+  }
+
+  .breadcrumb .active {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .hero-section {
+    text-align: center;
+    padding: 30px 0 20px 0;
+  }
+
+  .hero-content {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+  }
+
+  @media (max-width: 640px) {
+    .hero-title {
+      font-size: 2.25rem;
+    }
+  }
+
+  .hero-subtitle {
+    font-size: 1.15rem;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* SEO Section */
+  .seo-section {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .seo-card {
+    padding: 36px;
+  }
+
+  .seo-card h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: var(--color-text-primary);
+  }
+
+  .seo-card p {
+    color: var(--color-text-secondary);
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .seo-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  .seo-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 30px;
+  }
+
+  @media (max-width: 768px) {
+    .seo-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .seo-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border-card);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sub-faq h3 {
+    font-size: 1.1rem;
+    color: var(--color-text-primary);
+    margin: 16px 0 8px 0;
+  }
+
+  .sub-faq h3:first-child {
+    margin-top: 0;
+  }
+
+  .sub-faq p {
+    margin-bottom: 16px;
+  }
+
+  /* FAQ Styles */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 16px;
+  }
+
+  .faq-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .faq-item h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--color-text-primary);
+  }
+
+  .faq-item p {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+</style>

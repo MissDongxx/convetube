@@ -1,0 +1,222 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Converter from '../components/Converter.astro';
+
+const title = "Convertidor de YouTube a MP3 en Alta Calidad | ConveTube";
+const description = "Usa el mejor convertidor de YouTube a MP3 online. Descarga audio MP3 de videos de YouTube de forma rápida, segura y totalmente gratis.";
+const canonical = "https://convetube.com/convertidor-de-youtube-a-mp3/";
+---
+
+<Layout title={title} description={description} lang="es" canonical={canonical}>
+  <div class="container hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title"><span class="text-gradient">Convertidor de YouTube a MP3</span></h1>
+      <p class="hero-subtitle">Extrae el sonido de cualquier video de YouTube en formato MP3 con la mejor compresión y calidad de audio del mercado.</p>
+    </div>
+    
+    <Converter lang="es" />
+  </div>
+
+  <section class="seo-section container">
+    <div class="seo-card glass-panel">
+      <h2>El Mejor Convertidor de YouTube a MP3 Online</h2>
+      <p>¿Buscas una forma confiable de guardar el audio de tus tutoriales, conferencias o temas musicales favoritos? Nuestro <strong>convertidor de youtube a mp3</strong> en línea es la solución ideal. En ConveTube, procesamos los enlaces en tiempo récord para que disfrutes de tu contenido en modo offline sin interrupciones por mala conexión.</p>
+      <p>Nos enfocamos en darte la mejor experiencia posible, por lo que actualizamos nuestro motor de conversión periódicamente. Todo el proceso es 100% web, lo que significa que puedes usarlo desde cualquier navegador sin importar el sistema operativo.</p>
+      <p class="link-paragraph">
+        ¿Necesitas aprender el proceso paso a paso con detalles específicos de tu celular? Visita nuestra guía exclusiva: 
+        <a href="/convertidor-de-youtube-a-mp3/convertir-videos-de-youtube-a-mp3/" class="inline-link">Cómo convertir videos de YouTube a MP3</a>.
+      </p>
+    </div>
+
+    <div class="seo-grid">
+      <div class="seo-card glass-panel">
+        <h2>Ventajas de Usar ConveTube.com</h2>
+        <ul class="benefits-list">
+          <li><strong>Velocidad Extrema:</strong> Olvídate de esperar minutos. Nuestro servidor extrae el audio y crea el MP3 casi al instante.</li>
+          <li><strong>Sin Registro Obligatorio:</strong> Entras, conviertes y descargas. Cero formularios de suscripción.</li>
+          <li><strong>Tasa de bits de 320kbps:</strong> Admitimos descargas de la más alta calidad posible de audio de YouTube.</li>
+          <li><strong>Totalmente Limpio:</strong> Sin virus, malware o popups invasivos que pongan en riesgo tu dispositivo.</li>
+        </ul>
+      </div>
+
+      <div class="seo-card glass-panel flex-center">
+        <img 
+          src="/images/conversion_steps.png" 
+          alt="Beneficios del convertidor de YouTube a MP3 de ConveTube" 
+          width="400" 
+          height="400"
+          class="seo-img"
+          loading="lazy"
+        />
+      </div>
+    </div>
+
+    <div class="seo-card glass-panel">
+      <h2>Preguntas Frecuentes sobre el Convertidor</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <h3>¿Cómo puedo convertir archivos de audio de YouTube en mi celular?</h3>
+          <p>Es muy fácil. Solo abre la app de YouTube, pulsa en "Compartir" en el video que quieras, copia el enlace, pégalo en la barra de búsqueda de ConveTube desde el navegador de tu móvil (como Chrome o Safari) y dale al botón de descargar.</p>
+        </div>
+        <div class="faq-item">
+          <h3>¿Hay alguna restricción sobre el tamaño de los videos?</h3>
+          <p>No limitamos las descargas de audio de duración estándar, como canciones o podcasts de hasta 2 horas, para garantizar la máxima velocidad de conversión para todos los usuarios.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .hero-section {
+    text-align: center;
+    padding: 60px 0 20px 0;
+  }
+
+  .hero-content {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+  }
+
+  @media (max-width: 640px) {
+    .hero-title {
+      font-size: 2.25rem;
+    }
+  }
+
+  .hero-subtitle {
+    font-size: 1.15rem;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* SEO Section */
+  .seo-section {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .seo-card {
+    padding: 36px;
+  }
+
+  .seo-card h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: var(--color-text-primary);
+  }
+
+  .seo-card p {
+    color: var(--color-text-secondary);
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .seo-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  .link-paragraph {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 16px;
+    margin-top: 16px;
+  }
+
+  .inline-link {
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .inline-link:hover {
+    text-decoration: underline;
+  }
+
+  .seo-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 30px;
+  }
+
+  @media (max-width: 768px) {
+    .seo-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .seo-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border-card);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .benefits-list {
+    margin-left: 20px;
+    color: var(--color-text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .benefits-list li {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .benefits-list strong {
+    color: var(--color-text-primary);
+  }
+
+  /* FAQ Styles */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 16px;
+  }
+
+  .faq-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .faq-item h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--color-text-primary);
+  }
+
+  .faq-item p {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+</style>
