@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const downloadBtn = document.getElementById('download-btn');
   const convertAnotherBtn = document.getElementById('convert-another-btn');
   
+  let videoDuration = 0; // Track duration from metadata API
+  
   // Status text mapping based on language
   const isFr = window.location.pathname.includes('convertir-youtube-vers-mp3');
   const statusSteps = isFr 
@@ -109,7 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
           setTimeout(() => {
             // Populate metadata card
             videoTitle.textContent = infoData.title;
-            videoChannel.innerHTML = `${infoData.channel} &bull; ${formatTime(infoData.duration)}`;
+            videoDuration = infoData.duration || 0;
+            videoChannel.innerHTML = `${infoData.channel} &bull; ${formatTime(videoDuration)}`;
             
             // Set dynamic thumbnail if available
             if (infoData.thumbnail && videoThumb) {
@@ -119,6 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Configure custom Audio Player source
             audio.src = `/api/stream?id=${infoData.id}`;
             audio.load();
+            
+            // Pre-populate slider and total time from metadata to prevent Infinity:NaN
+            timeTotal.textContent = formatTime(videoDuration);
+            timeline.max = videoDuration;
+            timeline.value = 0;
             
             // Set download href with title query param
             downloadBtn.href = `/api/download?id=${infoData.id}&title=${encodeURIComponent(infoData.title)}`;
@@ -194,8 +202,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Loaded metadata event
     audio.addEventListener('loadedmetadata', () => {
-      timeTotal.textContent = formatTime(audio.duration);
-      timeline.max = audio.duration;
+      const duration = (audio.duration && audio.duration !== Infinity && !isNaN(audio.duration)) ? audio.duration : videoDuration;
+      timeTotal.textContent = formatTime(duration);
+      timeline.max = duration;
     });
     
     // Time update progress track

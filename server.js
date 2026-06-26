@@ -31,6 +31,62 @@ const getExecPrefix = () => {
   return prefix;
 };
 
+// Setup cache directory
+const cacheDir = path.join(__dirname, 'cache');
+if (!fs.existsSync(cacheDir)) {
+  fs.mkdirSync(cacheDir);
+}
+
+// Track active background conversions
+const activeTranscodes = new Map();
+
+const startBackgroundTranscode = (id) => {
+  const cachePath = path.join(cacheDir, `${id}.mp3`);
+  if (fs.existsSync(cachePath) || activeTranscodes.has(id)) {
+    return; // Already cached or currently transcoding
+  }
+
+  const url = `https://www.youtube.com/watch?v=${id}`;
+  const tempPath = path.join(cacheDir, `${id}.tmp`);
+  
+  console.log(`[Cache] Starting background transcode for video: ${id}`);
+  
+  const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', '-', url];
+  const ytDlp = spawn('yt-dlp', ytDlpArgs);
+  const ffmpeg = spawn('ffmpeg', [
+    '-i', 'pipe:0',
+    '-f', 'mp3',
+    '-acodec', 'libmp3lame',
+    '-ab', '320k',
+    '-y',
+    tempPath
+  ]);
+
+  activeTranscodes.set(id, { ytDlp, ffmpeg, tempPath });
+
+  ytDlp.stdout.pipe(ffmpeg.stdin);
+
+  ffmpeg.on('close', (code) => {
+    activeTranscodes.delete(id);
+    if (code === 0) {
+      if (fs.existsSync(tempPath)) {
+        fs.renameSync(tempPath, cachePath);
+        console.log(`[Cache] Completed background transcode: ${id}.mp3`);
+      }
+    } else {
+      console.error(`[Cache] ffmpeg failed with code ${code} for video: ${id}`);
+      if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+    }
+  });
+
+  ytDlp.on('error', (err) => {
+    console.error(`[Cache] yt-dlp failed to start:`, err);
+    ytDlp.kill();
+    ffmpeg.kill();
+    activeTranscodes.delete(id);
+  });
+};
+
 // Enable CORS
 app.use(cors());
 
@@ -103,6 +159,10 @@ app.get('/api/info', (req, res) => {
 
     try {
       const data = JSON.parse(stdout);
+      
+      // Start background transcoding immediately
+      startBackgroundTranscode(data.id);
+      
       res.json({
         id: data.id,
         title: data.title,
@@ -121,6 +181,13 @@ app.get('/api/stream', (req, res) => {
   const id = req.query.id;
   if (!id) {
     return res.status(400).send('Video ID is required');
+  }
+
+  const cachePath = path.join(cacheDir, `${id}.mp3`);
+  
+  // If cache exists, serve static file (supports seeking/range requests automatically)
+  if (fs.existsSync(cachePath)) {
+    return res.sendFile(cachePath);
   }
 
   const url = `https://www.youtube.com/watch?v=${id}`;
@@ -160,8 +227,17 @@ app.get('/api/download', (req, res) => {
     return res.status(400).send('Video ID is required');
   }
 
-  const url = `https://www.youtube.com/watch?v=${id}`;
   const filename = sanitizeFilename(rawTitle) + '.mp3';
+  const cachePath = path.join(cacheDir, `${id}.mp3`);
+
+  // If cache is ready, serve direct file download with Content-Length
+  if (fs.existsSync(cachePath)) {
+    console.log(`[Cache] Serving cached MP3 for direct download: ${filename}`);
+    return res.download(cachePath, filename);
+  }
+
+  console.log(`[Cache] Cache not ready for ${id}, converting live...`);
+  const url = `https://www.youtube.com/watch?v=${id}`;
 
   res.setHeader('Content-Type', 'audio/mpeg');
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
