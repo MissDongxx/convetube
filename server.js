@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { spawn, exec } from 'child_process';
 
@@ -9,6 +10,26 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const cookiesPath = path.join(__dirname, 'cookies.txt');
+
+// Helper to get base yt-dlp arguments for spawn
+const getBaseYtDlpArgs = () => {
+  const args = ['--js-runtimes', 'node'];
+  if (fs.existsSync(cookiesPath)) {
+    args.push('--cookies', cookiesPath);
+  }
+  return args;
+};
+
+// Helper to get base command prefix for exec
+const getExecPrefix = () => {
+  let prefix = 'yt-dlp --js-runtimes node';
+  if (fs.existsSync(cookiesPath)) {
+    prefix += ` --cookies "${cookiesPath}"`;
+  }
+  return prefix;
+};
 
 // Enable CORS
 app.use(cors());
@@ -73,7 +94,8 @@ app.get('/api/info', (req, res) => {
   }
 
   // Get video details using yt-dlp
-  exec(`yt-dlp -j --no-playlist "${videoUrl}"`, (error, stdout, stderr) => {
+  const cmdPrefix = getExecPrefix();
+  exec(`${cmdPrefix} -j --no-playlist "${videoUrl}"`, (error, stdout, stderr) => {
     if (error) {
       console.error('yt-dlp info error:', stderr);
       return res.status(500).json({ error: 'Failed to fetch video details' });
@@ -106,11 +128,8 @@ app.get('/api/stream', (req, res) => {
   res.setHeader('Content-Type', 'audio/mpeg');
   
   // Stream audio directly using yt-dlp and ffmpeg pipeline
-  const ytDlp = spawn('yt-dlp', [
-    '-f', 'bestaudio',
-    '-o', '-',
-    url
-  ]);
+  const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', '-', url];
+  const ytDlp = spawn('yt-dlp', ytDlpArgs);
 
   const ffmpeg = spawn('ffmpeg', [
     '-i', 'pipe:0',
@@ -148,11 +167,8 @@ app.get('/api/download', (req, res) => {
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
 
   // Stream high-quality 320kbps MP3 directly
-  const ytDlp = spawn('yt-dlp', [
-    '-f', 'bestaudio',
-    '-o', '-',
-    url
-  ]);
+  const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', '-', url];
+  const ytDlp = spawn('yt-dlp', ytDlpArgs);
 
   const ffmpeg = spawn('ffmpeg', [
     '-i', 'pipe:0',
