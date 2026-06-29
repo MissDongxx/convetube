@@ -151,30 +151,37 @@ document.addEventListener('DOMContentLoaded', () => {
       stateInput.classList.remove('active');
       stateLoading.classList.add('active');
       
-      // Simulate progress loader up to 90% while fetching
+      // Adaptive progress: slow ramp that never stalls at a fixed percentage
       let progress = 0;
       let infoData = null;
       let fetchFinished = false;
       let errorOccurred = false;
+      const startTime = Date.now();
       
       const progressInterval = setInterval(() => {
-        if (progress < 90) {
-          progress += 2;
-        } else if (fetchFinished) {
-          progress += 5;
+        if (fetchFinished) {
+          // Quickly finish to 100% once API responds
+          progress += 8;
+        } else {
+          // Adaptive slow-down: fast at start, gradually slows as it approaches 95%
+          // Uses a logarithmic curve so it never "stalls" at a fixed point
+          const elapsed = (Date.now() - startTime) / 1000; // seconds elapsed
+          // Target: reach ~60% in 3s, ~80% in 8s, ~90% in 15s, ~95% max
+          const target = Math.min(95, 60 * (1 - Math.exp(-elapsed / 3)) + 35 * (1 - Math.exp(-elapsed / 12)));
+          progress = Math.max(progress, target);
         }
         
         if (progress > 100) progress = 100;
         
-        progressBarFill.style.width = `${progress}%`;
-        progressPercent.textContent = `${progress}%`;
+        progressBarFill.style.width = `${Math.round(progress)}%`;
+        progressPercent.textContent = `${Math.round(progress)}%`;
         
         // Rotate status text based on progress
-        if (progress < 25) {
+        if (progress < 30) {
           loadingStatus.textContent = statusSteps[0];
-        } else if (progress < 55) {
+        } else if (progress < 60) {
           loadingStatus.textContent = statusSteps[1];
-        } else if (progress < 85) {
+        } else if (progress < 90) {
           loadingStatus.textContent = statusSteps[2];
         } else {
           loadingStatus.textContent = statusSteps[3];
@@ -213,22 +220,16 @@ document.addEventListener('DOMContentLoaded', () => {
             timeline.max = videoDuration;
             timeline.value = 0;
             
-            // Set download href
+            // Set download href — download works immediately via live streaming
             downloadBtn.href = `/api/download?id=${infoData.id}&title=${encodeURIComponent(infoData.title)}`;
             downloadBtn.setAttribute('download', `${sanitizeFilename(infoData.title)}.mp3`);
-
-            // Show "preparing" state on download button if cache not ready
-            if (!cacheReady) {
-              downloadBtn.classList.add('preparing');
-              if (downloadLabel) downloadLabel.textContent = preparingText;
-            }
             
             // Transition to Result view
             stateLoading.classList.remove('active');
             stateResult.classList.add('active');
           }, 300);
         }
-      }, 50);
+      }, 100);
 
       // Fetch metadata from backend
       try {
@@ -301,29 +302,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (audio.paused) {
         setPlayLoading(true);
-        audio.play().then(() => {
+        audio.play().catch(err => {
           setPlayLoading(false);
-          playSvg?.classList.add('hidden');
-          pauseSvg?.classList.remove('hidden');
-        }).catch(err => {
-          setPlayLoading(false);
-          playSvg?.classList.remove('hidden');
-          pauseSvg?.classList.add('hidden');
           console.log('Audio playback failed', err);
         });
       } else {
         audio.pause();
-        playSvg?.classList.remove('hidden');
-        pauseSvg?.classList.add('hidden');
       }
+    });
+
+    // Listen to native audio events to sync UI state instantly and eliminate flashing
+    audio.addEventListener('play', () => {
+      setPlayLoading(false);
+      playSvg?.classList.add('hidden');
+      pauseSvg?.classList.remove('hidden');
+    });
+
+    audio.addEventListener('pause', () => {
+      setPlayLoading(false);
+      playSvg?.classList.remove('hidden');
+      pauseSvg?.classList.add('hidden');
     });
 
     // When audio can start playing, remove loading indicator
     audio.addEventListener('canplay', () => {
       if (isAudioLoading) {
         setPlayLoading(false);
-        playSvg?.classList.add('hidden');
-        pauseSvg?.classList.remove('hidden');
       }
     });
     
@@ -346,15 +350,17 @@ document.addEventListener('DOMContentLoaded', () => {
     audio.addEventListener('timeupdate', () => {
       timeCurrent.textContent = formatTime(audio.currentTime);
       timeline.value = audio.currentTime;
-      // Update slider visual progress
-      const percent = (audio.duration && audio.duration !== Infinity) ? (audio.currentTime / audio.duration) * 100 : 0;
+      // Use videoDuration from metadata as fallback when streaming (audio.duration is Infinity)
+      const effectiveDuration = (audio.duration && audio.duration !== Infinity && !isNaN(audio.duration)) ? audio.duration : videoDuration;
+      const percent = effectiveDuration > 0 ? (audio.currentTime / effectiveDuration) * 100 : 0;
       timeline.style.background = `linear-gradient(to right, #C4593D ${percent}%, rgba(44,40,36,0.1) ${percent}%)`;
     });
     
     // Seeker slider control
     timeline.addEventListener('input', () => {
       audio.currentTime = timeline.value;
-      const percent = (audio.duration && audio.duration !== Infinity) ? (timeline.value / audio.duration) * 100 : 0;
+      const effectiveDuration = (audio.duration && audio.duration !== Infinity && !isNaN(audio.duration)) ? audio.duration : videoDuration;
+      const percent = effectiveDuration > 0 ? (timeline.value / effectiveDuration) * 100 : 0;
       timeline.style.background = `linear-gradient(to right, #C4593D ${percent}%, rgba(44,40,36,0.1) ${percent}%)`;
     });
     
@@ -401,16 +407,59 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Download button: show loading state when clicked if cache is not ready
+  // Download button: show feedback when clicked and revert when local download begins
   if (downloadBtn) {
     downloadBtn.addEventListener('click', (e) => {
-      if (downloadBtn.classList.contains('preparing')) {
+      if (!downloadLabel) return;
+
+      // Prevent duplicate downloads if already in progress
+      if (downloadBtn.classList.contains('downloading-active')) {
         e.preventDefault();
-        // Show a subtle message that it's still preparing
-        downloadBtn.classList.add('shake');
-        setTimeout(() => downloadBtn.classList.remove('shake'), 500);
         return;
       }
+
+      // Prevent default browser navigation so we can handle it cleanly
+      e.preventDefault();
+
+      const originalText = isFr ? 'Télécharger le MP3' : 'Descargar MP3';
+      downloadLabel.textContent = isFr ? 'Téléchargement en cours...' : 'Descargando...';
+      downloadBtn.classList.add('downloading-active');
+
+      // Generate a unique token for this download attempt
+      const token = 'dl_token_' + Date.now();
+
+      // Read the current href dynamically and append the token without permanently mutating the button's href
+      try {
+        const currentHref = downloadBtn.getAttribute('href') || '#';
+        const url = new URL(currentHref, window.location.origin);
+        url.searchParams.set('downloadToken', token);
+        
+        // Trigger the download programmatically (browser starts download via attachment header)
+        window.location.href = url.toString();
+      } catch (err) {
+        console.error('Failed to trigger download:', err);
+      }
+
+      // Poll cookies to detect when the browser receives the file headers and starts the download
+      const checkInterval = setInterval(() => {
+        if (document.cookie.includes(token)) {
+          clearInterval(checkInterval);
+          // Revert the button text and state
+          downloadLabel.textContent = originalText;
+          downloadBtn.classList.remove('downloading-active');
+          // Clean up the cookie by expiring it
+          document.cookie = `${token}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+        }
+      }, 150);
+
+      // Safety timeout: revert after 30 seconds if anything goes wrong or cookies are blocked
+      setTimeout(() => {
+        clearInterval(checkInterval);
+        if (downloadBtn.classList.contains('downloading-active')) {
+          downloadLabel.textContent = originalText;
+          downloadBtn.classList.remove('downloading-active');
+        }
+      }, 30000);
     });
   }
 });

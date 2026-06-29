@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="<%= lang %>">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-08N7PH62YY"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-08N7PH62YY');
+  </script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -25,8 +35,8 @@
   <meta property="twitter:description" content="<%= description %>">
   
   <!-- Favicon and Icons -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2">
+  <link rel="shortcut icon" href="/favicon.svg?v=2">
   
   <meta name="robots" content="index, follow">
   

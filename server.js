@@ -48,42 +48,80 @@ const startBackgroundTranscode = (id) => {
 
   const url = `https://www.youtube.com/watch?v=${id}`;
   const tempPath = path.join(cacheDir, `${id}.tmp`);
+  const downloadPath = path.join(cacheDir, `${id}.download`);
   
-  console.log(`[Cache] Starting background transcode for video: ${id}`);
+  console.log(`[Cache] Starting optimized background transcode for video: ${id}`);
   
-  const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', '-', url];
+  // Step 1: Download bestaudio to a local file.
+  // Downloading to a local file bypasses YouTube's play-rate throttling on piped stdout.
+  const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', downloadPath, url];
   const ytDlp = spawn('yt-dlp', ytDlpArgs);
-  const ffmpeg = spawn('ffmpeg', [
-    '-i', 'pipe:0',
-    '-f', 'mp3',
-    '-acodec', 'libmp3lame',
-    '-ab', '320k',
-    '-y',
-    tempPath
-  ]);
+  
+  activeTranscodes.set(id, { ytDlp, tempPath, downloadPath });
 
-  activeTranscodes.set(id, { ytDlp, ffmpeg, tempPath });
-
-  ytDlp.stdout.pipe(ffmpeg.stdin);
-
-  ffmpeg.on('close', (code) => {
-    activeTranscodes.delete(id);
-    if (code === 0) {
-      if (fs.existsSync(tempPath)) {
-        fs.renameSync(tempPath, cachePath);
-        console.log(`[Cache] Completed background transcode: ${id}.mp3`);
-      }
-    } else {
-      console.error(`[Cache] ffmpeg failed with code ${code} for video: ${id}`);
-      if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+  ytDlp.on('close', (code) => {
+    if (code !== 0) {
+      console.error(`[Cache] yt-dlp download failed with code ${code} for video: ${id}`);
+      if (fs.existsSync(downloadPath)) fs.unlinkSync(downloadPath);
+      activeTranscodes.delete(id);
+      return;
     }
+
+    console.log(`[Cache] Download complete for ${id}. Starting ffmpeg transcoding...`);
+
+    // Step 2: Transcode local file to MP3.
+    // Transcoding from a local file allows ffmpeg to utilize multithreaded decoding and high-speed local disk I/O.
+    const ffmpeg = spawn('ffmpeg', [
+      '-i', downloadPath,
+      '-f', 'mp3',
+      '-acodec', 'libmp3lame',
+      '-ab', '320k',
+      '-threads', '0', // Use all available CPU cores
+      '-y',
+      tempPath
+    ]);
+
+    // Update active transcode mapping with ffmpeg process
+    const current = activeTranscodes.get(id);
+    if (current) {
+      current.ffmpeg = ffmpeg;
+    }
+
+    ffmpeg.on('close', (ffmpegCode) => {
+      activeTranscodes.delete(id);
+      
+      // Clean up the temporary download file
+      if (fs.existsSync(downloadPath)) {
+        try {
+          fs.unlinkSync(downloadPath);
+        } catch (e) {
+          console.error(`[Cache] Failed to delete temp download file: ${e.message}`);
+        }
+      }
+
+      if (ffmpegCode === 0) {
+        if (fs.existsSync(tempPath)) {
+          fs.renameSync(tempPath, cachePath);
+          console.log(`[Cache] Completed background transcode: ${id}.mp3`);
+        }
+      } else {
+        console.error(`[Cache] ffmpeg transcoding failed with code ${ffmpegCode} for video: ${id}`);
+        if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+      }
+    });
+
+    ffmpeg.on('error', (err) => {
+      console.error(`[Cache] ffmpeg failed to start:`, err);
+      activeTranscodes.delete(id);
+      if (fs.existsSync(downloadPath)) fs.unlinkSync(downloadPath);
+      if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+    });
   });
 
   ytDlp.on('error', (err) => {
     console.error(`[Cache] yt-dlp failed to start:`, err);
-    ytDlp.kill();
-    ffmpeg.kill();
     activeTranscodes.delete(id);
+    if (fs.existsSync(downloadPath)) fs.unlinkSync(downloadPath);
   });
 };
 
@@ -140,6 +178,24 @@ app.get('/convertidor-de-youtube-a-mp3/convertir-videos-de-youtube-a-mp3', (req,
   });
 });
 
+// ES No Tube Page
+app.get('/convertidor-mp3-no-tube', (req, res) => {
+  res.render('convertidor-mp3-no-tube', {
+    title: 'Convertidor MP3 No Tube Gratis | La Mejor Alternativa - ConveTube',
+    description: '¿Buscas un convertidor mp3 no tube rápido y sin publicidad? ConveTube es la mejor alternativa gratuita para convertir videos de YouTube a MP3 online.',
+    canonical: 'https://convetube.com/convertidor-mp3-no-tube/'
+  });
+});
+
+// ES Descargar Page
+app.get('/descargar-videos-de-youtube-a-mp3-gratis-online', (req, res) => {
+  res.render('descargar-videos-de-youtube-a-mp3-gratis-online', {
+    title: 'Descargar Videos de YouTube a MP3 Gratis Online | ConveTube',
+    description: 'Descarga videos de YouTube a MP3 gratis y online en alta calidad (320kbps). Extrae pistas de audio de forma segura y rápida con ConveTube.',
+    canonical: 'https://convetube.com/descargar-videos-de-youtube-a-mp3-gratis-online/'
+  });
+});
+
 // Sitemap.xml
 app.get('/sitemap.xml', (req, res) => {
   res.set('Content-Type', 'application/xml');
@@ -167,6 +223,16 @@ app.get('/sitemap.xml', (req, res) => {
     <loc>https://convetube.com/convertidor-de-youtube-a-mp3/convertir-videos-de-youtube-a-mp3/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/convertidor-mp3-no-tube/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/descargar-videos-de-youtube-a-mp3-gratis-online/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>`);
 });
@@ -204,9 +270,9 @@ app.get('/api/info', (req, res) => {
     return res.status(400).json({ error: 'URL parameter is required' });
   }
 
-  // Get video details using yt-dlp
+  // Get video details using yt-dlp (optimized for speed)
   const cmdPrefix = getExecPrefix();
-  exec(`${cmdPrefix} -j --no-playlist "${videoUrl}"`, (error, stdout, stderr) => {
+  exec(`${cmdPrefix} -j --no-playlist --no-warnings --no-check-certificates --socket-timeout 10 "${videoUrl}"`, (error, stdout, stderr) => {
     if (error) {
       console.error('yt-dlp info error:', stderr);
       return res.status(500).json({ error: 'Failed to fetch video details' });
@@ -285,6 +351,12 @@ app.get('/api/download', (req, res) => {
   const filename = sanitizeFilename(rawTitle) + '.mp3';
   const cachePath = path.join(cacheDir, `${id}.mp3`);
 
+  // If a download token is provided, set a cookie so the client can detect when the download begins.
+  const downloadToken = req.query.downloadToken;
+  if (downloadToken) {
+    res.cookie(downloadToken, 'true', { maxAge: 60000, httpOnly: false, path: '/' });
+  }
+
   // If cache is ready, serve direct file download with Content-Length
   if (fs.existsSync(cachePath)) {
     console.log(`[Cache] Serving cached MP3 for direct download: ${filename}`);
@@ -293,6 +365,10 @@ app.get('/api/download', (req, res) => {
 
   console.log(`[Cache] Cache not ready for ${id}, converting live...`);
   const url = `https://www.youtube.com/watch?v=${id}`;
+
+  if (downloadToken) {
+    res.cookie(downloadToken, 'true', { maxAge: 60000, httpOnly: false, path: '/' });
+  }
 
   res.setHeader('Content-Type', 'audio/mpeg');
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);

@@ -558,6 +558,13 @@ const texts = translations[lang] || translations.es;
     position: relative;
   }
 
+  /* Download button actively downloading state */
+  .download-link-btn.downloading-active {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   .download-link-btn.preparing .download-icon {
     display: none;
   }

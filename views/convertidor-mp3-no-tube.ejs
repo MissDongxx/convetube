@@ -1,0 +1,235 @@
+<%- include('partials/header', { lang: 'es', title: title, description: description, canonical: canonical }) %>
+
+  <div class="container breadcrumb-container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol style="list-style: none; display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--bg-secondary); border: 1px solid rgba(44, 40, 36, 0.06); border-radius: 8px; font-size: 0.85rem; font-weight: 500;">
+        <li><a href="/" style="color: var(--color-text-secondary); text-decoration: none;">Inicio</a></li>
+        <li><span class="separator" style="color: var(--color-text-muted);">/</span></li>
+        <li aria-current="page" class="active" style="color: var(--color-text-primary); font-weight: 600;">Convertidor MP3 No Tube</li>
+      </ol>
+    </nav>
+  </div>
+
+  <div class="container hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Convertidor <span class="text-gradient">MP3 No Tube</span></h1>
+      <p class="hero-subtitle">La alternativa más rápida, segura y limpia para convertir tus videos de YouTube a MP3 sin anuncios invasivos.</p>
+    </div>
+    
+    <%- include('partials/converter', { lang: 'es' }) %>
+  </div>
+
+  <section class="seo-section container">
+    <div class="seo-card glass-panel">
+      <h2>¿Buscas un Convertidor YouTube a MP3 No Tube?</h2>
+      <p>Si estás acostumbrado a usar herramientas como el popular <strong>convertidor youtube a mp3 no tube</strong>, sabes lo útil que es poder extraer el audio de tus videos preferidos en segundos. Sin embargo, muchos de estos servicios suelen saturarse de anuncios emergentes molestos, redirecciones automáticas o incluso experimentar caídas constantes en sus servidores.</p>
+      <p>En <strong>ConveTube</strong>, hemos desarrollado un motor de conversión optimizado que funciona como la alternativa perfecta. Te permitimos <strong>convertir a mp3 no tube</strong> de forma directa, totalmente limpia, sin molestos registros y con la máxima velocidad de descarga del mercado.</p>
+      <p class="link-paragraph">
+        ¿Prefieres una descarga directa y veloz? Visita nuestra página dedicada a la acción de 
+        <a href="/descargar-videos-de-youtube-a-mp3-gratis-online" class="inline-link">descargar videos de YouTube a MP3 gratis online</a>.
+      </p>
+    </div>
+
+    <div class="seo-grid">
+      <div class="seo-card glass-panel">
+        <h2>¿Por qué ConveTube es la mejor alternativa a No Tube?</h2>
+        <p>A diferencia de otras plataformas tradicionales de extracción de audio, en nuestra web nos enfocamos en ofrecer una experiencia de usuario premium:</p>
+        <ul class="benefits-list">
+          <li><strong>Sin Publicidad Invasiva:</strong> Navega y descarga sin ventanas emergentes (popups) ni redirecciones sospechosas.</li>
+          <li><strong>Audio de Alta Fidelidad (320kbps):</strong> No comprimimos el sonido al extremo. Si el video original cuenta con buena calidad, obtendrás un archivo de sonido impecable.</li>
+          <li><strong>Extractor de Audio Inteligente:</strong> Nuestro sistema analiza la URL y extrae el <strong>convertidor mp3 audio no tube</strong> de forma eficiente en nuestros servidores en la nube.</li>
+          <li><strong>100% Gratuito e Ilimitado:</strong> No hay límites diarios de descargas. Puedes convertir toda tu biblioteca de música favorita de forma totalmente gratuita.</li>
+        </ul>
+      </div>
+
+      <div class="seo-card glass-panel flex-center">
+        <img 
+          src="/images/conversion_steps.png" 
+          alt="Comparativa y ventajas del convertidor MP3 no tube en ConveTube" 
+          width="400" 
+          height="400"
+          class="seo-img"
+          loading="lazy"
+        />
+      </div>
+    </div>
+
+    <div class="seo-card glass-panel">
+      <h2>Preguntas Frecuentes sobre el Convertidor MP3 No Tube</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <h3>¿Cómo se diferencia ConveTube de las plataformas tradicionales como no tube?</h3>
+          <p>ConveTube ofrece un entorno mucho más limpio, enfocado en la seguridad del usuario. No instalamos cookies de rastreo invasivas y nuestro reproductor integrado te permite previsualizar y escuchar el audio antes de guardarlo en tu dispositivo.</p>
+        </div>
+        <div class="faq-item">
+          <h3>¿El servicio funciona para convertir música en el celular?</h3>
+          <p>Sí, es totalmente compatible. Puedes usarlo en tu dispositivo móvil (Android o iPhone) sin necesidad de instalar aplicaciones desde la App Store o Google Play. Solo copia el enlace de YouTube, pégalo en nuestro navegador y descarga el MP3.</p>
+        </div>
+        <div class="faq-item">
+          <h3>¿Es legal utilizar este convertidor de YouTube?</h3>
+          <p>Nuetra plataforma está diseñada para facilitar la conversión de videos de uso personal, académico o contenido libre de derechos de autor. Te recomendamos respetar las leyes de propiedad intelectual de tu país de residencia.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<style>
+  /* Breadcrumbs styling */
+  .breadcrumb-container {
+    padding-top: 24px;
+  }
+
+  .hero-section {
+    text-align: center;
+    padding: 30px 0 20px 0;
+  }
+
+  .hero-content {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  @media (max-width: 640px) {
+    .hero-title {
+      font-size: 2.25rem;
+    }
+  }
+
+  .hero-subtitle {
+    font-size: 1.15rem;
+    color: var(--color-text-secondary);
+    font-weight: 400;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* SEO Section */
+  .seo-section {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .seo-card {
+    padding: 36px;
+  }
+
+  .seo-card h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: var(--color-text-primary);
+  }
+
+  .seo-card p {
+    color: var(--color-text-secondary);
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .seo-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  .link-paragraph {
+    border-top: 1px solid rgba(44, 40, 36, 0.08);
+    padding-top: 16px;
+    margin-top: 16px;
+  }
+
+  .inline-link {
+    color: #C4593D;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .inline-link:hover {
+    text-decoration: underline;
+  }
+
+  .seo-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 30px;
+  }
+
+  @media (max-width: 768px) {
+    .seo-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .seo-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid rgba(44, 40, 36, 0.08);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .benefits-list {
+    margin-left: 20px;
+    color: var(--color-text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .benefits-list li {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .benefits-list strong {
+    color: var(--color-text-primary);
+  }
+
+  /* FAQ Styles */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid rgba(44, 40, 36, 0.08);
+    padding-bottom: 16px;
+  }
+
+  .faq-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .faq-item h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--color-text-primary);
+    font-family: var(--font-family);
+  }
+
+  .faq-item p {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+</style>
+
+<%- include('partials/footer', { lang: 'es' }) %>
