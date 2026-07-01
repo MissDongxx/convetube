@@ -188,9 +188,14 @@
 </head>
 <body>
 
+<%
+  const homeHref = lang === 'fr' ? '/convertir-youtube-vers-mp3/' : lang === 'en' ? '/youtube-to-wav/' : '/';
+  const langLabel = lang === 'fr' ? 'Français' : lang === 'en' ? 'English' : 'Español';
+%>
+
   <header class="main-header">
     <div class="container header-container">
-      <a href="<%= lang === 'es' ? '/' : '/convertir-youtube-vers-mp3/' %>" class="logo" aria-label="ConveTube Home">
+      <a href="<%= homeHref %>" class="logo" aria-label="ConveTube Home">
         <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M21.4086 9.35258C23.5305 10.5065 23.5305 13.4935 21.4086 14.6474L8.59691 21.615C6.58284 22.7103 4.125 21.2138 4.125 18.9676L4.125 5.0324C4.125 2.7862 6.58284 1.28974 8.59691 2.38501L21.4086 9.35258Z" fill="url(#logo-grad)"/>
           <defs>
@@ -207,7 +212,7 @@
         <div class="lang-selector">
           <button class="lang-btn" aria-haspopup="listbox" aria-expanded="false" id="lang-menu-button">
             <span class="lang-icon">🌐</span>
-            <span class="lang-label"><%= lang === 'es' ? 'Español' : 'Français' %></span>
+            <span class="lang-label"><%= langLabel %></span>
             <span class="lang-arrow">▼</span>
           </button>
           <ul class="lang-dropdown" role="listbox" aria-labelledby="lang-menu-button" id="lang-menu">
@@ -216,6 +221,9 @@
             </li>
             <li role="option" aria-selected="<%= lang === 'fr' %>">
               <a href="/convertir-youtube-vers-mp3" class="<%= lang === 'fr' ? 'active' : '' %>">Français (FR)</a>
+            </li>
+            <li role="option" aria-selected="<%= lang === 'en' %>">
+              <a href="/youtube-to-wav" class="<%= lang === 'en' ? 'active' : '' %>">English (EN)</a>
             </li>
           </ul>
         </div>

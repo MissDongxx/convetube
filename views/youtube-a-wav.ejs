@@ -1,0 +1,57 @@
+<%- include('partials/header', { lang: 'es', title: title, description: description, canonical: canonical }) %>
+
+  <div class="container breadcrumb-container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li><a href="/">Inicio</a></li>
+        <li><span>/</span></li>
+        <li aria-current="page">YouTube a WAV</li>
+      </ol>
+    </nav>
+  </div>
+
+  <div class="container hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Convertir <span class="text-gradient">YouTube a WAV</span></h1>
+      <p class="hero-subtitle">Extrae audio de YouTube en formato WAV para edición, producción, muestras y proyectos que necesitan audio sin compresión.</p>
+    </div>
+
+    <%- include('partials/converter', { lang: 'es', format: 'wav' }) %>
+  </div>
+
+  <section class="seo-section container">
+    <div class="seo-card glass-panel">
+      <h2>Convertidor de YouTube a WAV online</h2>
+      <p>Si buscas <strong>youtube a wav</strong>, normalmente necesitas un archivo de audio sin compresión para editarlo en un DAW, limpiarlo, recortarlo o archivarlo con mayor fidelidad que un MP3. ConveTube puede analizar el enlace de YouTube y entregar una descarga WAV directamente desde el navegador.</p>
+      <p>WAV genera archivos más grandes que MP3, pero es una mejor opción cuando vas a mezclar, cortar, normalizar volumen o importar el audio en herramientas profesionales.</p>
+      <p class="link-paragraph">Para archivos más livianos y compatibles con cualquier reproductor, usa <a href="/" class="inline-link">YouTube a MP3</a> o <a href="/descargar-musica-de-youtube" class="inline-link">descargar música de YouTube</a>.</p>
+    </div>
+
+    <div class="seo-grid">
+      <div class="seo-card glass-panel">
+        <h2>Cómo descargar WAV desde YouTube</h2>
+        <ol class="steps-list">
+          <li><strong>Copia la URL:</strong> busca el video de YouTube y copia el enlace completo.</li>
+          <li><strong>Pega el enlace:</strong> introdúcelo en el convertidor para que ConveTube prepare el audio.</li>
+          <li><strong>Descarga WAV:</strong> revisa el resultado en el reproductor y guarda el archivo WAV en tu dispositivo.</li>
+        </ol>
+      </div>
+
+      <div class="seo-card glass-panel flex-center">
+        <img src="/images/conversion_steps.png" alt="Pasos para convertir YouTube a WAV" width="400" height="400" class="seo-img" loading="lazy" />
+      </div>
+    </div>
+
+    <div class="seo-card glass-panel">
+      <h2>Cuándo elegir WAV</h2>
+      <div class="features-grid">
+        <div class="feature-item"><span class="feature-icon">WAV</span><h3>Audio sin compresión</h3><p>Ideal para edición y producción cuando prefieres evitar pérdidas adicionales por recompresión.</p></div>
+        <div class="feature-item"><span class="feature-icon">DAW</span><h3>Compatible con editores</h3><p>Importa el archivo en Audacity, Ableton, Logic, Premiere, DaVinci Resolve u otras herramientas.</p></div>
+        <div class="feature-item"><span class="feature-icon">44.1</span><h3>Salida estándar</h3><p>El audio WAV se genera en PCM a 44.1 kHz, una configuración ampliamente aceptada.</p></div>
+        <div class="feature-item"><span class="feature-icon">MP3</span><h3>Alternativa ligera</h3><p>Si solo quieres escuchar música offline, MP3 suele ser más práctico por tamaño y compatibilidad.</p></div>
+      </div>
+    </div>
+  </section>
+
+<%- include('partials/wav-page-styles') %>
+<%- include('partials/footer', { lang: 'es' }) %>

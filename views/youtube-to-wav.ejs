@@ -1,0 +1,57 @@
+<%- include('partials/header', { lang: 'en', title: title, description: description, canonical: canonical }) %>
+
+  <div class="container breadcrumb-container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li><a href="/youtube-to-wav">Home</a></li>
+        <li><span>/</span></li>
+        <li aria-current="page">YouTube to WAV</li>
+      </ol>
+    </nav>
+  </div>
+
+  <div class="container hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">YouTube <span class="text-gradient">to WAV</span></h1>
+      <p class="hero-subtitle">Convert YouTube audio to WAV for editing, sampling, production, and projects that need an uncompressed audio file.</p>
+    </div>
+
+    <%- include('partials/converter', { lang: 'en', format: 'wav' }) %>
+  </div>
+
+  <section class="seo-section container">
+    <div class="seo-card glass-panel">
+      <h2>Free YouTube to WAV converter</h2>
+      <p>Use ConveTube when you need <strong>YouTube to WAV</strong> instead of a compressed MP3. Paste a YouTube link, let the converter analyze the video, preview the audio, and download a WAV file directly in your browser.</p>
+      <p>WAV files are larger, but they are useful for audio editing, video production, clean trimming, remixing, and workflows where you do not want another lossy compression pass.</p>
+      <p class="link-paragraph">For Spanish searches, use <a href="/youtube-a-wav" class="inline-link">YouTube a WAV</a>. For smaller music files, use the Spanish <a href="/" class="inline-link">YouTube to MP3 converter</a>.</p>
+    </div>
+
+    <div class="seo-grid">
+      <div class="seo-card glass-panel">
+        <h2>How to convert YouTube to WAV</h2>
+        <ol class="steps-list">
+          <li><strong>Copy the link:</strong> open YouTube and copy the URL of the video you want to extract.</li>
+          <li><strong>Paste it above:</strong> ConveTube reads the video metadata and prepares the audio stream.</li>
+          <li><strong>Download WAV:</strong> preview the result and save the WAV file to your device.</li>
+        </ol>
+      </div>
+
+      <div class="seo-card glass-panel flex-center">
+        <img src="/images/conversion_steps.png" alt="Steps to convert YouTube to WAV" width="400" height="400" class="seo-img" loading="lazy" />
+      </div>
+    </div>
+
+    <div class="seo-card glass-panel">
+      <h2>Why choose WAV?</h2>
+      <div class="features-grid">
+        <div class="feature-item"><span class="feature-icon">WAV</span><h3>Uncompressed output</h3><p>Useful when editing or producing audio and you want to avoid extra lossy compression.</p></div>
+        <div class="feature-item"><span class="feature-icon">DAW</span><h3>Editor friendly</h3><p>Import the file into Audacity, Ableton, Logic, Premiere, DaVinci Resolve, and similar tools.</p></div>
+        <div class="feature-item"><span class="feature-icon">44.1</span><h3>Standard PCM</h3><p>Downloads are generated as WAV PCM at 44.1 kHz for broad compatibility.</p></div>
+        <div class="feature-item"><span class="feature-icon">MP3</span><h3>Use MP3 for smaller files</h3><p>If you only need offline listening, MP3 is usually lighter and easier to store.</p></div>
+      </div>
+    </div>
+  </section>
+
+<%- include('partials/wav-page-styles') %>
+<%- include('partials/footer', { lang: 'en' }) %>

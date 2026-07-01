@@ -8,8 +8,27 @@ import { spawn, exec } from 'child_process';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const envPath = path.join(__dirname, '.env');
+if (fs.existsSync(envPath)) {
+  const envText = fs.readFileSync(envPath, 'utf8');
+  for (const line of envText.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const equalsIndex = trimmed.indexOf('=');
+    if (equalsIndex === -1) continue;
+    const key = trimmed.slice(0, equalsIndex).trim();
+    const value = trimmed.slice(equalsIndex + 1).trim().replace(/^["']|["']$/g, '');
+    if (key && process.env[key] === undefined) {
+      process.env[key] = value;
+    }
+  }
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL || 'info@convetube.com';
+const BREVO_SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || 'noreply@convetube.com';
+const BREVO_SENDER_NAME = process.env.BREVO_SENDER_NAME || 'ConveTube';
 
 const cookiesPath = path.join(__dirname, 'cookies.txt');
 
@@ -40,30 +59,53 @@ if (!fs.existsSync(cacheDir)) {
 // Track active background conversions
 const activeTranscodes = new Map();
 
-const startBackgroundTranscode = (id) => {
-  const cachePath = path.join(cacheDir, `${id}.mp3`);
-  if (fs.existsSync(cachePath) || activeTranscodes.has(id)) {
+const getAudioFormat = (format) => (format === 'wav' ? 'wav' : 'mp3');
+
+const getTranscodeOptions = (format, quality = 'download') => {
+  if (format === 'wav') {
+    return {
+      extension: 'wav',
+      mimeType: 'audio/wav',
+      ffmpegArgs: ['-f', 'wav', '-acodec', 'pcm_s16le', '-ar', '44100'],
+    };
+  }
+
+  return {
+    extension: 'mp3',
+    mimeType: 'audio/mpeg',
+    ffmpegArgs: ['-f', 'mp3', '-acodec', 'libmp3lame', '-ab', quality === 'stream' ? '128k' : '320k'],
+  };
+};
+
+const getCachePath = (id, format) => path.join(cacheDir, `${id}.${format}`);
+
+const startBackgroundTranscode = (id, requestedFormat = 'mp3') => {
+  const format = getAudioFormat(requestedFormat);
+  const options = getTranscodeOptions(format);
+  const cachePath = getCachePath(id, format);
+  const transcodeKey = `${id}:${format}`;
+  if (fs.existsSync(cachePath) || activeTranscodes.has(transcodeKey)) {
     return; // Already cached or currently transcoding
   }
 
   const url = `https://www.youtube.com/watch?v=${id}`;
-  const tempPath = path.join(cacheDir, `${id}.tmp`);
-  const downloadPath = path.join(cacheDir, `${id}.download`);
+  const tempPath = path.join(cacheDir, `${id}.${format}.tmp`);
+  const downloadPath = path.join(cacheDir, `${id}.${format}.download`);
   
-  console.log(`[Cache] Starting optimized background transcode for video: ${id}`);
+  console.log(`[Cache] Starting optimized background ${format.toUpperCase()} transcode for video: ${id}`);
   
   // Step 1: Download bestaudio to a local file.
   // Downloading to a local file bypasses YouTube's play-rate throttling on piped stdout.
   const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', downloadPath, url];
   const ytDlp = spawn('yt-dlp', ytDlpArgs);
   
-  activeTranscodes.set(id, { ytDlp, tempPath, downloadPath });
+  activeTranscodes.set(transcodeKey, { ytDlp, tempPath, downloadPath });
 
   ytDlp.on('close', (code) => {
     if (code !== 0) {
       console.error(`[Cache] yt-dlp download failed with code ${code} for video: ${id}`);
       if (fs.existsSync(downloadPath)) fs.unlinkSync(downloadPath);
-      activeTranscodes.delete(id);
+      activeTranscodes.delete(transcodeKey);
       return;
     }
 
@@ -73,22 +115,20 @@ const startBackgroundTranscode = (id) => {
     // Transcoding from a local file allows ffmpeg to utilize multithreaded decoding and high-speed local disk I/O.
     const ffmpeg = spawn('ffmpeg', [
       '-i', downloadPath,
-      '-f', 'mp3',
-      '-acodec', 'libmp3lame',
-      '-ab', '320k',
+      ...options.ffmpegArgs,
       '-threads', '0', // Use all available CPU cores
       '-y',
       tempPath
     ]);
 
     // Update active transcode mapping with ffmpeg process
-    const current = activeTranscodes.get(id);
+    const current = activeTranscodes.get(transcodeKey);
     if (current) {
       current.ffmpeg = ffmpeg;
     }
 
     ffmpeg.on('close', (ffmpegCode) => {
-      activeTranscodes.delete(id);
+      activeTranscodes.delete(transcodeKey);
       
       // Clean up the temporary download file
       if (fs.existsSync(downloadPath)) {
@@ -102,7 +142,7 @@ const startBackgroundTranscode = (id) => {
       if (ffmpegCode === 0) {
         if (fs.existsSync(tempPath)) {
           fs.renameSync(tempPath, cachePath);
-          console.log(`[Cache] Completed background transcode: ${id}.mp3`);
+          console.log(`[Cache] Completed background transcode: ${id}.${options.extension}`);
         }
       } else {
         console.error(`[Cache] ffmpeg transcoding failed with code ${ffmpegCode} for video: ${id}`);
@@ -112,7 +152,7 @@ const startBackgroundTranscode = (id) => {
 
     ffmpeg.on('error', (err) => {
       console.error(`[Cache] ffmpeg failed to start:`, err);
-      activeTranscodes.delete(id);
+      activeTranscodes.delete(transcodeKey);
       if (fs.existsSync(downloadPath)) fs.unlinkSync(downloadPath);
       if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
     });
@@ -120,13 +160,15 @@ const startBackgroundTranscode = (id) => {
 
   ytDlp.on('error', (err) => {
     console.error(`[Cache] yt-dlp failed to start:`, err);
-    activeTranscodes.delete(id);
+    activeTranscodes.delete(transcodeKey);
     if (fs.existsSync(downloadPath)) fs.unlinkSync(downloadPath);
   });
 };
 
 // Enable CORS
 app.use(cors());
+app.use(express.json({ limit: '20kb' }));
+app.use(express.urlencoded({ extended: false, limit: '20kb' }));
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -139,6 +181,13 @@ app.set('views', path.join(__dirname, 'views'));
 const sanitizeFilename = (filename) => {
   return filename.replace(/[^a-zA-Z0-9\s-_]/g, '').replace(/\s+/g, '_') || 'convetube-audio';
 };
+
+const escapeHtml = (value) => String(value)
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;');
 
 // --- Web Page Routes ---
 
@@ -169,13 +218,9 @@ app.get('/convertidor-de-youtube-a-mp3', (req, res) => {
   });
 });
 
-// ES Tertiary Page
+// Legacy ES tertiary page
 app.get('/convertidor-de-youtube-a-mp3/convertir-videos-de-youtube-a-mp3', (req, res) => {
-  res.render('convertir-videos-de-youtube-a-mp3', {
-    title: 'Cómo Convertir Videos de YouTube a MP3 Paso a Paso | ConveTube',
-    description: 'Guía y herramienta para convertir videos de YouTube a MP3. Descarga música y audio de YouTube a tu dispositivo móvil o PC con la mejor calidad.',
-    canonical: 'https://convetube.com/convertidor-de-youtube-a-mp3/convertir-videos-de-youtube-a-mp3/'
-  });
+  res.redirect(301, '/convertidor-de-youtube-a-mp3/');
 });
 
 // ES No Tube Page
@@ -193,6 +238,33 @@ app.get('/descargar-videos-de-youtube-a-mp3-gratis-online', (req, res) => {
     title: 'Descargar Videos de YouTube a MP3 Gratis Online | ConveTube',
     description: 'Descarga videos de YouTube a MP3 gratis y online en alta calidad (320kbps). Extrae pistas de audio de forma segura y rápida con ConveTube.',
     canonical: 'https://convetube.com/descargar-videos-de-youtube-a-mp3-gratis-online/'
+  });
+});
+
+// ES Music Download Page
+app.get('/descargar-musica-de-youtube', (req, res) => {
+  res.render('descargar-musica-de-youtube', {
+    title: 'Descargar Música de YouTube Gratis en MP3 | ConveTube',
+    description: 'Descargar música de YouTube en MP3 gratis y online. Guarda canciones, podcasts y audios para escuchar sin conexión desde cualquier dispositivo.',
+    canonical: 'https://convetube.com/descargar-musica-de-youtube/'
+  });
+});
+
+// ES WAV Page
+app.get('/youtube-a-wav', (req, res) => {
+  res.render('youtube-a-wav', {
+    title: 'YouTube a WAV Gratis | Convertir Audio Online - ConveTube',
+    description: 'Convierte YouTube a WAV online gratis. Descarga audio WAV sin compresión para edición, producción, muestras y proyectos de audio.',
+    canonical: 'https://convetube.com/youtube-a-wav/'
+  });
+});
+
+// EN WAV Page
+app.get('/youtube-to-wav', (req, res) => {
+  res.render('youtube-to-wav', {
+    title: 'YouTube to WAV Converter Free Online | ConveTube',
+    description: 'Convert YouTube to WAV online for free. Download uncompressed WAV audio for editing, sampling, production, and creative projects.',
+    canonical: 'https://convetube.com/youtube-to-wav/'
   });
 });
 
@@ -220,17 +292,27 @@ app.get('/sitemap.xml', (req, res) => {
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://convetube.com/convertidor-de-youtube-a-mp3/convertir-videos-de-youtube-a-mp3/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://convetube.com/convertidor-mp3-no-tube/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://convetube.com/descargar-videos-de-youtube-a-mp3-gratis-online/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/descargar-musica-de-youtube/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/youtube-a-wav/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/youtube-to-wav/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -245,27 +327,103 @@ app.get('/robots.txt', (req, res) => {
 
 // --- API Routes ---
 
+// Contact form: forwards messages by email without storing them on disk.
+app.post('/api/contact', async (req, res) => {
+  const email = String(req.body.email || '').trim();
+  const message = String(req.body.message || '').trim();
+  const website = String(req.body.website || '').trim();
+
+  if (website) {
+    return res.json({ ok: true });
+  }
+
+  if (!message || message.length > 4000) {
+    return res.status(400).json({ error: 'Message must be between 1 and 4000 characters.' });
+  }
+
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: 'Please enter a valid email address.' });
+  }
+
+  if (!process.env.BREVO_API_KEY) {
+    return res.status(503).json({ error: 'Email service is not configured.' });
+  }
+
+  const submittedAt = new Date().toISOString();
+  const subject = 'New ConveTube footer message';
+  const text = [
+    'New message from ConveTube',
+    '',
+    `From: ${email || 'Not provided'}`,
+    `Submitted: ${submittedAt}`,
+    '',
+    message
+  ].join('\n');
+
+  const html = `
+    <h2>New message from ConveTube</h2>
+    <p><strong>From:</strong> ${escapeHtml(email || 'Not provided')}</p>
+    <p><strong>Submitted:</strong> ${escapeHtml(submittedAt)}</p>
+    <p><strong>Message:</strong></p>
+    <p style="white-space: pre-wrap;">${escapeHtml(message)}</p>
+  `;
+
+  try {
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': process.env.BREVO_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        sender: {
+          email: BREVO_SENDER_EMAIL,
+          name: BREVO_SENDER_NAME
+        },
+        to: [{ email: CONTACT_TO_EMAIL }],
+        replyTo: email ? { email } : undefined,
+        subject,
+        textContent: text,
+        htmlContent: html
+      })
+    });
+
+    if (!response.ok) {
+      const details = await response.text();
+      console.error(`[Contact] Failed to send email: ${response.status} ${details}`);
+      return res.status(502).json({ error: 'Failed to send message.' });
+    }
+
+    return res.json({ ok: true });
+  } catch (error) {
+    console.error('[Contact] Email send error:', error);
+    return res.status(502).json({ error: 'Failed to send message.' });
+  }
+});
+
 // 0. Check if cached MP3 is ready
 app.get('/api/cache-status', (req, res) => {
   const id = req.query.id;
+  const format = getAudioFormat(req.query.format);
   if (!id) {
     return res.status(400).json({ error: 'Video ID is required' });
   }
 
-  const cachePath = path.join(cacheDir, `${id}.mp3`);
+  const cachePath = getCachePath(id, format);
   if (fs.existsSync(cachePath)) {
     const stats = fs.statSync(cachePath);
     return res.json({ ready: true, size: stats.size });
   }
 
   // Check if transcoding is in progress
-  const isTranscoding = activeTranscodes.has(id);
+  const isTranscoding = activeTranscodes.has(`${id}:${format}`);
   return res.json({ ready: false, transcoding: isTranscoding });
 });
 
 // 1. Fetch Video Metadata
 app.get('/api/info', (req, res) => {
   const videoUrl = req.query.url;
+  const format = getAudioFormat(req.query.format);
   if (!videoUrl) {
     return res.status(400).json({ error: 'URL parameter is required' });
   }
@@ -282,7 +440,7 @@ app.get('/api/info', (req, res) => {
       const data = JSON.parse(stdout);
       
       // Start background transcoding immediately
-      startBackgroundTranscode(data.id);
+      startBackgroundTranscode(data.id, format);
       
       res.json({
         id: data.id,
@@ -300,11 +458,13 @@ app.get('/api/info', (req, res) => {
 // 2. Stream Audio Live
 app.get('/api/stream', (req, res) => {
   const id = req.query.id;
+  const format = getAudioFormat(req.query.format);
+  const options = getTranscodeOptions(format, 'stream');
   if (!id) {
     return res.status(400).send('Video ID is required');
   }
 
-  const cachePath = path.join(cacheDir, `${id}.mp3`);
+  const cachePath = getCachePath(id, format);
   
   // If cache exists, serve static file (supports seeking/range requests automatically)
   if (fs.existsSync(cachePath)) {
@@ -313,7 +473,7 @@ app.get('/api/stream', (req, res) => {
 
   const url = `https://www.youtube.com/watch?v=${id}`;
   
-  res.setHeader('Content-Type', 'audio/mpeg');
+  res.setHeader('Content-Type', options.mimeType);
   
   // Stream audio directly using yt-dlp and ffmpeg pipeline
   const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', '-', url];
@@ -321,9 +481,7 @@ app.get('/api/stream', (req, res) => {
 
   const ffmpeg = spawn('ffmpeg', [
     '-i', 'pipe:0',
-    '-f', 'mp3',
-    '-acodec', 'libmp3lame',
-    '-ab', '128k',
+    ...options.ffmpegArgs,
     'pipe:1'
   ]);
 
@@ -344,12 +502,14 @@ app.get('/api/stream', (req, res) => {
 app.get('/api/download', (req, res) => {
   const id = req.query.id;
   const rawTitle = req.query.title || 'audio';
+  const format = getAudioFormat(req.query.format);
+  const options = getTranscodeOptions(format);
   if (!id) {
     return res.status(400).send('Video ID is required');
   }
 
-  const filename = sanitizeFilename(rawTitle) + '.mp3';
-  const cachePath = path.join(cacheDir, `${id}.mp3`);
+  const filename = `${sanitizeFilename(rawTitle)}.${options.extension}`;
+  const cachePath = getCachePath(id, format);
 
   // If a download token is provided, set a cookie so the client can detect when the download begins.
   const downloadToken = req.query.downloadToken;
@@ -359,7 +519,7 @@ app.get('/api/download', (req, res) => {
 
   // If cache is ready, serve direct file download with Content-Length
   if (fs.existsSync(cachePath)) {
-    console.log(`[Cache] Serving cached MP3 for direct download: ${filename}`);
+    console.log(`[Cache] Serving cached ${format.toUpperCase()} for direct download: ${filename}`);
     return res.download(cachePath, filename);
   }
 
@@ -370,18 +530,16 @@ app.get('/api/download', (req, res) => {
     res.cookie(downloadToken, 'true', { maxAge: 60000, httpOnly: false, path: '/' });
   }
 
-  res.setHeader('Content-Type', 'audio/mpeg');
+  res.setHeader('Content-Type', options.mimeType);
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
 
-  // Stream high-quality 320kbps MP3 directly
+  // Stream requested audio format directly
   const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', '-', url];
   const ytDlp = spawn('yt-dlp', ytDlpArgs);
 
   const ffmpeg = spawn('ffmpeg', [
     '-i', 'pipe:0',
-    '-f', 'mp3',
-    '-acodec', 'libmp3lame',
-    '-ab', '320k',
+    ...options.ffmpegArgs,
     'pipe:1'
   ]);
 

@@ -1,4 +1,6 @@
 <%
+const outputFormat = 'mp3';
+const formatLabel = outputFormat.toUpperCase();
 const translations = {
   es: {
     placeholder: 'Pega el enlace de YouTube aquí... (ej. https://www.youtube.com/watch?v=...)',
@@ -6,10 +8,10 @@ const translations = {
     invalidUrl: 'Por favor, introduce una URL de YouTube válida.',
     analyzing: 'Analizando enlace...',
     downloading: 'Descargando flujo de audio...',
-    converting: 'Convirtiendo a MP3 (320kbps)...',
+    converting: `Convirtiendo a ${formatLabel}${outputFormat === 'mp3' ? ' (320kbps)' : ''}...`,
     finishing: 'Finalizando archivo...',
     ready: '¡Conversión Completada!',
-    download: 'Descargar MP3',
+    download: `Descargar ${formatLabel}`,
     convertAnother: 'Convertir otro vídeo',
     playing: 'Reproduciendo',
     paused: 'Pausado',
@@ -22,13 +24,29 @@ const translations = {
     invalidUrl: 'Veuillez saisir une URL YouTube valide.',
     analyzing: 'Analyse du lien...',
     downloading: 'Téléchargement du flux audio...',
-    converting: 'Conversion en MP3 (320kbps)...',
+    converting: `Conversion en ${formatLabel}${outputFormat === 'mp3' ? ' (320kbps)' : ''}...`,
     finishing: 'Finalisation du fichier...',
     ready: 'Conversion Terminée !',
-    download: 'Télécharger le MP3',
+    download: `Télécharger le ${formatLabel}`,
     convertAnother: 'Convertir une autre vidéo',
     playing: 'Lecture en cours',
     paused: 'Pause',
+    mockTitle: 'YouTube Video Audio',
+    mockDuration: '00:00'
+  },
+  en: {
+    placeholder: 'Paste the YouTube link here... (e.g. https://www.youtube.com/watch?v=...)',
+    button: 'Convert',
+    invalidUrl: 'Please enter a valid YouTube URL.',
+    analyzing: 'Analyzing link...',
+    downloading: 'Downloading audio stream...',
+    converting: `Converting to ${formatLabel}${outputFormat === 'mp3' ? ' (320kbps)' : ''}...`,
+    finishing: 'Finishing file...',
+    ready: 'Conversion Complete!',
+    download: `Download ${formatLabel}`,
+    convertAnother: 'Convert another video',
+    playing: 'Playing',
+    paused: 'Paused',
     mockTitle: 'YouTube Video Audio',
     mockDuration: '00:00'
   }
@@ -37,7 +55,7 @@ const translations = {
 const texts = translations[lang] || translations.es;
 %>
 
-<div class="converter-box glass-panel">
+<div class="converter-box glass-panel" data-format="<%= outputFormat %>">
   <!-- State 1: Input Form -->
   <div id="state-input" class="converter-state active">
     <form id="convert-form" class="convert-form" novalidate>
@@ -53,6 +71,13 @@ const texts = translations[lang] || translations.es;
           required 
           autocomplete="off"
         />
+        <label class="format-select-label" for="format-select">
+          <span class="sr-only">Audio format</span>
+          <select id="format-select" class="format-select" aria-label="Audio format">
+            <option value="mp3" selected>MP3</option>
+            <option value="wav">WAV</option>
+          </select>
+        </label>
       </div>
       <button type="submit" class="btn-primary">
         <span><%= texts.button %></span>
@@ -222,6 +247,54 @@ const texts = translations[lang] || translations.es;
 
   .input-field {
     padding-left: 48px;
+    padding-right: 112px;
+  }
+
+  .format-select-label {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .format-select {
+    width: 88px;
+    height: 42px;
+    border: 1px solid rgba(44, 40, 36, 0.10);
+    border-radius: 21px;
+    background: #F5F0EB;
+    color: var(--color-text-primary);
+    font-family: var(--font-family);
+    font-size: 0.86rem;
+    font-weight: 700;
+    padding: 0 30px 0 14px;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, #7B7168 50%), linear-gradient(135deg, #7B7168 50%, transparent 50%);
+    background-position: calc(100% - 17px) 18px, calc(100% - 12px) 18px;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    transition: border-color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  .format-select:hover,
+  .format-select:focus {
+    background-color: #FFFFFF;
+    border-color: rgba(196, 89, 61, 0.35);
+    box-shadow: 0 0 0 3px rgba(196, 89, 61, 0.08);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
   .error-msg {
@@ -402,9 +475,10 @@ const texts = translations[lang] || translations.es;
 
   @media (max-width: 640px) {
     .player-controls {
-      flex-direction: column;
-      gap: 12px;
-      align-items: stretch;
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr);
+      gap: 12px 14px;
+      align-items: center;
     }
   }
 
@@ -495,8 +569,54 @@ const texts = translations[lang] || translations.es;
   }
 
   @media (max-width: 640px) {
+    .custom-audio-player {
+      padding: 16px;
+    }
+
+    .timeline-container {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .time-label {
+      min-width: 36px;
+      font-size: 0.72rem;
+      line-height: 1;
+    }
+
+    .timeline-slider {
+      min-width: 0;
+    }
+
     .volume-container {
-      align-self: flex-end;
+      grid-column: 2;
+      justify-self: end;
+      width: 96px;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .converter-box {
+      padding: 24px 18px;
+    }
+
+    .input-field {
+      padding-left: 42px;
+      padding-right: 96px;
+      font-size: 0.9rem;
+    }
+
+    .format-select {
+      width: 78px;
+      height: 38px;
+      font-size: 0.8rem;
+      padding-left: 12px;
+    }
+
+    .search-icon {
+      left: 14px;
     }
   }
 

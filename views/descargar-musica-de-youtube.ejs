@@ -1,0 +1,98 @@
+<%- include('partials/header', { lang: 'es', title: title, description: description, canonical: canonical }) %>
+
+  <div class="container breadcrumb-container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li><a href="/">Inicio</a></li>
+        <li><span>/</span></li>
+        <li aria-current="page">Descargar Música de YouTube</li>
+      </ol>
+    </nav>
+  </div>
+
+  <div class="container hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Descargar <span class="text-gradient">Música de YouTube</span></h1>
+      <p class="hero-subtitle">Guarda canciones, playlists puntuales, podcasts y audios de YouTube como MP3 para escucharlos sin conexión.</p>
+    </div>
+
+    <%- include('partials/converter', { lang: 'es', format: 'mp3' }) %>
+  </div>
+
+  <section class="seo-section container">
+    <div class="seo-card glass-panel">
+      <h2>Descarga música de YouTube en MP3 sin instalar programas</h2>
+      <p>Esta página está pensada para quienes buscan <strong>descargar musica de youtube</strong> y llevar sus canciones favoritas al móvil, ordenador o reproductor de audio. Pega el enlace de YouTube, espera el análisis y descarga el archivo MP3 listo para reproducirse offline.</p>
+      <p>ConveTube convierte el audio en el navegador y entrega archivos MP3 compatibles con Android, iPhone, Windows, macOS y la mayoría de reproductores. No necesitas extensiones, cuentas ni software adicional.</p>
+      <p class="link-paragraph">Si buscas una guía más general, visita también <a href="/descargar-videos-de-youtube-a-mp3-gratis-online" class="inline-link">descargar videos de YouTube a MP3 gratis online</a> o el <a href="/convertidor-de-youtube-a-mp3" class="inline-link">convertidor de YouTube a MP3</a>.</p>
+    </div>
+
+    <div class="seo-grid">
+      <div class="seo-card glass-panel">
+        <h2>Cómo guardar canciones de YouTube</h2>
+        <ol class="steps-list">
+          <li><strong>Copia el enlace:</strong> abre YouTube y copia la URL del video musical, concierto, podcast o audio que quieras guardar.</li>
+          <li><strong>Pégalo en ConveTube:</strong> introduce el enlace en el cuadro superior para que el sistema detecte título, duración y canal.</li>
+          <li><strong>Descarga el MP3:</strong> reproduce el audio si quieres revisarlo y pulsa el botón de descarga para guardarlo en tu dispositivo.</li>
+        </ol>
+      </div>
+
+      <div class="seo-card glass-panel flex-center">
+        <img src="/images/conversion_steps.png" alt="Pasos para descargar música de YouTube en MP3" width="400" height="400" class="seo-img" loading="lazy" />
+      </div>
+    </div>
+
+    <div class="seo-card glass-panel">
+      <h2>Para música, podcasts y audio offline</h2>
+      <div class="features-grid">
+        <div class="feature-item"><span class="feature-icon">MP3</span><h3>Formato universal</h3><p>El MP3 funciona en casi cualquier aplicación de música, coche, teléfono o reproductor portátil.</p></div>
+        <div class="feature-item"><span class="feature-icon">320</span><h3>Alta calidad</h3><p>El motor prioriza una salida de hasta 320kbps para conservar un sonido claro y estable.</p></div>
+        <div class="feature-item"><span class="feature-icon">WEB</span><h3>Sin instalar nada</h3><p>Todo ocurre desde el navegador, con una interfaz simple y sin pasos técnicos innecesarios.</p></div>
+        <div class="feature-item"><span class="feature-icon">MOV</span><h3>Listo para móvil</h3><p>Usa ConveTube desde Android, iPhone o tablet y guarda el archivo en tu carpeta de descargas.</p></div>
+      </div>
+    </div>
+
+    <div class="seo-card glass-panel">
+      <h2>Preguntas frecuentes</h2>
+      <div class="faq-list">
+        <div class="faq-item"><h3>¿Puedo descargar canciones de YouTube en el móvil?</h3><p>Sí. Copia el enlace desde la app de YouTube, abre ConveTube en tu navegador y descarga el MP3 desde el botón final.</p></div>
+        <div class="faq-item"><h3>¿Qué diferencia hay con una página de videos a MP3?</h3><p>La función es la misma, pero esta página está enfocada en usuarios que quieren guardar música, canciones, podcasts y audios para escucharlos offline.</p></div>
+        <div class="faq-item"><h3>¿También ofrecen WAV?</h3><p>Sí. Para edición de audio o trabajos donde prefieras un archivo sin compresión, prueba <a href="/youtube-a-wav" class="inline-link">YouTube a WAV</a>.</p></div>
+      </div>
+    </div>
+  </section>
+
+<style>
+  .breadcrumb-container { padding-top: 24px; }
+  .breadcrumb-list { list-style: none; display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--bg-secondary); border: 1px solid rgba(44, 40, 36, 0.06); border-radius: 8px; font-size: 0.85rem; font-weight: 500; }
+  .breadcrumb-list a { color: var(--color-text-secondary); text-decoration: none; }
+  .breadcrumb-list li:last-child { color: var(--color-text-primary); font-weight: 600; }
+  .hero-section { text-align: center; padding: 30px 0 20px 0; }
+  .hero-content { max-width: 720px; margin: 0 auto; }
+  .hero-title { font-size: 3rem; margin-bottom: 20px; letter-spacing: -0.02em; line-height: 1.15; }
+  .hero-subtitle { font-size: 1.15rem; color: var(--color-text-secondary); font-weight: 400; max-width: 640px; margin: 0 auto; }
+  .seo-section { margin-top: 60px; display: flex; flex-direction: column; gap: 30px; }
+  .seo-card { padding: 36px; }
+  .seo-card h2 { font-size: 1.6rem; margin-bottom: 20px; color: var(--color-text-primary); }
+  .seo-card p, .steps-list li { color: var(--color-text-secondary); font-size: 0.95rem; line-height: 1.7; }
+  .link-paragraph { border-top: 1px solid rgba(44, 40, 36, 0.08); padding-top: 16px; margin-top: 16px; }
+  .inline-link { color: #C4593D; text-decoration: none; font-weight: 600; }
+  .inline-link:hover { text-decoration: underline; }
+  .seo-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; }
+  .flex-center { display: flex; justify-content: center; align-items: center; padding: 20px; }
+  .seo-img { max-width: 100%; height: auto; border-radius: 12px; border: 1px solid rgba(44, 40, 36, 0.08); box-shadow: var(--shadow-lg); }
+  .steps-list { margin-left: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .steps-list strong { color: var(--color-text-primary); }
+  .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .feature-item { background: var(--bg-secondary); border: 1px solid rgba(44, 40, 36, 0.06); padding: 20px; border-radius: 14px; }
+  .feature-icon { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; height: 32px; padding: 0 8px; margin-bottom: 12px; border-radius: 8px; background: rgba(196, 89, 61, 0.10); color: #C4593D; font-weight: 800; font-size: 0.85rem; }
+  .feature-item h3, .faq-item h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--color-text-primary); }
+  .feature-item p, .faq-item p { margin: 0; }
+  .faq-list { display: flex; flex-direction: column; gap: 20px; }
+  .faq-item { border-bottom: 1px solid rgba(44, 40, 36, 0.08); padding-bottom: 16px; }
+  .faq-item:last-child { border-bottom: none; padding-bottom: 0; }
+  @media (max-width: 768px) { .seo-grid, .features-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) { .hero-title { font-size: 2.25rem; } .seo-card { padding: 26px; } }
+</style>
+
+<%- include('partials/footer', { lang: 'es' }) %>

@@ -32,6 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const downloadSpinner = document.getElementById('download-spinner');
   const downloadLabel = document.getElementById('download-label');
   const convertAnotherBtn = document.getElementById('convert-another-btn');
+  const converterBox = document.querySelector('.converter-box');
+  const formatSelect = document.getElementById('format-select');
+  let outputFormat = 'mp3';
   
   let videoDuration = 0;
   let currentVideoId = null;
@@ -40,16 +43,48 @@ document.addEventListener('DOMContentLoaded', () => {
   let isAudioLoading = false;
   
   // Status text mapping based on language
-  const isFr = window.location.pathname.includes('convertir-youtube-vers-mp3');
-  const statusSteps = isFr 
-    ? ['Analyse du lien...', 'Récupération de la piste...', 'Transcodage en MP3...', 'Finalisation...']
-    : ['Analizando enlace...', 'Descargando flujo...', 'Convirtiendo a MP3...', 'Finalizando...'];
-    
-  const invalidUrlText = isFr 
+  const pageLang = document.documentElement.lang || 'es';
+  const isFr = pageLang.startsWith('fr');
+  const isEn = pageLang.startsWith('en');
+  const invalidUrlText = isFr
     ? 'Veuillez saisir une URL YouTube valide.'
-    : 'Por favor, introduce una URL de YouTube válida.';
+    : isEn
+      ? 'Please enter a valid YouTube URL.'
+      : 'Por favor, introduce una URL de YouTube válida.';
 
-  const preparingText = isFr ? 'Préparation...' : 'Preparando...';
+  function getSelectedFormat() {
+    return formatSelect?.value === 'wav' ? 'wav' : 'mp3';
+  }
+
+  function getFormatLabel(format = outputFormat) {
+    return format.toUpperCase();
+  }
+
+  function getStatusSteps(format = outputFormat) {
+    const label = getFormatLabel(format);
+    if (isFr) {
+      return ['Analyse du lien...', 'Récupération de la piste...', `Transcodage en ${label}...`, 'Finalisation...'];
+    }
+    if (isEn) {
+      return ['Analyzing link...', 'Downloading stream...', `Converting to ${label}...`, 'Finishing...'];
+    }
+    return ['Analizando enlace...', 'Descargando flujo...', `Convirtiendo a ${label}...`, 'Finalizando...'];
+  }
+
+  function getDownloadText(format = outputFormat) {
+    const label = getFormatLabel(format);
+    return isFr ? `Télécharger le ${label}` : isEn ? `Download ${label}` : `Descargar ${label}`;
+  }
+
+  function syncSelectedFormat() {
+    outputFormat = getSelectedFormat();
+    if (converterBox) converterBox.dataset.format = outputFormat;
+    if (downloadLabel && !currentVideoId) downloadLabel.textContent = getDownloadText(outputFormat);
+  }
+
+  syncSelectedFormat();
+
+  formatSelect?.addEventListener('change', syncSelectedFormat);
 
   // YouTube URL regex
   const ytRegex = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]{11})/;
@@ -68,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const poll = async () => {
       try {
-        const resp = await fetch(`/api/cache-status?id=${videoId}`);
+        const resp = await fetch(`/api/cache-status?id=${videoId}&format=${outputFormat}`);
         const data = await resp.json();
         if (data.ready) {
           cacheReady = true;
@@ -92,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const currentTime = audio.currentTime;
       const wasPlaying = !audio.paused;
 
-      audio.src = `/api/stream?id=${videoId}`;
+      audio.src = `/api/stream?id=${videoId}&format=${outputFormat}`;
       audio.preload = 'auto';
       audio.load();
 
@@ -108,13 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update download link — cached files serve with Content-Length for proper progress
     if (downloadBtn && currentVideoId === videoId) {
-      downloadBtn.href = `/api/download?id=${videoId}&title=${encodeURIComponent(videoTitle.textContent)}`;
+      downloadBtn.href = `/api/download?id=${videoId}&format=${outputFormat}&title=${encodeURIComponent(videoTitle.textContent)}`;
     }
 
     // Remove preparing indicator from download button
     if (downloadBtn) {
       downloadBtn.classList.remove('preparing');
-      if (downloadLabel) downloadLabel.textContent = isFr ? 'Télécharger le MP3' : 'Descargar MP3';
+      if (downloadLabel) downloadLabel.textContent = getDownloadText();
     }
   }
 
@@ -146,6 +181,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       errorMsg.classList.remove('visible');
+      syncSelectedFormat();
+      const conversionFormat = outputFormat;
+      const statusSteps = getStatusSteps(conversionFormat);
       
       // Transition to Loading State
       stateInput.classList.remove('active');
@@ -211,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
             startCachePolling(infoData.id);
             
             // Configure audio player source (streaming initially)
-            audio.src = `/api/stream?id=${infoData.id}`;
+            audio.src = `/api/stream?id=${infoData.id}&format=${outputFormat}`;
             audio.preload = 'auto';
             audio.load();
             
@@ -221,8 +259,8 @@ document.addEventListener('DOMContentLoaded', () => {
             timeline.value = 0;
             
             // Set download href — download works immediately via live streaming
-            downloadBtn.href = `/api/download?id=${infoData.id}&title=${encodeURIComponent(infoData.title)}`;
-            downloadBtn.setAttribute('download', `${sanitizeFilename(infoData.title)}.mp3`);
+            downloadBtn.href = `/api/download?id=${infoData.id}&format=${outputFormat}&title=${encodeURIComponent(infoData.title)}`;
+            downloadBtn.setAttribute('download', `${sanitizeFilename(infoData.title)}.${outputFormat}`);
             
             // Transition to Result view
             stateLoading.classList.remove('active');
@@ -233,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Fetch metadata from backend
       try {
-        const response = await fetch(`/api/info?url=${encodeURIComponent(url)}`);
+        const response = await fetch(`/api/info?url=${encodeURIComponent(url)}&format=${outputFormat}`);
         if (!response.ok) throw new Error('API error');
         infoData = await response.json();
         fetchFinished = true;
@@ -276,13 +314,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Clear inputs
     input.value = '';
+    if (formatSelect) formatSelect.value = 'mp3';
+    syncSelectedFormat();
     progressBarFill.style.width = '0%';
     progressPercent.textContent = '0%';
 
     // Reset download button
     if (downloadBtn) {
       downloadBtn.classList.remove('preparing');
-      if (downloadLabel) downloadLabel.textContent = isFr ? 'Télécharger le MP3' : 'Descargar MP3';
+      if (downloadLabel) downloadLabel.textContent = getDownloadText();
     }
     
     // Switch state
@@ -421,8 +461,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // Prevent default browser navigation so we can handle it cleanly
       e.preventDefault();
 
-      const originalText = isFr ? 'Télécharger le MP3' : 'Descargar MP3';
-      downloadLabel.textContent = isFr ? 'Téléchargement en cours...' : 'Descargando...';
+      const originalText = getDownloadText();
+      downloadLabel.textContent = isFr ? 'Téléchargement en cours...' : isEn ? 'Downloading...' : 'Descargando...';
       downloadBtn.classList.add('downloading-active');
 
       // Generate a unique token for this download attempt

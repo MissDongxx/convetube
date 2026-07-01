@@ -11,7 +11,15 @@ const t = {
     privacy: 'Política de Privacidad',
     terms: 'Términos de Servicio',
     dmca: 'DMCA',
-    rights: 'Todos los derechos reservados.'
+    rights: 'Todos los derechos reservados.',
+    contact: 'Contacto',
+    email: 'Correo electrónico',
+    message: 'Tu mensaje',
+    messagePlaceholder: 'Escribe tu comentario o sugerencia...',
+    send: 'Enviar mensaje',
+    sending: 'Enviando...',
+    sent: 'Mensaje enviado. Gracias.',
+    failed: 'No se pudo enviar. Escríbenos a info@convetube.com.'
   },
   fr: {
     desc: 'Le convertisseur YouTube vers MP3 leader pour sa rapidité, sa sécurité et sa simplicité. Convertissez et téléchargez de la musique gratuite en illimité.',
@@ -21,11 +29,38 @@ const t = {
     privacy: 'Politique de Confidentialité',
     terms: 'Conditions d\'Utilisation',
     dmca: 'DMCA',
-    rights: 'Tous droits réservés.'
+    rights: 'Tous droits réservés.',
+    contact: 'Contact',
+    email: 'E-mail',
+    message: 'Votre message',
+    messagePlaceholder: 'Écrivez votre commentaire ou suggestion...',
+    send: 'Envoyer',
+    sending: 'Envoi...',
+    sent: 'Message envoyé. Merci.',
+    failed: 'Envoi impossible. Écrivez-nous à info@convetube.com.'
+  },
+  en: {
+    desc: 'A fast, simple YouTube audio converter for MP3 and WAV downloads in your browser.',
+    tools: 'Tools',
+    legal: 'Legal',
+    home: 'Home',
+    privacy: 'Privacy Policy',
+    terms: 'Terms of Service',
+    dmca: 'DMCA',
+    rights: 'All rights reserved.',
+    contact: 'Contact',
+    email: 'Email',
+    message: 'Your message',
+    messagePlaceholder: 'Write your comment or suggestion...',
+    send: 'Send message',
+    sending: 'Sending...',
+    sent: 'Message sent. Thank you.',
+    failed: 'Could not send. Email us at info@convetube.com.'
   }
 };
 
 const texts = t[lang] || t.es;
+const footerHomeHref = lang === 'fr' ? '/convertir-youtube-vers-mp3/' : lang === 'en' ? '/youtube-to-wav/' : '/';
 %>
 
   </main>
@@ -33,7 +68,7 @@ const texts = t[lang] || t.es;
   <footer class="main-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <a href="<%= lang === 'es' ? '/' : '/convertir-youtube-vers-mp3/' %>" class="footer-logo">
+        <a href="<%= footerHomeHref %>" class="footer-logo">
           <span class="logo-text">Conve<span class="logo-text-alt">Tube</span></span>
         </a>
         <p class="footer-desc"><%= texts.desc %></p>
@@ -45,9 +80,11 @@ const texts = t[lang] || t.es;
           <li><a href="/"><%= texts.home %></a></li>
           <li><a href="/convertir-youtube-vers-mp3">Convertir YouTube vers MP3 (FR)</a></li>
           <li><a href="/convertidor-de-youtube-a-mp3">Convertidor de YouTube a MP3 (ES)</a></li>
-          <li><a href="/convertidor-de-youtube-a-mp3/convertir-videos-de-youtube-a-mp3">Convertir Videos de YouTube a MP3 (ES)</a></li>
           <li><a href="/convertidor-mp3-no-tube">Convertidor MP3 No Tube (ES)</a></li>
           <li><a href="/descargar-videos-de-youtube-a-mp3-gratis-online">Descargar YouTube a MP3 (ES)</a></li>
+          <li><a href="/descargar-musica-de-youtube">Descargar Música de YouTube (ES)</a></li>
+          <li><a href="/youtube-a-wav">YouTube a WAV (ES)</a></li>
+          <li><a href="/youtube-to-wav">YouTube to WAV (EN)</a></li>
         </ul>
       </div>
 
@@ -58,6 +95,22 @@ const texts = t[lang] || t.es;
           <li><a href="#terms"><%= texts.terms %></a></li>
           <li><a href="#dmca"><%= texts.dmca %></a></li>
         </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4 class="footer-title"><%= texts.contact %></h4>
+        <a href="mailto:info@convetube.com" class="footer-email">info@convetube.com</a>
+        <form class="footer-message-form" action="/api/contact" method="post" data-sending="<%= texts.sending %>" data-sent="<%= texts.sent %>" data-failed="<%= texts.failed %>">
+          <label class="footer-field-label" for="footer-email"><%= texts.email %></label>
+          <input id="footer-email" name="email" class="footer-input" type="email" autocomplete="email" />
+          <input class="footer-honeypot" type="text" name="website" autocomplete="off" tabindex="-1" aria-hidden="true" />
+
+          <label class="footer-field-label" for="footer-message"><%= texts.message %></label>
+          <textarea id="footer-message" name="message" class="footer-textarea" rows="3" placeholder="<%= texts.messagePlaceholder %>" required></textarea>
+
+          <button class="footer-submit" type="submit"><%= texts.send %></button>
+          <p class="footer-form-status" aria-live="polite"></p>
+        </form>
       </div>
     </div>
 
@@ -83,9 +136,15 @@ const texts = t[lang] || t.es;
 
     .footer-grid {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-columns: minmax(220px, 1.4fr) minmax(180px, 1fr) minmax(160px, 0.8fr) minmax(240px, 1.2fr);
       gap: 40px;
       margin-bottom: 40px;
+    }
+
+    @media (max-width: 1024px) {
+      .footer-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 768px) {
@@ -152,6 +211,111 @@ const texts = t[lang] || t.es;
       color: #D4714E;
     }
 
+    .footer-email {
+      display: inline-block;
+      color: #D4714E;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .footer-email:hover {
+      text-decoration: underline;
+    }
+
+    .footer-message-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 320px;
+    }
+
+    .footer-field-label {
+      color: #D4C8BC;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .footer-honeypot {
+      position: absolute;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .footer-input,
+    .footer-textarea {
+      width: 100%;
+      border: 1px solid rgba(212, 200, 188, 0.14);
+      background: rgba(245, 240, 235, 0.06);
+      color: #F5F0EB;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      font-family: var(--font-family);
+      outline: none;
+      transition: border-color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .footer-input:focus,
+    .footer-textarea:focus {
+      background: rgba(245, 240, 235, 0.09);
+      border-color: rgba(212, 113, 78, 0.55);
+    }
+
+    .footer-textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    .footer-textarea::placeholder {
+      color: #9C948C;
+    }
+
+    .footer-submit {
+      align-self: flex-start;
+      border: 0;
+      background: linear-gradient(135deg, #C4593D 0%, #D4714E 100%);
+      color: #FFFFFF;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      font-family: var(--font-family);
+      cursor: pointer;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .footer-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(196, 89, 61, 0.22);
+    }
+
+    .footer-submit:disabled {
+      opacity: 0.65;
+      cursor: wait;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .footer-form-status {
+      min-height: 18px;
+      color: #D4C8BC;
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+
+    .footer-form-status.success {
+      color: #96C18F;
+    }
+
+    .footer-form-status.error {
+      color: #F0A08F;
+    }
+
     .footer-bottom {
       border-top: 1px solid rgba(212, 200, 188, 0.10);
       padding-top: 30px;
@@ -192,6 +356,55 @@ const texts = t[lang] || t.es;
       border-radius: 12px;
     }
   </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const contactForm = document.querySelector('.footer-message-form');
+      if (!contactForm) return;
+
+      const submitButton = contactForm.querySelector('.footer-submit');
+      const status = contactForm.querySelector('.footer-form-status');
+      const defaultButtonText = submitButton?.textContent || '';
+
+      contactForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!submitButton || !status) return;
+
+        submitButton.disabled = true;
+        submitButton.textContent = contactForm.dataset.sending || defaultButtonText;
+        status.textContent = '';
+        status.className = 'footer-form-status';
+
+        try {
+          const response = await fetch(contactForm.action, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(Object.fromEntries(new FormData(contactForm)))
+          });
+
+          if (!response.ok) {
+            let details = {};
+            try {
+              details = await response.json();
+            } catch (error) {
+              details = {};
+            }
+            throw new Error(details.error || 'Contact request failed');
+          }
+
+          contactForm.reset();
+          status.textContent = contactForm.dataset.sent || '';
+          status.classList.add('success');
+        } catch (error) {
+          status.textContent = error.message || contactForm.dataset.failed || '';
+          status.classList.add('error');
+        } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = defaultButtonText;
+        }
+      });
+    });
+  </script>
 
   <!-- Client JavaScript -->
   <script src="/js/client.js"></script>
