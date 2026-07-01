@@ -329,12 +329,14 @@ app.get('/robots.txt', (req, res) => {
 
 // Contact form: forwards messages by email without storing them on disk.
 app.post('/api/contact', async (req, res) => {
+  console.log('[Contact] Received contact submission:', req.body);
   const email = String(req.body.email || '').trim();
   const message = String(req.body.message || '').trim();
   const website = String(req.body.website || '').trim();
   const botField = String(req.body.bot_field || '').trim();
 
   if (website || botField) {
+    console.warn(`[Contact] Spam honeypot triggered. website: "${website}", bot_field: "${botField}". Silently ignoring.`);
     return res.json({ ok: true });
   }
 
