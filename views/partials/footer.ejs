@@ -103,7 +103,7 @@ const footerHomeHref = lang === 'fr' ? '/convertir-youtube-vers-mp3/' : lang ===
         <form class="footer-message-form" action="/api/contact" method="post" data-sending="<%= texts.sending %>" data-sent="<%= texts.sent %>" data-failed="<%= texts.failed %>">
           <label class="footer-field-label" for="footer-email"><%= texts.email %></label>
           <input id="footer-email" name="email" class="footer-input" type="email" autocomplete="email" />
-          <input class="footer-honeypot" type="text" name="website" autocomplete="off" tabindex="-1" aria-hidden="true" />
+          <input class="footer-honeypot" type="text" name="bot_field" autocomplete="off" tabindex="-1" aria-hidden="true" />
 
           <label class="footer-field-label" for="footer-message"><%= texts.message %></label>
           <textarea id="footer-message" name="message" class="footer-textarea" rows="3" placeholder="<%= texts.messagePlaceholder %>" required></textarea>

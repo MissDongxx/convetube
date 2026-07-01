@@ -332,8 +332,9 @@ app.post('/api/contact', async (req, res) => {
   const email = String(req.body.email || '').trim();
   const message = String(req.body.message || '').trim();
   const website = String(req.body.website || '').trim();
+  const botField = String(req.body.bot_field || '').trim();
 
-  if (website) {
+  if (website || botField) {
     return res.json({ ok: true });
   }
 
