@@ -1,0 +1,245 @@
+<%- include('partials/header', { lang: 'es', title: title, description: description, canonical: canonical }) %>
+
+  <div class="container breadcrumb-container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol style="list-style: none; display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--bg-secondary); border: 1px solid rgba(44, 40, 36, 0.06); border-radius: 8px; font-size: 0.85rem; font-weight: 500;">
+        <li><a href="/" style="color: var(--color-text-secondary); text-decoration: none;">Inicio</a></li>
+        <li><span class="separator" style="color: var(--color-text-muted);">/</span></li>
+        <li aria-current="page" class="active" style="color: var(--color-text-primary); font-weight: 600;">Convertidor MP3 YouTube</li>
+      </ol>
+    </nav>
+  </div>
+
+  <div class="container hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Convertidor <span class="text-gradient">MP3 YouTube</span></h1>
+      <p class="hero-subtitle">Convierte enlaces de YouTube en archivos MP3 de alta calidad desde el navegador, sin instalar aplicaciones ni crear una cuenta.</p>
+    </div>
+
+    <%- include('partials/converter', { lang: 'es' }) %>
+  </div>
+
+  <section class="seo-section container">
+    <div class="seo-card glass-panel">
+      <h2>Convertidor MP3 YouTube rápido y fácil</h2>
+      <p>ConveTube funciona como un <strong>convertidor MP3 YouTube</strong> pensado para quienes quieren extraer audio de un video y guardarlo en formato MP3 sin pasos complicados. Solo pega el enlace, espera el análisis automático y descarga el archivo cuando esté listo.</p>
+      <p>Este flujo también ayuda si buscas un <strong>convertidor mp3 a youtube</strong> o una forma sencilla de pasar el audio de YouTube a MP3. La herramienta procesa el video desde la URL original y genera un archivo compatible con teléfonos, computadoras, reproductores y editores básicos.</p>
+      <p class="link-paragraph">
+        Para una búsqueda más general puedes volver al
+        <a href="/" class="inline-link">convertidor YouTube</a>.
+        Si prefieres una alternativa tipo NoTube, usa el
+        <a href="/convertidor-mp3-no-tube" class="inline-link">convertidor MP3 no tube</a>.
+      </p>
+    </div>
+
+    <div class="seo-grid">
+      <div class="seo-card glass-panel">
+        <h2>Cómo convertir MP3 desde YouTube</h2>
+        <ol class="steps-list">
+          <li><strong>Copia el enlace:</strong> abre YouTube y copia la URL del video que quieres convertir en audio.</li>
+          <li><strong>Pega la URL:</strong> coloca el enlace en el convertidor de esta página y pulsa el botón de convertir.</li>
+          <li><strong>Descarga el MP3:</strong> cuando el archivo esté listo, revisa el audio con el reproductor y guárdalo en tu dispositivo.</li>
+        </ol>
+      </div>
+
+      <div class="seo-card glass-panel flex-center">
+        <img
+          src="/images/conversion_steps.png"
+          alt="Pasos para usar el convertidor MP3 YouTube de ConveTube"
+          width="400"
+          height="400"
+          class="seo-img"
+          loading="lazy"
+        />
+      </div>
+    </div>
+
+    <div class="seo-card glass-panel">
+      <h2>Ventajas para convertir YouTube en MP3</h2>
+      <ul class="benefits-list">
+        <li><strong>Proceso online:</strong> no necesitas instalar programas, extensiones ni aplicaciones adicionales.</li>
+        <li><strong>Alta calidad:</strong> el motor prepara el audio en MP3 con una tasa de bits pensada para escuchar música, podcasts y clases.</li>
+        <li><strong>Compatible con celular:</strong> puedes convertir desde Android, iPhone, tablet o computadora usando un navegador moderno.</li>
+        <li><strong>Sin registro:</strong> entra, pega el enlace y descarga el archivo sin crear una cuenta.</li>
+      </ul>
+    </div>
+
+    <div class="seo-card glass-panel">
+      <h2>Preguntas frecuentes</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <h3>¿Qué significa convertidor MP3 YouTube?</h3>
+          <p>Significa convertir el audio de un video de YouTube en un archivo MP3 descargable. ConveTube toma la URL del video y crea un archivo de audio listo para escuchar sin conexión.</p>
+        </div>
+        <div class="faq-item">
+          <h3>¿Puedo usar este convertidor desde el celular?</h3>
+          <p>Sí. Puedes copiar el enlace desde la app de YouTube, abrir ConveTube en el navegador de tu celular y descargar el MP3 cuando termine la conversión.</p>
+        </div>
+        <div class="faq-item">
+          <h3>¿Es diferente de un convertidor de YouTube a MP3?</h3>
+          <p>La función es la misma, pero esta página está enfocada en quienes buscan la frase convertidor MP3 YouTube o convertidor mp3 youtube para encontrar una herramienta directa de audio.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<style>
+  .breadcrumb-container {
+    padding-top: 24px;
+  }
+
+  .hero-section {
+    text-align: center;
+    padding: 30px 0 20px 0;
+  }
+
+  .hero-content {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  @media (max-width: 640px) {
+    .hero-title {
+      font-size: 2.25rem;
+    }
+  }
+
+  .hero-subtitle {
+    font-size: 1.15rem;
+    color: var(--color-text-secondary);
+    font-weight: 400;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .seo-section {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .seo-card {
+    padding: 36px;
+  }
+
+  .seo-card h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: var(--color-text-primary);
+  }
+
+  .seo-card p {
+    color: var(--color-text-secondary);
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .seo-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  .link-paragraph {
+    border-top: 1px solid rgba(44, 40, 36, 0.08);
+    padding-top: 16px;
+    margin-top: 16px;
+  }
+
+  .inline-link {
+    color: #C4593D;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .inline-link:hover {
+    text-decoration: underline;
+  }
+
+  .seo-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 30px;
+  }
+
+  @media (max-width: 768px) {
+    .seo-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .seo-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid rgba(44, 40, 36, 0.08);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .steps-list,
+  .benefits-list {
+    margin-left: 20px;
+    color: var(--color-text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .steps-list li,
+  .benefits-list li {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .steps-list strong,
+  .benefits-list strong {
+    color: var(--color-text-primary);
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid rgba(44, 40, 36, 0.08);
+    padding-bottom: 16px;
+  }
+
+  .faq-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .faq-item h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--color-text-primary);
+    font-family: var(--font-family);
+  }
+
+  .faq-item p {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+</style>
+
+<%- include('partials/footer', { lang: 'es' }) %>

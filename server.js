@@ -218,6 +218,15 @@ app.get('/convertidor-de-youtube-a-mp3', (req, res) => {
   });
 });
 
+// ES MP3 YouTube Page
+app.get('/convertidor-mp3-youtube', (req, res) => {
+  res.render('convertidor-mp3-youtube', {
+    title: 'Convertidor MP3 YouTube Gratis Online | ConveTube',
+    description: 'Usa ConveTube como convertidor MP3 YouTube online. Convierte enlaces de YouTube a MP3 gratis, rápido y sin instalar aplicaciones.',
+    canonical: 'https://convetube.com/convertidor-mp3-youtube/'
+  });
+});
+
 // Legacy ES tertiary page
 app.get('/convertidor-de-youtube-a-mp3/convertir-videos-de-youtube-a-mp3', (req, res) => {
   res.redirect(301, '/convertidor-de-youtube-a-mp3/');
@@ -288,6 +297,11 @@ app.get('/sitemap.xml', (req, res) => {
   </url>
   <url>
     <loc>https://convetube.com/convertidor-de-youtube-a-mp3/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/convertidor-mp3-youtube/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
