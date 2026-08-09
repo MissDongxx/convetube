@@ -189,41 +189,137 @@ const escapeHtml = (value) => String(value)
   .replace(/"/g, '&quot;')
   .replace(/'/g, '&#39;');
 
+const languageAlternates = {
+  es: 'https://convetube.com/',
+  fr: 'https://convetube.com/convertir-youtube-vers-mp3/',
+  en: 'https://convetube.com/youtube-to-wav/'
+};
+
+const getLanguageAlternates = (canonical, lang) => ({
+  es: lang === 'es' ? canonical : languageAlternates.es,
+  fr: lang === 'fr' ? canonical : languageAlternates.fr,
+  en: lang === 'en' ? canonical : languageAlternates.en
+});
+
+const createStructuredData = ({ canonical, title, description, lang, applicationName, applicationCategory, featureList, faqItems }) => ({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebApplication',
+      '@id': `${canonical}#webapplication`,
+      name: applicationName,
+      url: canonical,
+      description,
+      applicationCategory,
+      operatingSystem: 'Any',
+      browserRequirements: 'Requires JavaScript and a modern web browser',
+      inLanguage: lang,
+      featureList,
+      provider: {
+        '@type': 'Organization',
+        name: 'ConveTube',
+        url: 'https://convetube.com/'
+      }
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${canonical}#faq`,
+      url: canonical,
+      inLanguage: lang,
+      mainEntity: faqItems.map(({ question, answer }) => ({
+        '@type': 'Question',
+        name: question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: answer
+        }
+      }))
+    }
+  ]
+});
+
+const renderPage = (res, view, page) => {
+  const { lang, ...pageData } = page;
+  res.render(view, {
+    ...pageData,
+    lang,
+    hreflang: getLanguageAlternates(page.canonical, lang),
+    structuredData: createStructuredData({ ...page, lang })
+  });
+};
+
 // --- Web Page Routes ---
 
 // ES Homepage
 app.get('/', (req, res) => {
-  res.render('index', {
+  renderPage(res, 'index', {
+    lang: 'es',
     title: 'Convertidor YouTube a MP3 Gratis | Descargar Música de YouTube - ConveTube',
     description: 'El mejor convertidor YouTube a MP3 gratis. Convierte videos de YouTube a MP3 en segundos con alta calidad. Fácil, rápido y sin registro en ConveTube.',
-    canonical: 'https://convetube.com/'
+    canonical: 'https://convetube.com/',
+    applicationName: 'ConveTube YouTube a MP3',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['Conversión de YouTube a MP3', 'Vista previa de audio', 'Descarga desde el navegador'],
+    faqItems: [
+      { question: '¿Este convertidor de YouTube a MP3 es completamente gratis?', answer: 'Sí, el servicio de ConveTube es 100% gratis. Puedes realizar tantas conversiones y descargas de música como desees, sin límites diarios ni cargos ocultos.' },
+      { question: '¿Necesito registrarme para descargar música?', answer: 'No. Respetamos tu privacidad y comodidad. No necesitas crear una cuenta ni proporcionar correos electrónicos para utilizar nuestro extractor de audio.' },
+      { question: '¿Puedo escuchar el audio antes de descargarlo?', answer: '¡Por supuesto! Hemos incorporado un reproductor de música premium para que puedas verificar la calidad y el contenido del audio online antes de guardarlo en tu disco local.' },
+      { question: '¿ConveTube funciona como youtube convertidor online?', answer: 'Sí. Puedes usar ConveTube como youtube convertidor desde el navegador: copia el enlace del video, pégalo en la caja principal y descarga el audio MP3 cuando el procesamiento termine.' }
+    ]
   });
 });
 
 // FR Subdirectory
 app.get('/convertir-youtube-vers-mp3', (req, res) => {
-  res.render('convertir-youtube-vers-mp3', {
+  renderPage(res, 'convertir-youtube-vers-mp3', {
+    lang: 'fr',
     title: 'Convertir YouTube vers MP3 Gratuit | Télécharger Vidéo YouTube - ConveTube',
     description: 'Convertir YouTube vers MP3 gratuitement et en haute qualité. Télécharger vos musiques et vidéos préférées de YouTube en quelques secondes sur ConveTube.',
-    canonical: 'https://convetube.com/convertir-youtube-vers-mp3/'
+    canonical: 'https://convetube.com/convertir-youtube-vers-mp3/',
+    applicationName: 'ConveTube Convertisseur YouTube vers MP3',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['Conversion YouTube vers MP3', 'Audio jusqu’à 320 kbps', 'Compatible mobile et ordinateur'],
+    faqItems: [
+      { question: 'Le convertisseur est-il vraiment illimité ?', answer: 'Oui, absolument. Nous ne limitions pas le nombre de conversions quotidiennes. Vous pouvez télécharger autant de musiques YouTube que vous le souhaitez.' },
+      { question: "Puis-je l'utiliser sur mon smartphone ?", answer: 'Oui. ConveTube est optimisé pour les appareils mobiles. Il fonctionne directement depuis Safari, Chrome ou Firefox sur iOS et Android sans aucune application tierce.' },
+      { question: 'Faut-il payer pour télécharger la musique ?', answer: "Non, ce service est 100% gratuit et financé par des dons. Il n'y aura jamais d'abonnements payants cachés." }
+    ]
   });
 });
 
 // ES Secondary Page
 app.get('/convertidor-de-youtube-a-mp3', (req, res) => {
-  res.render('convertidor-de-youtube-a-mp3', {
+  renderPage(res, 'convertidor-de-youtube-a-mp3', {
+    lang: 'es',
     title: 'Convertidor de YouTube a MP3 en Alta Calidad | ConveTube',
     description: 'Usa el mejor convertidor de YouTube a MP3 online. Descarga audio MP3 de videos de YouTube de forma rápida, segura y totalmente gratis.',
-    canonical: 'https://convetube.com/convertidor-de-youtube-a-mp3/'
+    canonical: 'https://convetube.com/convertidor-de-youtube-a-mp3/',
+    applicationName: 'ConveTube Convertidor de YouTube a MP3 HD',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['Conversión de audio en alta calidad', 'Procesamiento de enlaces desde el móvil', 'Descarga MP3 sin instalación'],
+    faqItems: [
+      { question: '¿Cómo puedo convertir archivos de audio de YouTube en mi celular?', answer: 'Es muy fácil. Solo abre la app de YouTube, pulsa en "Compartir" en el video que quieras, copia el enlace, pégalo en la barra de búsqueda de ConveTube desde el navegador de tu móvil (como Chrome o Safari) y dale al botón de descargar.' },
+      { question: '¿Hay alguna restricción sobre el tamaño de los videos?', answer: 'No limitamos las descargas de audio de duración estándar, como canciones o podcasts de hasta 2 horas, para garantizar la máxima velocidad de conversión para todos los usuarios.' },
+      { question: '¿Puedo convertir YouTube a MP3 en línea sin instalar nada?', answer: 'Sí. ConveTube funciona directamente desde el navegador, por lo que puedes convertir de YouTube a MP3 en línea desde tu computadora o celular sin instalar software adicional.' }
+    ]
   });
 });
 
 // ES MP3 YouTube Page
 app.get('/convertidor-mp3-youtube', (req, res) => {
-  res.render('convertidor-mp3-youtube', {
+  renderPage(res, 'convertidor-mp3-youtube', {
+    lang: 'es',
     title: 'Convertidor MP3 YouTube Gratis Online | ConveTube',
     description: 'Usa ConveTube como convertidor MP3 YouTube online. Convierte enlaces de YouTube a MP3 gratis, rápido y sin instalar aplicaciones.',
-    canonical: 'https://convetube.com/convertidor-mp3-youtube/'
+    canonical: 'https://convetube.com/convertidor-mp3-youtube/',
+    applicationName: 'ConveTube Convertidor MP3 YouTube',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['Conversión directa desde una URL', 'MP3 compatible con teléfonos y computadoras', 'Flujo simple de pegar y descargar'],
+    faqItems: [
+      { question: '¿Qué significa convertidor MP3 YouTube?', answer: 'Significa convertir el audio de un video de YouTube en un archivo MP3 descargable. ConveTube toma la URL del video y crea un archivo de audio listo para escuchar sin conexión.' },
+      { question: '¿Puedo usar este convertidor desde el celular?', answer: 'Sí. Puedes copiar el enlace desde la app de YouTube, abrir ConveTube en el navegador de tu celular y descargar el MP3 cuando termine la conversión.' },
+      { question: '¿Es diferente de un convertidor de YouTube a MP3?', answer: 'La función es la misma, pero esta página está enfocada en quienes buscan la frase convertidor MP3 YouTube o convertidor mp3 youtube para encontrar una herramienta directa de audio.' }
+    ]
   });
 });
 
@@ -234,46 +330,95 @@ app.get('/convertidor-de-youtube-a-mp3/convertir-videos-de-youtube-a-mp3', (req,
 
 // ES No Tube Page
 app.get('/convertidor-mp3-no-tube', (req, res) => {
-  res.render('convertidor-mp3-no-tube', {
+  renderPage(res, 'convertidor-mp3-no-tube', {
+    lang: 'es',
     title: 'Convertidor MP3 No Tube Gratis | La Mejor Alternativa - ConveTube',
     description: '¿Buscas un convertidor mp3 no tube rápido y sin publicidad? ConveTube es la mejor alternativa gratuita para convertir videos de YouTube a MP3 online.',
-    canonical: 'https://convetube.com/convertidor-mp3-no-tube/'
+    canonical: 'https://convetube.com/convertidor-mp3-no-tube/',
+    applicationName: 'ConveTube Alternativa a No Tube',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['Conversión MP3 sin ventanas invasivas', 'Previsualización del audio', 'Descargas desde Android y iPhone'],
+    faqItems: [
+      { question: '¿Cómo se diferencia ConveTube de las plataformas tradicionales como no tube?', answer: 'ConveTube ofrece un entorno mucho más limpio, enfocado en la seguridad del usuario. No instalamos cookies de rastreo invasivas y nuestro reproductor integrado te permite previsualizar y escuchar el audio antes de guardarlo en tu dispositivo.' },
+      { question: '¿El servicio funciona para convertir música en el celular?', answer: 'Sí, es totalmente compatible. Puedes usarlo en tu dispositivo móvil (Android o iPhone) sin necesidad de instalar aplicaciones desde la App Store o Google Play. Solo copia el enlace de YouTube, pégalo en nuestro navegador y descarga el MP3.' },
+      { question: '¿Es legal utilizar este convertidor de YouTube?', answer: 'Nuestra plataforma está diseñada para facilitar la conversión de videos de uso personal, académico o contenido libre de derechos de autor. Te recomendamos respetar las leyes de propiedad intelectual de tu país de residencia.' },
+      { question: '¿ConveTube sirve si busco convertidor notube o convertidor mp3 nube?', answer: 'Sí. Esas búsquedas suelen referirse a una herramienta tipo NoTube para convertir enlaces de YouTube en MP3. ConveTube ofrece una experiencia similar, pero enfocada en una navegación limpia y directa.' }
+    ]
   });
 });
 
 // ES Descargar Page
 app.get('/descargar-videos-de-youtube-a-mp3-gratis-online', (req, res) => {
-  res.render('descargar-videos-de-youtube-a-mp3-gratis-online', {
+  renderPage(res, 'descargar-videos-de-youtube-a-mp3-gratis-online', {
+    lang: 'es',
     title: 'Descargar Videos de YouTube a MP3 Gratis Online | ConveTube',
     description: 'Descarga videos de YouTube a MP3 gratis y online en alta calidad (320kbps). Extrae pistas de audio de forma segura y rápida con ConveTube.',
-    canonical: 'https://convetube.com/descargar-videos-de-youtube-a-mp3-gratis-online/'
+    canonical: 'https://convetube.com/descargar-videos-de-youtube-a-mp3-gratis-online/',
+    applicationName: 'ConveTube Descarga YouTube a MP3',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['Descarga de pistas MP3 hasta 320 kbps', 'Conversión individual rápida', 'Compatible con iOS, Android, Windows y macOS'],
+    faqItems: [
+      { question: '¿Puedo descargar más de un archivo MP3 a la vez?', answer: 'Sí. Puedes realizar tantas descargas como quieras, de forma sucesiva. Procesamos cada video de forma individual a máxima velocidad para no congestionar tu conexión.' },
+      { question: '¿En qué carpeta se guardan los audios descargados?', answer: 'Por defecto, los archivos MP3 se guardarán en la carpeta de "Descargas" de tu sistema operativo (o en la ubicación que tengas configurada en las preferencias de tu navegador web).' },
+      { question: '¿Es necesario instalar algún tipo de plugin o extensión?', answer: 'No. ConveTube es una aplicación 100% basada en la web. Solo necesitas conexión a Internet y un navegador moderno para poder descargar tus pistas de audio preferidas.' }
+    ]
   });
 });
 
 // ES Music Download Page
 app.get('/descargar-musica-de-youtube', (req, res) => {
-  res.render('descargar-musica-de-youtube', {
+  renderPage(res, 'descargar-musica-de-youtube', {
+    lang: 'es',
     title: 'Descargar Música de YouTube Gratis en MP3 | ConveTube',
     description: 'Descargar música de YouTube en MP3 gratis y online. Guarda canciones, podcasts y audios para escuchar sin conexión desde cualquier dispositivo.',
-    canonical: 'https://convetube.com/descargar-musica-de-youtube/'
+    canonical: 'https://convetube.com/descargar-musica-de-youtube/',
+    applicationName: 'ConveTube Descargar Música de YouTube',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['Descarga de canciones, podcasts y audios', 'Formato MP3 universal', 'Experiencia optimizada para móvil'],
+    faqItems: [
+      { question: '¿Puedo descargar canciones de YouTube en el móvil?', answer: 'Sí. Copia el enlace desde la app de YouTube, abre ConveTube en tu navegador y descarga el MP3 desde el botón final.' },
+      { question: '¿Cómo descargar MP3 de YouTube online?', answer: 'Pega el enlace del video en ConveTube, espera a que el sistema prepare el audio y pulsa el botón de descarga para guardar el archivo MP3.' },
+      { question: '¿Qué diferencia hay con una página de videos a MP3?', answer: 'La función es la misma, pero esta página está enfocada en usuarios que quieren guardar música, canciones, podcasts y audios para escucharlos offline.' },
+      { question: '¿También ofrecen WAV?', answer: 'Sí. Para edición de audio o trabajos donde prefieras un archivo sin compresión, prueba YouTube a WAV.' }
+    ]
   });
 });
 
 // ES WAV Page
 app.get('/youtube-a-wav', (req, res) => {
-  res.render('youtube-a-wav', {
+  renderPage(res, 'youtube-a-wav', {
+    lang: 'es',
     title: 'YouTube a WAV Gratis | Convertir Audio Online - ConveTube',
     description: 'Convierte YouTube a WAV online gratis. Descarga audio WAV sin compresión para edición, producción, muestras y proyectos de audio.',
-    canonical: 'https://convetube.com/youtube-a-wav/'
+    canonical: 'https://convetube.com/youtube-a-wav/',
+    applicationName: 'ConveTube YouTube a WAV',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['Conversión a WAV PCM', 'Salida a 44.1 kHz', 'Archivo sin compresión para edición'],
+    faqItems: [
+      { question: '¿Para qué sirve convertir YouTube a WAV?', answer: 'WAV es útil para editar, recortar, normalizar o importar audio en un DAW cuando necesitas una salida sin compresión adicional.' },
+      { question: '¿El archivo WAV ocupa más espacio que un MP3?', answer: 'Sí. WAV conserva el audio sin compresión, por lo que normalmente ocupa más espacio que un archivo MP3.' },
+      { question: '¿Qué frecuencia de muestreo tiene el WAV?', answer: 'La salida WAV se genera en PCM a 44.1 kHz, una configuración estándar y compatible con muchas herramientas.' },
+      { question: '¿Puedo usar el convertidor desde el celular?', answer: 'Sí. Puedes pegar el enlace y descargar el archivo WAV desde un navegador moderno en Android, iPhone, tablet u ordenador.' }
+    ]
   });
 });
 
 // EN WAV Page
 app.get('/youtube-to-wav', (req, res) => {
-  res.render('youtube-to-wav', {
+  renderPage(res, 'youtube-to-wav', {
+    lang: 'en',
     title: 'YouTube to WAV Converter Free Online | ConveTube',
     description: 'Convert YouTube to WAV online for free. Download uncompressed WAV audio for editing, sampling, production, and creative projects.',
-    canonical: 'https://convetube.com/youtube-to-wav/'
+    canonical: 'https://convetube.com/youtube-to-wav/',
+    applicationName: 'ConveTube YouTube to WAV Converter',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['YouTube to WAV conversion', '44.1 kHz PCM output', 'Browser-based audio preview and download'],
+    faqItems: [
+      { question: 'Why convert YouTube to WAV?', answer: 'WAV is useful for editing, trimming, mixing, sampling, and production workflows that need an uncompressed audio file.' },
+      { question: 'Are WAV files larger than MP3 files?', answer: 'Yes. WAV preserves audio without compression, so it usually requires more storage than an MP3.' },
+      { question: 'What sample rate does the WAV output use?', answer: 'The WAV output is generated as PCM at 44.1 kHz, a standard setting supported by many editors.' },
+      { question: 'Can I use the converter on a phone?', answer: 'Yes. Paste the link and download the WAV file from a modern browser on Android, iPhone, tablet, or desktop.' }
+    ]
   });
 });
 

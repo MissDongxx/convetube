@@ -21,6 +21,16 @@
   
   <!-- Canonical URL -->
   <link rel="canonical" href="<%= canonical %>">
+
+  <!-- Language alternates -->
+  <% Object.entries(hreflang || {}).forEach(([language, url]) => { %>
+    <link rel="alternate" hreflang="<%= language %>" href="<%= url %>">
+  <% }) %>
+
+  <!-- Structured data: one WebApplication and one page-specific FAQPage -->
+  <% if (structuredData) { %>
+    <script type="application/ld+json"><%- JSON.stringify(structuredData).replace(/</g, '\\u003c') %></script>
+  <% } %>
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
