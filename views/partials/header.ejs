@@ -199,7 +199,7 @@
 <body>
 
 <%
-  const homeHref = lang === 'fr' ? '/convertir-youtube-vers-mp3/' : lang === 'en' ? '/youtube-to-wav/' : '/';
+  const homeHref = lang === 'fr' ? '/convertir-youtube-vers-mp3/' : lang === 'en' ? '/' : '/convertidor-de-youtube-a-mp3/';
   const langLabel = lang === 'fr' ? 'Français' : lang === 'en' ? 'English' : 'Español';
 %>
 
@@ -227,13 +227,13 @@
           </button>
           <ul class="lang-dropdown" role="listbox" aria-labelledby="lang-menu-button" id="lang-menu">
             <li role="option" aria-selected="<%= lang === 'es' %>">
-              <a href="/" class="<%= lang === 'es' ? 'active' : '' %>">Español (ES)</a>
+              <a href="/convertidor-de-youtube-a-mp3/" class="<%= lang === 'es' ? 'active' : '' %>">Español (ES)</a>
             </li>
             <li role="option" aria-selected="<%= lang === 'fr' %>">
               <a href="/convertir-youtube-vers-mp3" class="<%= lang === 'fr' ? 'active' : '' %>">Français (FR)</a>
             </li>
             <li role="option" aria-selected="<%= lang === 'en' %>">
-              <a href="/youtube-to-wav" class="<%= lang === 'en' ? 'active' : '' %>">English (EN)</a>
+              <a href="/" class="<%= lang === 'en' ? 'active' : '' %>">English (EN)</a>
             </li>
           </ul>
         </div>

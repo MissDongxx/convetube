@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('convert-form');
-  const input = document.getElementById('youtube-url');
+  const input = document.getElementById('video-url');
   const errorMsg = document.getElementById('error-message');
   
   const stateInput = document.getElementById('state-input');
@@ -34,12 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const convertAnotherBtn = document.getElementById('convert-another-btn');
   const converterBox = document.querySelector('.converter-box');
   const formatSelect = document.getElementById('format-select');
+  const genericUrlMode = converterBox?.dataset.genericUrl === 'true';
   const supportedFormats = ['mp3', 'wav', 'flac', 'ogg'];
   const defaultFormat = supportedFormats.includes(converterBox?.dataset.format) ? converterBox.dataset.format : 'mp3';
   let outputFormat = defaultFormat;
   
   let videoDuration = 0;
-  let currentVideoId = null;
+  let currentSourceKey = null;
+  let currentSourceUrl = null;
   let cacheReady = false;
   let cachePollingTimer = null;
   let isAudioLoading = false;
@@ -81,15 +83,28 @@ document.addEventListener('DOMContentLoaded', () => {
   function syncSelectedFormat() {
     outputFormat = getSelectedFormat();
     if (converterBox) converterBox.dataset.format = outputFormat;
-    if (downloadLabel && !currentVideoId) downloadLabel.textContent = getDownloadText(outputFormat);
+    if (downloadLabel && !currentSourceKey) downloadLabel.textContent = getDownloadText(outputFormat);
   }
 
   syncSelectedFormat();
 
   formatSelect?.addEventListener('change', syncSelectedFormat);
 
-  // YouTube URL regex
+  // Keep the stricter YouTube check on YouTube-specific pages; the URL to MP3 homepage accepts any HTTP(S) video URL.
   const ytRegex = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]{11})/;
+
+  function isValidHttpUrl(value) {
+    try {
+      const parsed = new URL(value);
+      return ['http:', 'https:'].includes(parsed.protocol) && Boolean(parsed.hostname);
+    } catch {
+      return false;
+    }
+  }
+
+  function getSourceQuery(sourceUrl) {
+    return `source=${encodeURIComponent(sourceUrl)}`;
+  }
 
   function formatTime(secs) {
     if (isNaN(secs) || secs === null || secs === undefined) return '0:00';
@@ -99,18 +114,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Poll cache status until ready
-  function startCachePolling(videoId) {
+  function startCachePolling(sourceKey, sourceUrl) {
     if (cachePollingTimer) clearInterval(cachePollingTimer);
     cacheReady = false;
 
     const poll = async () => {
       try {
-        const resp = await fetch(`/api/cache-status?id=${videoId}&format=${outputFormat}`);
+        const resp = await fetch(`/api/cache-status?${getSourceQuery(sourceUrl)}&format=${outputFormat}`);
         const data = await resp.json();
         if (data.ready) {
           cacheReady = true;
           if (cachePollingTimer) clearInterval(cachePollingTimer);
-          onCacheReady(videoId);
+          onCacheReady(sourceKey, sourceUrl);
         }
       } catch (e) {
         // Silently retry
@@ -123,13 +138,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Called when cache file is ready on the server
-  function onCacheReady(videoId) {
+  function onCacheReady(sourceKey, sourceUrl) {
     // Swap audio source to cached file for instant playback (supports seeking)
-    if (audio && currentVideoId === videoId) {
+    if (audio && currentSourceKey === sourceKey) {
       const currentTime = audio.currentTime;
       const wasPlaying = !audio.paused;
 
-      audio.src = `/api/stream?id=${videoId}&format=${outputFormat}`;
+      audio.src = `/api/stream?${getSourceQuery(sourceUrl)}&format=${outputFormat}`;
       audio.preload = 'auto';
       audio.load();
 
@@ -144,8 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Update download link — cached files serve with Content-Length for proper progress
-    if (downloadBtn && currentVideoId === videoId) {
-      downloadBtn.href = `/api/download?id=${videoId}&format=${outputFormat}&title=${encodeURIComponent(videoTitle.textContent)}`;
+    if (downloadBtn && currentSourceKey === sourceKey) {
+      downloadBtn.href = `/api/download?${getSourceQuery(sourceUrl)}&format=${outputFormat}&title=${encodeURIComponent(videoTitle.textContent)}`;
     }
 
     // Remove preparing indicator from download button
@@ -174,9 +189,9 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const url = input.value.trim();
-      const match = url.match(ytRegex);
-      
-      if (!match) {
+      const isValidSource = genericUrlMode ? isValidHttpUrl(url) : ytRegex.test(url);
+
+      if (!isValidSource) {
         errorMsg.textContent = invalidUrlText;
         errorMsg.classList.add('visible');
         return;
@@ -247,11 +262,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             // Store video ID and start cache polling
-            currentVideoId = infoData.id;
-            startCachePolling(infoData.id);
+            currentSourceKey = infoData.sourceKey;
+            currentSourceUrl = url;
+            startCachePolling(infoData.sourceKey, url);
             
             // Configure audio player source (streaming initially)
-            audio.src = `/api/stream?id=${infoData.id}&format=${outputFormat}`;
+            audio.src = `/api/stream?${getSourceQuery(url)}&format=${outputFormat}`;
             audio.preload = 'auto';
             audio.load();
             
@@ -261,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timeline.value = 0;
             
             // Set download href — download works immediately via live streaming
-            downloadBtn.href = `/api/download?id=${infoData.id}&format=${outputFormat}&title=${encodeURIComponent(infoData.title)}`;
+            downloadBtn.href = `/api/download?${getSourceQuery(url)}&format=${outputFormat}&title=${encodeURIComponent(infoData.title)}`;
             downloadBtn.setAttribute('download', `${sanitizeFilename(infoData.title)}.${outputFormat}`);
             
             // Transition to Result view
@@ -298,7 +314,8 @@ document.addEventListener('DOMContentLoaded', () => {
       cachePollingTimer = null;
     }
     cacheReady = false;
-    currentVideoId = null;
+    currentSourceKey = null;
+    currentSourceUrl = null;
     isAudioLoading = false;
 
     // Reset player

@@ -2,8 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
-import { spawn, exec } from 'child_process';
+import { spawn } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,15 +40,6 @@ const getBaseYtDlpArgs = () => {
     args.push('--cookies', cookiesPath);
   }
   return args;
-};
-
-// Helper to get base command prefix for exec
-const getExecPrefix = () => {
-  let prefix = 'yt-dlp --js-runtimes node';
-  if (fs.existsSync(cookiesPath)) {
-    prefix += ` --cookies "${cookiesPath}"`;
-  }
-  return prefix;
 };
 
 // Setup cache directory
@@ -94,39 +86,70 @@ const getTranscodeOptions = (format, quality = 'download') => {
   };
 };
 
-const getCachePath = (id, format) => path.join(cacheDir, `${id}.${format}`);
+const normalizeSourceUrl = (value) => {
+  try {
+    const parsed = new URL(String(value || '').trim());
+    if (!['http:', 'https:'].includes(parsed.protocol) || !parsed.hostname) return null;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+};
 
-const startBackgroundTranscode = (id, requestedFormat = 'mp3') => {
+const getSourceKey = (sourceUrl) => crypto
+  .createHash('sha256')
+  .update(sourceUrl)
+  .digest('hex')
+  .slice(0, 32);
+
+const getSourceFromRequest = (req) => {
+  const directUrl = normalizeSourceUrl(req.query.source || req.query.url);
+  if (directUrl) {
+    return { url: directUrl, key: getSourceKey(directUrl) };
+  }
+
+  // Keep old clients and cached YouTube links working during the migration.
+  const legacyId = String(req.query.id || '').trim();
+  if (/^[a-zA-Z0-9_-]{11}$/.test(legacyId)) {
+    const legacyUrl = `https://www.youtube.com/watch?v=${legacyId}`;
+    return { url: legacyUrl, key: getSourceKey(legacyUrl) };
+  }
+
+  return null;
+};
+
+const getCachePath = (sourceKey, format) => path.join(cacheDir, `${sourceKey}.${format}`);
+
+const startBackgroundTranscode = (sourceUrl, sourceKey, requestedFormat = 'mp3') => {
   const format = getAudioFormat(requestedFormat);
   const options = getTranscodeOptions(format);
-  const cachePath = getCachePath(id, format);
-  const transcodeKey = `${id}:${format}`;
+  const cachePath = getCachePath(sourceKey, format);
+  const transcodeKey = `${sourceKey}:${format}`;
   if (fs.existsSync(cachePath) || activeTranscodes.has(transcodeKey)) {
     return; // Already cached or currently transcoding
   }
 
-  const url = `https://www.youtube.com/watch?v=${id}`;
-  const tempPath = path.join(cacheDir, `${id}.${format}.tmp`);
-  const downloadPath = path.join(cacheDir, `${id}.${format}.download`);
+  const tempPath = path.join(cacheDir, `${sourceKey}.${format}.tmp`);
+  const downloadPath = path.join(cacheDir, `${sourceKey}.${format}.download`);
   
-  console.log(`[Cache] Starting optimized background ${format.toUpperCase()} transcode for video: ${id}`);
+  console.log(`[Cache] Starting optimized background ${format.toUpperCase()} transcode for source: ${sourceKey}`);
   
   // Step 1: Download bestaudio to a local file.
   // Downloading to a local file bypasses YouTube's play-rate throttling on piped stdout.
-  const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', downloadPath, url];
+  const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', downloadPath, sourceUrl];
   const ytDlp = spawn('yt-dlp', ytDlpArgs);
   
   activeTranscodes.set(transcodeKey, { ytDlp, tempPath, downloadPath });
 
   ytDlp.on('close', (code) => {
     if (code !== 0) {
-      console.error(`[Cache] yt-dlp download failed with code ${code} for video: ${id}`);
+      console.error(`[Cache] yt-dlp download failed with code ${code} for source: ${sourceKey}`);
       if (fs.existsSync(downloadPath)) fs.unlinkSync(downloadPath);
       activeTranscodes.delete(transcodeKey);
       return;
     }
 
-    console.log(`[Cache] Download complete for ${id}. Starting ffmpeg transcoding...`);
+    console.log(`[Cache] Download complete for ${sourceKey}. Starting ffmpeg transcoding...`);
 
     // Step 2: Transcode local file to MP3.
     // Transcoding from a local file allows ffmpeg to utilize multithreaded decoding and high-speed local disk I/O.
@@ -159,10 +182,10 @@ const startBackgroundTranscode = (id, requestedFormat = 'mp3') => {
       if (ffmpegCode === 0) {
         if (fs.existsSync(tempPath)) {
           fs.renameSync(tempPath, cachePath);
-          console.log(`[Cache] Completed background transcode: ${id}.${options.extension}`);
+          console.log(`[Cache] Completed background transcode: ${sourceKey}.${options.extension}`);
         }
       } else {
-        console.error(`[Cache] ffmpeg transcoding failed with code ${ffmpegCode} for video: ${id}`);
+        console.error(`[Cache] ffmpeg transcoding failed with code ${ffmpegCode} for source: ${sourceKey}`);
         if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
       }
     });
@@ -207,9 +230,9 @@ const escapeHtml = (value) => String(value)
   .replace(/'/g, '&#39;');
 
 const languageAlternates = {
-  es: 'https://convetube.com/',
+  es: 'https://convetube.com/convertidor-de-youtube-a-mp3/',
   fr: 'https://convetube.com/convertir-youtube-vers-mp3/',
-  en: 'https://convetube.com/youtube-to-wav/'
+  en: 'https://convetube.com/'
 };
 
 const getLanguageAlternates = (canonical, lang) => ({
@@ -266,6 +289,157 @@ const renderPage = (res, view, page) => {
 };
 
 // --- Web Page Routes ---
+
+// SEO tool pages: one primary keyword per URL, with supporting sections and related-tool links.
+app.get('/mp3-converter/link-to-mp3/', (req, res) => {
+  renderPage(res, 'seo-converter-page', {
+    lang: 'en',
+    title: 'Link to MP3 Converter Free Online | Convert Video Links - ConveTube',
+    description: 'Use a free link to MP3 converter to turn a supported video link into an MP3 file online. Paste a URL, preview the audio, and download it in your browser.',
+    canonical: 'https://convetube.com/mp3-converter/link-to-mp3/',
+    applicationName: 'ConveTube Link to MP3 Converter',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['Link to MP3 conversion', 'Audio preview in the browser', 'MP3 download without software installation'],
+    keyword: 'link to MP3 converter',
+    heading: 'Link to',
+    headingAccent: 'MP3 Converter',
+    heroSubtitle: 'Convert a supported video link to MP3 online, preview the audio, and save the result from your browser.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP3 Converter', href: '/mp3-converter/link-to-mp3/' }, { label: 'Link to MP3' }],
+    introHeading: 'Free link to MP3 converter online',
+    introParagraphs: [
+      'ConveTube helps you turn a supported <strong>video link into an MP3</strong> without installing a desktop application. Paste the link above, let the converter prepare the audio, and check the result before downloading.',
+      'This page is designed for people searching for a direct link to MP3 workflow. It supports a simple URL-first experience on modern phones, tablets, and computers.'
+    ],
+    stepsHeading: 'How to convert a link to MP3',
+    steps: [
+      { title: 'Copy the video link', body: 'copy the URL of the video you want to use.' },
+      { title: 'Paste the link above', body: 'add it to the converter and start the audio analysis.' },
+      { title: 'Preview the audio', body: 'check the title and playback controls when the result is ready.' },
+      { title: 'Download MP3', body: 'save the audio file to your device for compatible personal use.' }
+    ],
+    benefitsHeading: 'Why use a link to MP3 converter?',
+    benefits: [
+      { icon: 'URL', title: 'Direct link workflow', body: 'Start with a URL instead of searching through files or installing conversion software.' },
+      { icon: 'MP3', title: 'Widely supported output', body: 'MP3 files work with common phones, computers, music players, and editing tools.' },
+      { icon: 'WEB', title: 'Works in a browser', body: 'Use the same conversion flow on desktop and mobile browsers.' },
+      { icon: 'PLAY', title: 'Preview before saving', body: 'Listen to the prepared result before you download the final file.' }
+    ],
+    relatedTools: [
+      { href: '/mp3-converter/video-to-mp3/', label: 'Video to MP3', description: 'Convert a video URL to an MP3 audio file.' },
+      { href: '/', label: 'URL to MP3', description: 'Use the homepage for a general URL-to-MP3 workflow.' },
+      { href: '/wav-converter/youtube-to-wav/', label: 'YouTube to WAV', description: 'Choose WAV when you need an uncompressed output.' }
+    ],
+    faqHeading: 'Frequently asked questions about link to MP3 conversion',
+    faqItems: [
+      { question: 'What is a link to MP3 converter?', answer: 'A link to MP3 converter accepts a supported video URL and prepares an MP3 audio file that you can preview and download in a browser.' },
+      { question: 'How do I convert a link to MP3?', answer: 'Copy a supported video link, paste it into the converter, wait for the audio result, preview it, and select the MP3 download button.' },
+      { question: 'Can I use a link to MP3 converter on a phone?', answer: 'Yes. ConveTube is designed for modern mobile and desktop browsers, so you can paste a link and download the result from your device.' },
+      { question: 'Why use MP3 instead of WAV?', answer: 'MP3 is usually smaller and easier to store or share. Use the YouTube to WAV page when your workflow needs uncompressed audio.' }
+    ],
+    genericUrl: true,
+    defaultFormat: 'mp3'
+  });
+});
+
+app.get('/mp3-converter/video-to-mp3/', (req, res) => {
+  renderPage(res, 'seo-converter-page', {
+    lang: 'en',
+    title: 'Video to MP3 Converter Free Online | Convert Video to MP3 - ConveTube',
+    description: 'Convert video to MP3 online for free with ConveTube. Paste a supported video URL, preview the extracted audio, and download an MP3 file in your browser.',
+    canonical: 'https://convetube.com/mp3-converter/video-to-mp3/',
+    applicationName: 'ConveTube Video to MP3 Converter',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['Video to MP3 conversion', 'Audio preview before download', 'Browser-based conversion on mobile and desktop'],
+    keyword: 'video to MP3 converter',
+    heading: 'Video to',
+    headingAccent: 'MP3 Converter',
+    heroSubtitle: 'Convert a supported video URL to a compact MP3 audio file with a fast, browser-based workflow.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP3 Converter', href: '/mp3-converter/video-to-mp3/' }, { label: 'Video to MP3' }],
+    introHeading: 'Convert video to MP3 online',
+    introParagraphs: [
+      'Use this <strong>video to MP3 converter</strong> when you want the audio track from a supported video URL. ConveTube extracts the audio, prepares an MP3, and gives you a built-in preview before the download step.',
+      'MP3 is a practical choice for listening, notes, podcasts, and other workflows where a smaller audio file is more convenient than the original video.'
+    ],
+    stepsHeading: 'How to convert video to MP3',
+    steps: [
+      { title: 'Copy a supported video URL', body: 'open the source video and copy its full link.' },
+      { title: 'Paste the URL', body: 'insert the link in the converter and start processing.' },
+      { title: 'Review the result', body: 'use the title and audio player to confirm the prepared track.' },
+      { title: 'Download the MP3', body: 'save the audio file when the conversion is complete.' }
+    ],
+    benefitsHeading: 'Benefits of converting video to MP3',
+    benefits: [
+      { icon: 'AUDIO', title: 'Audio-only playback', body: 'Listen to the extracted track without keeping a full video open.' },
+      { icon: '320', title: 'High-quality MP3', body: 'The download flow prepares an MP3 suitable for everyday listening.' },
+      { icon: 'FAST', title: 'Simple four-step flow', body: 'Paste, process, preview, and download without a multi-screen setup.' },
+      { icon: 'MOBILE', title: 'Mobile friendly', body: 'Use the page on Android, iPhone, tablet, Windows, or macOS.' }
+    ],
+    relatedTools: [
+      { href: '/mp3-converter/link-to-mp3/', label: 'Link to MP3', description: 'Convert a supported video link into MP3.' },
+      { href: '/', label: 'URL to MP3', description: 'Start with any supported video URL from the homepage.' },
+      { href: '/wav-converter/youtube-to-wav/', label: 'YouTube to WAV', description: 'Use the WAV workflow for editing and production.' }
+    ],
+    faqHeading: 'Frequently asked questions about video to MP3 conversion',
+    faqItems: [
+      { question: 'What does a video to MP3 converter do?', answer: 'It extracts the audio track from a supported video URL and prepares it as an MP3 file for preview and download.' },
+      { question: 'How do I convert a video to MP3 online?', answer: 'Paste a supported video URL into ConveTube, wait for the result, preview the audio, and download the MP3 file.' },
+      { question: 'Is video to MP3 conversion available on mobile?', answer: 'Yes. The converter runs in a modern mobile browser and does not require a separate desktop application.' },
+      { question: 'When should I choose WAV instead?', answer: 'Choose WAV when you need an uncompressed file for editing, sampling, mixing, or production. MP3 is generally smaller for listening and storage.' }
+    ],
+    genericUrl: true,
+    defaultFormat: 'mp3'
+  });
+});
+
+app.get('/wav-converter/youtube-to-wav/', (req, res) => {
+  renderPage(res, 'seo-converter-page', {
+    lang: 'en',
+    title: 'YouTube to WAV Converter Free Online | Download WAV - ConveTube',
+    description: 'Convert YouTube to WAV online for free. Download uncompressed WAV audio for editing, sampling, production, and creative projects in your browser.',
+    canonical: 'https://convetube.com/wav-converter/youtube-to-wav/',
+    applicationName: 'ConveTube YouTube to WAV Converter',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['YouTube to WAV conversion', '44.1 kHz PCM output', 'Browser-based audio preview and download'],
+    keyword: 'YouTube to WAV converter',
+    heading: 'YouTube to',
+    headingAccent: 'WAV Converter',
+    heroSubtitle: 'Convert a YouTube video URL to WAV for editing, sampling, production, and projects that need uncompressed audio.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'WAV Converter', href: '/wav-converter/youtube-to-wav/' }, { label: 'YouTube to WAV' }],
+    introHeading: 'Free YouTube to WAV converter online',
+    introParagraphs: [
+      'Use ConveTube when you need <strong>YouTube to WAV</strong> instead of a compressed MP3. Paste a supported YouTube link, let the converter prepare the audio, preview the result, and download a WAV file directly in your browser.',
+      'WAV files are larger, but they are useful for editing, trimming, normalization, remixing, and production workflows where you want an uncompressed output.'
+    ],
+    stepsHeading: 'How to convert YouTube to WAV',
+    steps: [
+      { title: 'Copy the YouTube link', body: 'open the video and copy its URL from the share or address bar.' },
+      { title: 'Paste it above', body: 'add the link to the converter and start the audio analysis.' },
+      { title: 'Preview the WAV result', body: 'check the prepared audio and its metadata in the built-in player.' },
+      { title: 'Download WAV', body: 'save the uncompressed audio file for your next project.' }
+    ],
+    benefitsHeading: 'Why choose WAV?',
+    benefits: [
+      { icon: 'WAV', title: 'Uncompressed output', body: 'Keep an uncompressed PCM file for editing and production workflows.' },
+      { icon: 'DAW', title: 'Editor friendly', body: 'Import the result into Audacity, Ableton, Logic, Premiere, and similar tools.' },
+      { icon: '44.1', title: 'Standard PCM', body: 'The output is generated as WAV PCM at 44.1 kHz for broad compatibility.' },
+      { icon: 'MP3', title: 'Switch to MP3 when smaller', body: 'Use the MP3 pages when storage, sharing, or everyday playback matters more.' }
+    ],
+    relatedTools: [
+      { href: '/mp3-converter/video-to-mp3/', label: 'Video to MP3', description: 'Choose a smaller audio format for everyday listening.' },
+      { href: '/mp3-converter/link-to-mp3/', label: 'Link to MP3', description: 'Convert a supported video link directly to MP3.' },
+      { href: '/', label: 'URL to MP3', description: 'Start with a general URL-to-MP3 workflow.' }
+    ],
+    faqHeading: 'Frequently asked questions about YouTube to WAV',
+    faqItems: [
+      { question: 'Why convert YouTube to WAV?', answer: 'WAV is useful for editing, trimming, mixing, sampling, and production workflows that need an uncompressed audio file.' },
+      { question: 'Are WAV files larger than MP3 files?', answer: 'Yes. WAV preserves audio without compression, so it usually requires more storage than an MP3.' },
+      { question: 'What sample rate does the WAV output use?', answer: 'The WAV output is generated as PCM at 44.1 kHz, a standard setting supported by many editors.' },
+      { question: 'Can I use the converter on a phone?', answer: 'Yes. Paste the link and download the WAV file from a modern browser on Android, iPhone, tablet, or desktop.' }
+    ],
+    genericUrl: false,
+    defaultFormat: 'wav'
+  });
+});
 
 app.get('/flac-converter/youtube-to-flac/', (req, res) => {
   renderPage(res, 'seo-converter-page', {
@@ -417,21 +591,21 @@ app.get('/mp3-converter/youtube-to-mp3/', (req, res) => {
   });
 });
 
-// ES Homepage
+// EN Homepage: URL to MP3
 app.get('/', (req, res) => {
   renderPage(res, 'index', {
-    lang: 'es',
-    title: 'Convertidor YouTube a MP3 Gratis | Descargar Música de YouTube - ConveTube',
-    description: 'El mejor convertidor YouTube a MP3 gratis. Convierte videos de YouTube a MP3 en segundos con alta calidad. Fácil, rápido y sin registro en ConveTube.',
+    lang: 'en',
+    title: 'URL to MP3 Converter Free Online | Convert Link to MP3 - ConveTube',
+    description: 'Convert any supported video URL to MP3 online for free. Preview and download high-quality MP3 audio in your browser with ConveTube.',
     canonical: 'https://convetube.com/',
-    applicationName: 'ConveTube YouTube a MP3',
+    applicationName: 'ConveTube URL to MP3 Converter',
     applicationCategory: 'MultimediaApplication',
-    featureList: ['Conversión de YouTube a MP3', 'Vista previa de audio', 'Descarga desde el navegador'],
+    featureList: ['Any supported video URL to MP3 conversion', 'Browser-based audio preview', 'MP3 download without software installation'],
     faqItems: [
-      { question: '¿Este convertidor de YouTube a MP3 es completamente gratis?', answer: 'Sí, el servicio de ConveTube es 100% gratis. Puedes realizar tantas conversiones y descargas de música como desees, sin límites diarios ni cargos ocultos.' },
-      { question: '¿Necesito registrarme para descargar música?', answer: 'No. Respetamos tu privacidad y comodidad. No necesitas crear una cuenta ni proporcionar correos electrónicos para utilizar nuestro extractor de audio.' },
-      { question: '¿Puedo escuchar el audio antes de descargarlo?', answer: '¡Por supuesto! Hemos incorporado un reproductor de música premium para que puedas verificar la calidad y el contenido del audio online antes de guardarlo en tu disco local.' },
-      { question: '¿ConveTube funciona como youtube convertidor online?', answer: 'Sí. Puedes usar ConveTube como youtube convertidor desde el navegador: copia el enlace del video, pégalo en la caja principal y descarga el audio MP3 cuando el procesamiento termine.' }
+      { question: 'What is a URL to MP3 converter?', answer: 'A URL to MP3 converter turns a supported video URL into an MP3 audio file that you can save and play on your device.' },
+      { question: 'Can I convert any video URL to MP3?', answer: 'Yes. Paste a supported video URL, wait for the audio analysis, and download the MP3 when the result is ready.' },
+      { question: 'Is the URL to MP3 converter free?', answer: 'Yes. ConveTube provides the URL to MP3 conversion flow online for free, with no required account or subscription.' },
+      { question: 'Do I need to install software?', answer: 'No. The converter runs in a modern web browser, so you can convert a URL to MP3 without installing additional software.' }
     ]
   });
 });
@@ -454,20 +628,21 @@ app.get('/convertir-youtube-vers-mp3', (req, res) => {
   });
 });
 
-// ES Secondary Page
+// ES Internal Page: migrated former homepage
 app.get('/convertidor-de-youtube-a-mp3', (req, res) => {
   renderPage(res, 'convertidor-de-youtube-a-mp3', {
     lang: 'es',
-    title: 'Convertidor de YouTube a MP3 en Alta Calidad | ConveTube',
-    description: 'Usa el mejor convertidor de YouTube a MP3 online. Descarga audio MP3 de videos de YouTube de forma rápida, segura y totalmente gratis.',
+    title: 'Convertidor YouTube a MP3 Gratis | Descargar Música de YouTube - ConveTube',
+    description: 'El mejor convertidor YouTube a MP3 gratis. Convierte videos de YouTube a MP3 en segundos con alta calidad. Fácil, rápido y sin registro en ConveTube.',
     canonical: 'https://convetube.com/convertidor-de-youtube-a-mp3/',
-    applicationName: 'ConveTube Convertidor de YouTube a MP3 HD',
+    applicationName: 'ConveTube Convertidor YouTube a MP3 Gratis',
     applicationCategory: 'MultimediaApplication',
-    featureList: ['Conversión de audio en alta calidad', 'Procesamiento de enlaces desde el móvil', 'Descarga MP3 sin instalación'],
+    featureList: ['Conversión de YouTube a MP3', 'Vista previa de audio', 'Descarga desde el navegador'],
     faqItems: [
-      { question: '¿Cómo puedo convertir archivos de audio de YouTube en mi celular?', answer: 'Es muy fácil. Solo abre la app de YouTube, pulsa en "Compartir" en el video que quieras, copia el enlace, pégalo en la barra de búsqueda de ConveTube desde el navegador de tu móvil (como Chrome o Safari) y dale al botón de descargar.' },
-      { question: '¿Hay alguna restricción sobre el tamaño de los videos?', answer: 'No limitamos las descargas de audio de duración estándar, como canciones o podcasts de hasta 2 horas, para garantizar la máxima velocidad de conversión para todos los usuarios.' },
-      { question: '¿Puedo convertir YouTube a MP3 en línea sin instalar nada?', answer: 'Sí. ConveTube funciona directamente desde el navegador, por lo que puedes convertir de YouTube a MP3 en línea desde tu computadora o celular sin instalar software adicional.' }
+      { question: '¿Este convertidor de YouTube a MP3 es completamente gratis?', answer: 'Sí, el servicio de ConveTube es 100% gratis. Puedes realizar tantas conversiones y descargas de música como desees, sin límites diarios ni cargos ocultos.' },
+      { question: '¿Necesito registrarme para descargar música?', answer: 'No. Respetamos tu privacidad y comodidad. No necesitas crear una cuenta ni proporcionar correos electrónicos para utilizar nuestro extractor de audio.' },
+      { question: '¿Puedo escuchar el audio antes de descargarlo?', answer: '¡Por supuesto! Hemos incorporado un reproductor de música premium para que puedas verificar la calidad y el contenido del audio online antes de guardarlo en tu disco local.' },
+      { question: '¿ConveTube funciona como youtube convertidor online?', answer: 'Sí. Puedes usar ConveTube como youtube convertidor desde el navegador: copia el enlace del video, pégalo en la caja principal y descarga el audio MP3 cuando el procesamiento termine.' }
     ]
   });
 });
@@ -570,23 +745,9 @@ app.get('/youtube-a-wav', (req, res) => {
   });
 });
 
-// EN WAV Page
+// EN WAV legacy route: consolidate the old path under the output-format hierarchy.
 app.get('/youtube-to-wav', (req, res) => {
-  renderPage(res, 'youtube-to-wav', {
-    lang: 'en',
-    title: 'YouTube to WAV Converter Free Online | ConveTube',
-    description: 'Convert YouTube to WAV online for free. Download uncompressed WAV audio for editing, sampling, production, and creative projects.',
-    canonical: 'https://convetube.com/youtube-to-wav/',
-    applicationName: 'ConveTube YouTube to WAV Converter',
-    applicationCategory: 'MultimediaApplication',
-    featureList: ['YouTube to WAV conversion', '44.1 kHz PCM output', 'Browser-based audio preview and download'],
-    faqItems: [
-      { question: 'Why convert YouTube to WAV?', answer: 'WAV is useful for editing, trimming, mixing, sampling, and production workflows that need an uncompressed audio file.' },
-      { question: 'Are WAV files larger than MP3 files?', answer: 'Yes. WAV preserves audio without compression, so it usually requires more storage than an MP3.' },
-      { question: 'What sample rate does the WAV output use?', answer: 'The WAV output is generated as PCM at 44.1 kHz, a standard setting supported by many editors.' },
-      { question: 'Can I use the converter on a phone?', answer: 'Yes. Paste the link and download the WAV file from a modern browser on Android, iPhone, tablet, or desktop.' }
-    ]
-  });
+  res.redirect(301, '/wav-converter/youtube-to-wav/');
 });
 
 // Sitemap.xml
@@ -638,7 +799,17 @@ app.get('/sitemap.xml', (req, res) => {
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://convetube.com/youtube-to-wav/</loc>
+    <loc>https://convetube.com/mp3-converter/link-to-mp3/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/mp3-converter/video-to-mp3/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/wav-converter/youtube-to-wav/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -747,80 +918,97 @@ app.post('/api/contact', async (req, res) => {
 
 // 0. Check if cached MP3 is ready
 app.get('/api/cache-status', (req, res) => {
-  const id = req.query.id;
+  const source = getSourceFromRequest(req);
   const format = getAudioFormat(req.query.format);
-  if (!id) {
-    return res.status(400).json({ error: 'Video ID is required' });
+  if (!source) {
+    return res.status(400).json({ error: 'A valid video URL is required' });
   }
 
-  const cachePath = getCachePath(id, format);
+  const cachePath = getCachePath(source.key, format);
   if (fs.existsSync(cachePath)) {
     const stats = fs.statSync(cachePath);
     return res.json({ ready: true, size: stats.size });
   }
 
   // Check if transcoding is in progress
-  const isTranscoding = activeTranscodes.has(`${id}:${format}`);
+  const isTranscoding = activeTranscodes.has(`${source.key}:${format}`);
   return res.json({ ready: false, transcoding: isTranscoding });
 });
 
 // 1. Fetch Video Metadata
-app.get('/api/info', (req, res) => {
-  const videoUrl = req.query.url;
+app.get('/api/info', async (req, res) => {
+  const source = getSourceFromRequest(req);
   const format = getAudioFormat(req.query.format);
-  if (!videoUrl) {
-    return res.status(400).json({ error: 'URL parameter is required' });
+  if (!source) {
+    return res.status(400).json({ error: 'A valid video URL is required' });
   }
 
-  // Get video details using yt-dlp (optimized for speed)
-  const cmdPrefix = getExecPrefix();
-  exec(`${cmdPrefix} -j --no-playlist --no-warnings --no-check-certificates --socket-timeout 10 "${videoUrl}"`, (error, stdout, stderr) => {
-    if (error) {
-      console.error('yt-dlp info error:', stderr);
-      return res.status(500).json({ error: 'Failed to fetch video details' });
-    }
+  try {
+    const data = await new Promise((resolve, reject) => {
+      const ytDlp = spawn('yt-dlp', [
+        ...getBaseYtDlpArgs(),
+        '-j',
+        '--no-playlist',
+        '--no-warnings',
+        '--no-check-certificates',
+        '--socket-timeout',
+        '10',
+        source.url
+      ]);
+      let stdout = '';
+      let stderr = '';
 
-    try {
-      const data = JSON.parse(stdout);
-      
-      // Start background transcoding immediately
-      startBackgroundTranscode(data.id, format);
-      
-      res.json({
-        id: data.id,
-        title: data.title,
-        channel: data.uploader || 'ConveTube Engine',
-        duration: data.duration, // In seconds
-        thumbnail: data.thumbnail
+      ytDlp.stdout.on('data', (chunk) => { stdout += chunk; });
+      ytDlp.stderr.on('data', (chunk) => { stderr += chunk; });
+      ytDlp.on('error', reject);
+      ytDlp.on('close', (code) => {
+        if (code !== 0) {
+          reject(new Error(stderr || `yt-dlp exited with code ${code}`));
+          return;
+        }
+        try {
+          resolve(JSON.parse(stdout));
+        } catch (error) {
+          reject(error);
+        }
       });
-    } catch (e) {
-      res.status(500).json({ error: 'Failed to parse metadata' });
-    }
-  });
+    });
+
+    startBackgroundTranscode(source.url, source.key, format);
+
+    res.json({
+      sourceKey: source.key,
+      title: data.title || 'Video audio',
+      channel: data.uploader || data.channel || 'ConveTube Engine',
+      duration: data.duration,
+      thumbnail: data.thumbnail
+    });
+  } catch (error) {
+    console.error('yt-dlp info error:', error.message);
+    res.status(500).json({ error: 'Failed to fetch video details' });
+  }
 });
 
 // 2. Stream Audio Live
 app.get('/api/stream', (req, res) => {
-  const id = req.query.id;
+  const source = getSourceFromRequest(req);
   const format = getAudioFormat(req.query.format);
   const options = getTranscodeOptions(format, 'stream');
-  if (!id) {
-    return res.status(400).send('Video ID is required');
+  if (!source) {
+    return res.status(400).send('A valid video URL is required');
   }
 
-  const cachePath = getCachePath(id, format);
+  const cachePath = getCachePath(source.key, format);
   
   // If cache exists, serve static file (supports seeking/range requests automatically)
   if (fs.existsSync(cachePath)) {
     return res.sendFile(cachePath);
   }
 
-  const url = `https://www.youtube.com/watch?v=${id}`;
-  
   res.setHeader('Content-Type', options.mimeType);
   
   // Stream audio directly using yt-dlp and ffmpeg pipeline
-  const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', '-', url];
+  const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', '-', source.url];
   const ytDlp = spawn('yt-dlp', ytDlpArgs);
 
   const ffmpeg = spawn('ffmpeg', [
@@ -844,16 +1032,16 @@ app.get('/api/stream', (req, res) => {
 
 // 3. Convert & Download High-Quality MP3 (320kbps)
 app.get('/api/download', (req, res) => {
-  const id = req.query.id;
+  const source = getSourceFromRequest(req);
   const rawTitle = req.query.title || 'audio';
   const format = getAudioFormat(req.query.format);
   const options = getTranscodeOptions(format);
-  if (!id) {
-    return res.status(400).send('Video ID is required');
+  if (!source) {
+    return res.status(400).send('A valid video URL is required');
   }
 
   const filename = `${sanitizeFilename(rawTitle)}.${options.extension}`;
-  const cachePath = getCachePath(id, format);
+  const cachePath = getCachePath(source.key, format);
 
   // If a download token is provided, set a cookie so the client can detect when the download begins.
   const downloadToken = req.query.downloadToken;
@@ -867,8 +1055,7 @@ app.get('/api/download', (req, res) => {
     return res.download(cachePath, filename);
   }
 
-  console.log(`[Cache] Cache not ready for ${id}, converting live...`);
-  const url = `https://www.youtube.com/watch?v=${id}`;
+  console.log(`[Cache] Cache not ready for ${source.key}, converting live...`);
 
   if (downloadToken) {
     res.cookie(downloadToken, 'true', { maxAge: 60000, httpOnly: false, path: '/' });
@@ -878,7 +1065,7 @@ app.get('/api/download', (req, res) => {
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
 
   // Stream requested audio format directly
-  const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', '-', url];
+  const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', '-', source.url];
   const ytDlp = spawn('yt-dlp', ytDlpArgs);
 
   const ffmpeg = spawn('ffmpeg', [

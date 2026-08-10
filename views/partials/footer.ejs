@@ -40,7 +40,7 @@ const t = {
     failed: 'Envoi impossible. Écrivez-nous à info@convetube.com.'
   },
   en: {
-    desc: 'A fast, simple YouTube audio converter for MP3 and WAV downloads in your browser.',
+    desc: 'A fast, simple video URL converter for MP3 and WAV downloads in your browser.',
     tools: 'Tools',
     legal: 'Legal',
     home: 'Home',
@@ -60,10 +60,10 @@ const t = {
 };
 
 const texts = t[lang] || t.es;
-const footerHomeHref = lang === 'fr' ? '/convertir-youtube-vers-mp3/' : lang === 'en' ? '/youtube-to-wav/' : '/';
+const footerHomeHref = lang === 'fr' ? '/convertir-youtube-vers-mp3/' : lang === 'en' ? '/' : '/convertidor-de-youtube-a-mp3/';
+const isUrlHomepage = typeof homeUrlMp3 !== 'undefined' && homeUrlMp3;
 const footerToolLinks = {
   es: [
-    { href: '/', label: texts.home },
     { href: '/convertidor-de-youtube-a-mp3', label: 'Convertidor de YouTube a MP3' },
     { href: '/convertidor-mp3-youtube', label: 'Convertidor MP3 YouTube' },
     { href: '/convertidor-mp3-no-tube', label: 'Convertidor MP3 No Tube' },
@@ -74,9 +74,12 @@ const footerToolLinks = {
   fr: [
     { href: '/convertir-youtube-vers-mp3', label: 'Convertir YouTube vers MP3' }
   ],
-  en: [
-    { href: '/youtube-to-wav', label: 'YouTube to WAV' }
-  ]
+  en: isUrlHomepage
+    ? [{ href: '/', label: 'URL to MP3' }]
+    : [
+        { href: '/', label: 'URL to MP3' },
+        { href: '/youtube-to-wav', label: 'YouTube to WAV' }
+      ]
 }[lang] || [];
 %>
 
