@@ -1,5 +1,6 @@
 <%
-const outputFormat = 'mp3';
+const allowedFormats = ['mp3', 'wav', 'flac', 'ogg'];
+const outputFormat = typeof defaultFormat !== 'undefined' && allowedFormats.includes(defaultFormat) ? defaultFormat : 'mp3';
 const formatLabel = outputFormat.toUpperCase();
 const translations = {
   es: {
@@ -74,8 +75,10 @@ const texts = translations[lang] || translations.es;
         <label class="format-select-label" for="format-select">
           <span class="sr-only">Audio format</span>
           <select id="format-select" class="format-select" aria-label="Audio format">
-            <option value="mp3" selected>MP3</option>
-            <option value="wav">WAV</option>
+            <option value="mp3" <%= outputFormat === 'mp3' ? 'selected' : '' %>>MP3</option>
+            <option value="wav" <%= outputFormat === 'wav' ? 'selected' : '' %>>WAV</option>
+            <option value="flac" <%= outputFormat === 'flac' ? 'selected' : '' %>>FLAC</option>
+            <option value="ogg" <%= outputFormat === 'ogg' ? 'selected' : '' %>>OGG</option>
           </select>
         </label>
       </div>

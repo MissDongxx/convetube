@@ -59,7 +59,8 @@ if (!fs.existsSync(cacheDir)) {
 // Track active background conversions
 const activeTranscodes = new Map();
 
-const getAudioFormat = (format) => (format === 'wav' ? 'wav' : 'mp3');
+const supportedAudioFormats = new Set(['mp3', 'wav', 'flac', 'ogg']);
+const getAudioFormat = (format) => supportedAudioFormats.has(format) ? format : 'mp3';
 
 const getTranscodeOptions = (format, quality = 'download') => {
   if (format === 'wav') {
@@ -67,6 +68,22 @@ const getTranscodeOptions = (format, quality = 'download') => {
       extension: 'wav',
       mimeType: 'audio/wav',
       ffmpegArgs: ['-f', 'wav', '-acodec', 'pcm_s16le', '-ar', '44100'],
+    };
+  }
+
+  if (format === 'flac') {
+    return {
+      extension: 'flac',
+      mimeType: 'audio/flac',
+      ffmpegArgs: ['-f', 'flac', '-acodec', 'flac'],
+    };
+  }
+
+  if (format === 'ogg') {
+    return {
+      extension: 'ogg',
+      mimeType: 'audio/ogg',
+      ffmpegArgs: ['-f', 'ogg', '-acodec', 'libvorbis', '-ab', quality === 'stream' ? '128k' : '192k'],
     };
   }
 
@@ -249,6 +266,156 @@ const renderPage = (res, view, page) => {
 };
 
 // --- Web Page Routes ---
+
+app.get('/flac-converter/youtube-to-flac/', (req, res) => {
+  renderPage(res, 'seo-converter-page', {
+    lang: 'en',
+    title: 'YouTube to FLAC Converter – Save Lossless Audio | ConveTube',
+    description: 'Convert a supported YouTube link to FLAC online for lossless audio workflows. Understand source quality, file size, playback, and download steps.',
+    canonical: 'https://convetube.com/flac-converter/youtube-to-flac/',
+    applicationName: 'ConveTube YouTube to FLAC Converter',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['YouTube to FLAC conversion', 'Lossless FLAC output', 'Browser-based conversion and download'],
+    keyword: 'youtube to flac',
+    heading: 'YouTube to',
+    headingAccent: 'FLAC Converter',
+    heroSubtitle: 'Convert a supported YouTube video link to FLAC for archiving, editing, and lossless audio workflows.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'FLAC Converter', href: '/flac-converter/youtube-to-flac/' }, { label: 'YouTube to FLAC' }],
+    introHeading: 'Convert YouTube to FLAC online',
+    introParagraphs: [
+      'Use this <strong>YouTube to FLAC</strong> tool when your workflow needs a lossless audio container. Paste a supported YouTube URL above, let ConveTube prepare the audio, review the result, and download the FLAC file.',
+      'FLAC avoids adding lossy compression during export, but it does not restore detail that is missing from the source video. The result can be useful for editing, tagging, archiving, and playback on FLAC-compatible devices.'
+    ],
+    stepsHeading: 'How to convert YouTube to FLAC',
+    steps: [
+      { title: 'Copy the YouTube URL', body: 'open the video you are permitted to use and copy its full link.' },
+      { title: 'Paste the link', body: 'add the URL to the converter and keep FLAC selected as the output.' },
+      { title: 'Prepare the audio', body: 'start conversion and wait while the source audio is processed.' },
+      { title: 'Download FLAC', body: 'review the result and save the lossless-format file to your device.' }
+    ],
+    benefitsHeading: 'FLAC quality, size, and compatibility',
+    benefits: [
+      { icon: 'FLAC', title: 'Lossless output', body: 'FLAC stores the converted audio without adding another lossy compression stage.' },
+      { icon: 'SOURCE', title: 'Source quality matters', body: 'Exporting to FLAC preserves the available source; it does not increase the original fidelity.' },
+      { icon: 'SIZE', title: 'Larger files', body: 'Expect FLAC downloads to use more storage than equivalent MP3 or OGG files.' },
+      { icon: 'PLAY', title: 'Broad tool support', body: 'FLAC works in many desktop players, media libraries, editors, and current mobile apps.' }
+    ],
+    relatedTools: [
+      { href: '/ogg-converter/youtube-to-ogg/', label: 'YouTube to OGG', description: 'Choose a smaller open audio format for compatible players.' },
+      { href: '/mp3-converter/youtube-to-mp3/', label: 'YouTube to MP3', description: 'Create a compact audio file for broad playback support.' },
+      { href: '/youtube-to-wav/', label: 'YouTube to WAV', description: 'Use the existing WAV converter for uncompressed PCM output.' }
+    ],
+    faqHeading: 'YouTube to FLAC questions',
+    faqItems: [
+      { question: 'How do I convert YouTube to FLAC?', answer: 'Paste a supported YouTube URL into the tool, select FLAC, start the conversion, review the prepared audio, and download the resulting file.' },
+      { question: 'Does converting YouTube to FLAC improve audio quality?', answer: 'No. FLAC prevents an additional lossy export, but it cannot recreate audio detail that was not present in the source.' },
+      { question: 'Why is a FLAC file larger than an MP3?', answer: 'FLAC uses lossless compression, while MP3 discards some audio data to create a smaller file. The storage difference depends on the source and duration.' },
+      { question: 'What devices can play FLAC?', answer: 'Many current phones, computers, media players, library apps, and audio editors support FLAC. Check your target app or device before converting a large file.' }
+    ],
+    genericUrl: false,
+    defaultFormat: 'flac'
+  });
+});
+
+app.get('/ogg-converter/youtube-to-ogg/', (req, res) => {
+  renderPage(res, 'seo-converter-page', {
+    lang: 'en',
+    title: 'YouTube to OGG Converter – Convert Audio Online | ConveTube',
+    description: 'Convert a supported YouTube link to OGG online. Follow a quick workflow, compare compatibility and file size, and troubleshoot common conversion issues.',
+    canonical: 'https://convetube.com/ogg-converter/youtube-to-ogg/',
+    applicationName: 'ConveTube YouTube to OGG Converter',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['YouTube to OGG conversion', 'Vorbis audio output', 'Browser-based conversion and download'],
+    keyword: 'youtube to ogg',
+    heading: 'YouTube to',
+    headingAccent: 'OGG Converter',
+    heroSubtitle: 'Convert a supported YouTube video link to OGG for open-format playback and space-conscious audio storage.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'OGG Converter', href: '/ogg-converter/youtube-to-ogg/' }, { label: 'YouTube to OGG' }],
+    introHeading: 'Convert YouTube to OGG online',
+    introParagraphs: [
+      'This <strong>YouTube to OGG</strong> converter turns a supported video link into an OGG Vorbis audio file. Paste the URL into the first-screen tool, keep OGG selected, and download the result after processing.',
+      'OGG is an open container commonly paired with the Vorbis codec. It can deliver useful quality at moderate file sizes, although support varies across browsers, mobile apps, car systems, and hardware players.'
+    ],
+    stepsHeading: 'How to convert YouTube to OGG',
+    steps: [
+      { title: 'Copy the video link', body: 'open a supported YouTube video and copy its full URL.' },
+      { title: 'Paste it above', body: 'insert the URL and confirm OGG as the selected format.' },
+      { title: 'Run the conversion', body: 'start the tool and wait for the source audio to be prepared.' },
+      { title: 'Save the OGG file', body: 'review the result, then download it for a compatible app or device.' }
+    ],
+    benefitsHeading: 'OGG format uses and compatibility',
+    benefits: [
+      { icon: 'OGG', title: 'Open audio format', body: 'OGG Vorbis is widely used in open-source software, games, and web-focused audio workflows.' },
+      { icon: 'SIZE', title: 'Efficient storage', body: 'Vorbis compression can keep files smaller than lossless FLAC or uncompressed WAV.' },
+      { icon: 'CHECK', title: 'Check playback first', body: 'Confirm OGG support in the browser, editor, phone, vehicle, or player you plan to use.' },
+      { icon: '192K', title: 'Balanced export', body: 'The download conversion targets a practical balance between clarity and file size.' }
+    ],
+    relatedTools: [
+      { href: '/flac-converter/youtube-to-flac/', label: 'YouTube to FLAC', description: 'Keep a lossless-format file for editing or archiving.' },
+      { href: '/mp3-converter/youtube-to-mp3/', label: 'YouTube to MP3', description: 'Choose MP3 when broad device support is the priority.' },
+      { href: '/youtube-to-wav/', label: 'YouTube to WAV', description: 'Create an uncompressed file with the existing WAV tool.' }
+    ],
+    faqHeading: 'YouTube to OGG questions',
+    faqItems: [
+      { question: 'How do I convert YouTube to OGG?', answer: 'Paste a supported YouTube URL, select OGG, begin conversion, and download the prepared OGG Vorbis audio file.' },
+      { question: 'Is OGG supported by every device?', answer: 'No. Many browsers, desktop players, Android apps, and editors support OGG, but some Apple apps, vehicles, and dedicated players may prefer MP3 or WAV.' },
+      { question: 'What OGG quality should I choose?', answer: 'The converter uses a balanced setting suitable for typical listening. Choose FLAC when lossless output matters or MP3 when compatibility matters most.' },
+      { question: 'Why did the OGG conversion fail?', answer: 'Check that the full YouTube URL is valid and publicly reachable, then retry. A removed, private, region-restricted, or temporarily unavailable source may not process.' }
+    ],
+    genericUrl: false,
+    defaultFormat: 'ogg'
+  });
+});
+
+app.get('/mp3-converter/youtube-to-mp3/', (req, res) => {
+  renderPage(res, 'seo-converter-page', {
+    lang: 'en',
+    title: 'YouTube to MP3 Converter – Convert Video Links | ConveTube',
+    description: 'Convert a supported YouTube link to MP3 online. Use the focused tool, choose audio quality, understand file size, and resolve common URL errors.',
+    canonical: 'https://convetube.com/mp3-converter/youtube-to-mp3/',
+    applicationName: 'ConveTube YouTube to MP3 Converter',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['YouTube to MP3 conversion', '320 kbps MP3 download', 'Audio preview in the browser'],
+    keyword: 'youtube to mp3',
+    heading: 'YouTube to',
+    headingAccent: 'MP3 Converter',
+    heroSubtitle: 'Convert a supported YouTube video link to MP3 for compact storage and playback across common devices.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP3 Converter', href: '/mp3-converter/youtube-to-mp3/' }, { label: 'YouTube to MP3' }],
+    introHeading: 'Convert YouTube to MP3 online',
+    introParagraphs: [
+      'Use this dedicated <strong>YouTube to MP3</strong> page for a focused video-link-to-audio workflow. Paste the full YouTube URL above, start the conversion, preview the prepared track, and save the MP3.',
+      'MP3 is a practical output for phones, computers, car stereos, portable players, presentation software, and other tools where broad compatibility and smaller files matter.'
+    ],
+    stepsHeading: 'How to convert YouTube to MP3',
+    steps: [
+      { title: 'Copy the YouTube URL', body: 'open the source video and copy its complete link.' },
+      { title: 'Paste the link', body: 'add the URL to the converter with MP3 selected.' },
+      { title: 'Process and preview', body: 'start conversion, then check the title and audio result.' },
+      { title: 'Download MP3', body: 'save the prepared file to your phone, tablet, or computer.' }
+    ],
+    benefitsHeading: 'MP3 quality, file size, and uses',
+    benefits: [
+      { icon: 'MP3', title: 'Broad compatibility', body: 'MP3 works with common browsers, phones, computers, vehicles, editors, and media players.' },
+      { icon: '320K', title: 'High-quality download', body: 'The download flow prepares a 320 kbps MP3 from the available source audio.' },
+      { icon: 'SIZE', title: 'Compact files', body: 'Lossy compression generally uses less storage than FLAC or WAV for the same duration.' },
+      { icon: 'PLAY', title: 'Preview first', body: 'Use the built-in player to check the prepared audio before saving it.' }
+    ],
+    relatedTools: [
+      { href: '/flac-converter/youtube-to-flac/', label: 'YouTube to FLAC', description: 'Choose lossless output for editing or archive workflows.' },
+      { href: '/ogg-converter/youtube-to-ogg/', label: 'YouTube to OGG', description: 'Use an open audio format for compatible applications.' },
+      { href: '/youtube-to-wav/', label: 'YouTube to WAV', description: 'Create an uncompressed WAV file with the existing tool.' }
+    ],
+    faqHeading: 'YouTube to MP3 questions',
+    faqItems: [
+      { question: 'How do I convert YouTube to MP3?', answer: 'Copy a supported YouTube URL, paste it into the converter, keep MP3 selected, start processing, preview the result, and download the file.' },
+      { question: 'Can I choose MP3 quality?', answer: 'The download workflow prepares a high-quality 320 kbps MP3. The available fidelity still depends on the audio in the source video.' },
+      { question: 'Why is my YouTube URL unsupported?', answer: 'Use the complete public video URL and check that the video is still available. Private, removed, age-gated, live, or region-restricted sources may not process.' },
+      { question: 'How long does conversion take?', answer: 'Timing depends on video length, source availability, server load, and network speed. Short public videos usually finish sooner than long recordings.' }
+    ],
+    genericUrl: false,
+    defaultFormat: 'mp3'
+  });
+});
 
 // ES Homepage
 app.get('/', (req, res) => {
@@ -472,6 +639,21 @@ app.get('/sitemap.xml', (req, res) => {
   </url>
   <url>
     <loc>https://convetube.com/youtube-to-wav/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/flac-converter/youtube-to-flac/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/ogg-converter/youtube-to-ogg/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/mp3-converter/youtube-to-mp3/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

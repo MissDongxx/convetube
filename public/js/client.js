@@ -34,7 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const convertAnotherBtn = document.getElementById('convert-another-btn');
   const converterBox = document.querySelector('.converter-box');
   const formatSelect = document.getElementById('format-select');
-  let outputFormat = 'mp3';
+  const supportedFormats = ['mp3', 'wav', 'flac', 'ogg'];
+  const defaultFormat = supportedFormats.includes(converterBox?.dataset.format) ? converterBox.dataset.format : 'mp3';
+  let outputFormat = defaultFormat;
   
   let videoDuration = 0;
   let currentVideoId = null;
@@ -53,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
       : 'Por favor, introduce una URL de YouTube válida.';
 
   function getSelectedFormat() {
-    return formatSelect?.value === 'wav' ? 'wav' : 'mp3';
+    return supportedFormats.includes(formatSelect?.value) ? formatSelect.value : 'mp3';
   }
 
   function getFormatLabel(format = outputFormat) {
@@ -314,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Clear inputs
     input.value = '';
-    if (formatSelect) formatSelect.value = 'mp3';
+    if (formatSelect) formatSelect.value = defaultFormat;
     syncSelectedFormat();
     progressBarFill.style.width = '0%';
     progressPercent.textContent = '0%';

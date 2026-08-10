@@ -1,0 +1,108 @@
+<%- include('partials/header', { lang: lang, title: title, description: description, canonical: canonical, hreflang: hreflang, structuredData: structuredData }) %>
+
+  <div class="container breadcrumb-container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <% breadcrumbItems.forEach((item, index) => { %>
+          <li>
+            <% if (item.href && index < breadcrumbItems.length - 1) { %>
+              <a href="<%= item.href %>"><%= item.label %></a>
+            <% } else { %>
+              <span aria-current="page"><%= item.label %></span>
+            <% } %>
+          </li>
+          <% if (index < breadcrumbItems.length - 1) { %><li><span>/</span></li><% } %>
+        <% }) %>
+      </ol>
+    </nav>
+  </div>
+
+  <div class="container seo-tool-hero">
+    <div class="hero-content">
+      <h1 class="hero-title"><%= heading %> <span class="text-gradient"><%= headingAccent %></span></h1>
+      <p class="hero-subtitle"><%= heroSubtitle %></p>
+    </div>
+
+    <%- include('partials/converter', { lang: lang, genericUrl: genericUrl, defaultFormat: defaultFormat }) %>
+  </div>
+
+  <main class="seo-section container">
+    <section class="seo-card glass-panel">
+      <h2><%= introHeading %></h2>
+      <% introParagraphs.forEach((paragraph) => { %><p><%- paragraph %></p><% }) %>
+    </section>
+
+    <section class="seo-grid">
+      <div class="seo-card glass-panel">
+        <h2><%= stepsHeading %></h2>
+        <ol class="steps-list">
+          <% steps.forEach((step) => { %><li><strong><%= step.title %>:</strong> <%= step.body %></li><% }) %>
+        </ol>
+      </div>
+      <div class="seo-card glass-panel flex-center">
+        <img src="/images/conversion_steps.png" alt="Steps to use the <%= keyword %>" width="400" height="400" class="seo-img" loading="lazy" />
+      </div>
+    </section>
+
+    <section class="seo-card glass-panel">
+      <h2><%= benefitsHeading %></h2>
+      <div class="features-grid">
+        <% benefits.forEach((benefit) => { %>
+          <div class="feature-item"><span class="feature-icon"><%= benefit.icon %></span><h3><%= benefit.title %></h3><p><%= benefit.body %></p></div>
+        <% }) %>
+      </div>
+    </section>
+
+    <section class="seo-card glass-panel">
+      <h2>Explore related converters</h2>
+      <p class="related-intro">Continue through the ConveTube conversion family:</p>
+      <div class="related-links">
+        <% relatedTools.forEach((tool) => { %><a href="<%= tool.href %>" class="related-link"><strong><%= tool.label %></strong><span><%= tool.description %></span></a><% }) %>
+      </div>
+    </section>
+
+    <section class="seo-card glass-panel">
+      <h2><%= faqHeading %></h2>
+      <div class="faq-list">
+        <% faqItems.forEach((faq) => { %><div class="faq-item"><h3><%= faq.question %></h3><p><%= faq.answer %></p></div><% }) %>
+      </div>
+    </section>
+  </main>
+
+  <style>
+    .seo-tool-hero { text-align: center; padding: 48px 0 20px; }
+    .seo-tool-hero .hero-content { max-width: 820px; margin: 0 auto; }
+    .seo-tool-hero .hero-title { font-size: 3rem; margin-bottom: 20px; letter-spacing: -0.02em; line-height: 1.15; }
+    .seo-tool-hero .hero-subtitle { font-size: 1.15rem; color: var(--color-text-secondary); max-width: 700px; margin: 0 auto; }
+    .seo-section { margin-top: 52px; display: flex; flex-direction: column; gap: 28px; }
+    .seo-card { padding: 34px; }
+    .seo-card h2 { font-size: 1.55rem; margin-bottom: 18px; color: var(--color-text-primary); }
+    .seo-card p { color: var(--color-text-secondary); margin-bottom: 15px; font-size: 0.96rem; line-height: 1.75; }
+    .seo-card p:last-child { margin-bottom: 0; }
+    .seo-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 28px; }
+    .flex-center { display: flex; justify-content: center; align-items: center; padding: 20px; }
+    .seo-img { max-width: 100%; height: auto; border-radius: 12px; border: 1px solid rgba(44, 40, 36, 0.08); box-shadow: var(--shadow-lg); }
+    .steps-list { margin-left: 20px; color: var(--color-text-secondary); display: flex; flex-direction: column; gap: 15px; }
+    .steps-list li { font-size: 0.96rem; line-height: 1.65; }
+    .steps-list strong { color: var(--color-text-primary); }
+    .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .feature-item { background: var(--bg-secondary); border: 1px solid rgba(44, 40, 36, 0.06); padding: 20px; border-radius: 14px; }
+    .feature-icon { display: block; font-size: 1.3rem; font-weight: 800; color: #C4593D; margin-bottom: 10px; }
+    .feature-item h3 { font-size: 1.05rem; margin-bottom: 7px; color: var(--color-text-primary); }
+    .feature-item p { margin: 0; }
+    .related-intro { margin-bottom: 18px !important; }
+    .related-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .related-link { display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid rgba(196, 89, 61, 0.18); border-radius: 12px; color: var(--color-text-primary); text-decoration: none; background: rgba(255,255,255,0.35); }
+    .related-link:hover { border-color: #C4593D; transform: translateY(-1px); }
+    .related-link strong { color: #C4593D; }
+    .related-link span { color: var(--color-text-secondary); font-size: 0.88rem; line-height: 1.45; }
+    .faq-list { display: flex; flex-direction: column; gap: 18px; }
+    .faq-item { border-bottom: 1px solid rgba(44, 40, 36, 0.08); padding-bottom: 15px; }
+    .faq-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .faq-item h3 { font-size: 1.05rem; margin-bottom: 7px; color: var(--color-text-primary); }
+    .faq-item p { margin: 0; }
+    @media (max-width: 768px) { .seo-grid, .features-grid, .related-links { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .seo-tool-hero .hero-title { font-size: 2.25rem; } .seo-card { padding: 25px; } }
+  </style>
+
+<%- include('partials/footer', { lang: lang }) %>
