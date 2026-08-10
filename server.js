@@ -222,6 +222,12 @@ const sanitizeFilename = (filename) => {
   return filename.replace(/[^a-zA-Z0-9\s-_]/g, '').replace(/\s+/g, '_') || 'convetube-audio';
 };
 
+const getDownloadFilename = (title, extension) => {
+  const baseName = sanitizeFilename(String(title || 'audio'));
+  const prefixedName = /^convetube[_-]/i.test(baseName) ? baseName : `ConveTube_${baseName}`;
+  return `${prefixedName}.${extension}`;
+};
+
 const escapeHtml = (value) => String(value)
   .replace(/&/g, '&amp;')
   .replace(/</g, '&lt;')
@@ -233,6 +239,36 @@ const languageAlternates = {
   es: 'https://convetube.com/convertidor-de-youtube-a-mp3/',
   fr: 'https://convetube.com/convertir-youtube-vers-mp3/',
   en: 'https://convetube.com/'
+};
+
+const languageHomePaths = {
+  es: '/convertidor-de-youtube-a-mp3',
+  fr: '/convertir-youtube-vers-mp3',
+  en: '/'
+};
+
+const supportedLanguages = new Set(Object.keys(languageHomePaths));
+
+const getCookieValue = (cookieHeader, name) => {
+  const match = String(cookieHeader || '').match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+};
+
+const detectBrowserLanguage = (acceptLanguage) => {
+  const requestedLanguages = String(acceptLanguage || '')
+    .split(',')
+    .map((entry) => {
+      const [tag, quality = 'q=1'] = entry.trim().split(';');
+      return { tag: tag.toLowerCase(), quality: Number(quality.replace(/^q=/, '')) || 0 };
+    })
+    .filter(({ tag, quality }) => tag && quality > 0)
+    .sort((a, b) => b.quality - a.quality);
+
+  for (const { tag } of requestedLanguages) {
+    const language = tag.split('-')[0];
+    if (supportedLanguages.has(language)) return language;
+  }
+  return 'en';
 };
 
 const getLanguageAlternates = (canonical, lang) => ({
@@ -280,6 +316,12 @@ const createStructuredData = ({ canonical, title, description, lang, application
 
 const renderPage = (res, view, page) => {
   const { lang, ...pageData } = page;
+  res.cookie('convetube_lang', lang, {
+    maxAge: 1000 * 60 * 60 * 24 * 365,
+    httpOnly: false,
+    sameSite: 'lax',
+    path: '/'
+  });
   res.render(view, {
     ...pageData,
     lang,
@@ -454,6 +496,7 @@ app.get('/flac-converter/youtube-to-flac/', (req, res) => {
     heading: 'YouTube to',
     headingAccent: 'FLAC Converter',
     heroSubtitle: 'Convert a supported YouTube video link to FLAC for archiving, editing, and lossless audio workflows.',
+    showBreadcrumb: false,
     breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'FLAC Converter', href: '/flac-converter/youtube-to-flac/' }, { label: 'YouTube to FLAC' }],
     introHeading: 'Convert YouTube to FLAC online',
     introParagraphs: [
@@ -593,6 +636,26 @@ app.get('/mp3-converter/youtube-to-mp3/', (req, res) => {
 
 // EN Homepage: URL to MP3
 app.get('/', (req, res) => {
+  const requestedLanguage = String(req.query.lang || '').toLowerCase();
+  if (supportedLanguages.has(requestedLanguage) && requestedLanguage !== 'en') {
+    res.cookie('convetube_lang', requestedLanguage, { maxAge: 1000 * 60 * 60 * 24 * 365, httpOnly: false, sameSite: 'lax', path: '/' });
+    return res.redirect(302, languageHomePaths[requestedLanguage]);
+  }
+
+  if (requestedLanguage === 'en') {
+    res.cookie('convetube_lang', 'en', { maxAge: 1000 * 60 * 60 * 24 * 365, httpOnly: false, sameSite: 'lax', path: '/' });
+  } else {
+    const savedLanguage = getCookieValue(req.headers.cookie, 'convetube_lang');
+    const detectedLanguage = savedLanguage && supportedLanguages.has(savedLanguage)
+      ? savedLanguage
+      : detectBrowserLanguage(req.headers['accept-language']);
+
+    if (detectedLanguage !== 'en') {
+      res.cookie('convetube_lang', detectedLanguage, { maxAge: 1000 * 60 * 60 * 24 * 365, httpOnly: false, sameSite: 'lax', path: '/' });
+      return res.redirect(302, languageHomePaths[detectedLanguage]);
+    }
+  }
+
   renderPage(res, 'index', {
     lang: 'en',
     title: 'URL to MP3 Converter Free Online | Convert Link to MP3 - ConveTube',
@@ -1040,7 +1103,7 @@ app.get('/api/download', (req, res) => {
     return res.status(400).send('A valid video URL is required');
   }
 
-  const filename = `${sanitizeFilename(rawTitle)}.${options.extension}`;
+  const filename = getDownloadFilename(rawTitle, options.extension);
   const cachePath = getCachePath(source.key, format);
 
   // If a download token is provided, set a cookie so the client can detect when the download begins.

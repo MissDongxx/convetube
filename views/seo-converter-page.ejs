@@ -1,21 +1,23 @@
 <%- include('partials/header', { lang: lang, title: title, description: description, canonical: canonical, hreflang: hreflang, structuredData: structuredData }) %>
 
-  <div class="container breadcrumb-container">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <ol class="breadcrumb-list">
-        <% breadcrumbItems.forEach((item, index) => { %>
-          <li>
-            <% if (item.href && index < breadcrumbItems.length - 1) { %>
-              <a href="<%= item.href %>"><%= item.label %></a>
-            <% } else { %>
-              <span aria-current="page"><%= item.label %></span>
-            <% } %>
-          </li>
-          <% if (index < breadcrumbItems.length - 1) { %><li><span>/</span></li><% } %>
-        <% }) %>
-      </ol>
-    </nav>
-  </div>
+  <% if (typeof showBreadcrumb === 'undefined' || showBreadcrumb !== false) { %>
+    <div class="container breadcrumb-container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol class="breadcrumb-list">
+          <% breadcrumbItems.forEach((item, index) => { %>
+            <li>
+              <% if (item.href && index < breadcrumbItems.length - 1) { %>
+                <a href="<%= item.href %>"><%= item.label %></a>
+              <% } else { %>
+                <span aria-current="page"><%= item.label %></span>
+              <% } %>
+            </li>
+            <% if (index < breadcrumbItems.length - 1) { %><li class="breadcrumb-separator" aria-hidden="true">/</li><% } %>
+          <% }) %>
+        </ol>
+      </nav>
+    </div>
+  <% } %>
 
   <div class="container seo-tool-hero">
     <div class="hero-content">
@@ -70,6 +72,14 @@
   </main>
 
   <style>
+    .breadcrumb-container { padding-top: 24px; }
+    .breadcrumb { color: var(--color-text-muted); font-size: 0.85rem; }
+    .breadcrumb-list { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; list-style: none; margin: 0; padding: 0; }
+    .breadcrumb-list li { display: inline-flex; align-items: center; }
+    .breadcrumb-list a { color: var(--color-text-secondary); text-decoration: none; }
+    .breadcrumb-list a:hover { color: var(--color-accent); text-decoration: underline; text-underline-offset: 3px; }
+    .breadcrumb-list [aria-current="page"] { color: var(--color-text-primary); font-weight: 600; }
+    .breadcrumb-separator { color: var(--color-text-muted); }
     .seo-tool-hero { text-align: center; padding: 48px 0 20px; }
     .seo-tool-hero .hero-content { max-width: 820px; margin: 0 auto; }
     .seo-tool-hero .hero-title { font-size: 3rem; margin-bottom: 20px; letter-spacing: -0.02em; line-height: 1.15; }

@@ -118,81 +118,431 @@
       background-clip: text;
     }
 
-    /* Lang Selector Dropdown */
-    .lang-selector {
+    /* Free tools mega menu */
+    .nav-menu {
+      height: 100%;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .tools-selector {
       position: relative;
       display: inline-block;
     }
 
-    .lang-btn {
-      background: #F5F0EB;
-      border: 1px solid rgba(44, 40, 36, 0.10);
-      color: var(--color-text-primary);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.9rem;
+    .tools-toggle {
+      background: transparent;
+      border: 0;
+      color: var(--color-accent);
+      padding: 8px 0;
+      font-size: 1rem;
+      line-height: 1;
       font-weight: 600;
       font-family: var(--font-family);
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: background var(--transition-fast), border-color var(--transition-fast);
+      gap: 8px;
+      letter-spacing: 0;
+      transition: color var(--transition-fast);
     }
 
-    .lang-btn:hover {
-      background: #F0E6D4;
-      border-color: rgba(44, 40, 36, 0.18);
+    .tools-toggle:hover,
+    .tools-toggle:focus-visible {
+      color: var(--color-accent-hover);
+      outline: none;
     }
 
-    .lang-arrow {
-      font-size: 0.75rem;
+    .tools-chevron {
+      width: 13px;
+      height: 13px;
       color: var(--color-text-secondary);
+      transition: transform var(--transition-fast);
     }
 
-    .lang-dropdown {
-      position: absolute;
-      right: 0;
-      top: calc(100% + 8px);
+    .tools-toggle[aria-expanded="false"] .tools-chevron {
+      transform: rotate(180deg);
+    }
+
+    .tools-menu {
+      position: fixed;
+      top: 82px;
+      left: max(16px, calc(50vw - 560px));
+      right: max(16px, calc(50vw - 560px));
+      width: auto;
+      max-height: calc(100vh - 94px);
+      overflow-y: auto;
       background: #FFFFFF;
-      border: 1px solid rgba(44, 40, 36, 0.08);
-      border-radius: 12px;
-      box-shadow: 0 10px 30px -5px rgba(44, 40, 36, 0.12);
-      padding: 6px;
-      list-style: none;
-      min-width: 140px;
+      border: 1px solid var(--border-card);
+      border-radius: 20px;
+      box-shadow: var(--shadow-lg);
+      padding: 32px;
       opacity: 0;
       visibility: hidden;
+      pointer-events: none;
       transform: translateY(-8px);
-      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+      transition: opacity var(--transition-fast), transform var(--transition-fast), visibility var(--transition-fast);
     }
 
-    .lang-selector:hover .lang-dropdown,
-    .lang-selector:focus-within .lang-dropdown {
+    .tools-selector.is-open .tools-menu {
       opacity: 1;
       visibility: visible;
+      pointer-events: auto;
       transform: translateY(0);
     }
 
-    .lang-dropdown li {
-      margin: 2px 0;
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 32px;
     }
 
-    .lang-dropdown a {
-      display: block;
-      padding: 8px 12px;
-      color: var(--color-text-secondary);
+    .tools-group-title {
+      color: var(--color-accent);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+
+    .tools-group-title a,
+    .tools-item a,
+    .tools-all-link {
+      color: inherit;
       text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 500;
-      border-radius: 8px;
-      transition: background 0.15s, color 0.15s;
     }
 
-    .lang-dropdown a:hover,
-    .lang-dropdown a.active {
+    .tools-group-title a:hover,
+    .tools-group-title a:focus-visible,
+    .tools-item a:hover,
+    .tools-item a:focus-visible {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    .tools-item a.active {
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+
+    .tools-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      list-style: none;
+    }
+
+    .tools-item {
+      color: var(--color-text-primary);
+      font-size: 0.98rem;
+      line-height: 1.2;
+      letter-spacing: -0.025em;
+    }
+
+    .tools-hot {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 7px 4px;
+      margin-left: 7px;
+      border-radius: 6px;
+      background: var(--color-accent);
+      color: #FFFFFF;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      line-height: 1;
+      vertical-align: 0.16em;
+    }
+
+    .tools-menu-footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 26px;
+      padding-top: 18px;
+      border-top: 1px dashed rgba(44, 40, 36, 0.14);
+    }
+
+    .tools-all-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 9px;
+      background: rgba(196, 89, 61, 0.1);
+      color: var(--color-accent);
+      font-size: 0.9rem;
+      font-weight: 600;
+      line-height: 1;
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+
+    .tools-all-link:hover,
+    .tools-all-link:focus-visible {
+      background: rgba(196, 89, 61, 0.18);
+      color: var(--color-accent-hover);
+      outline: none;
+    }
+
+    .tools-arrow {
+      font-size: 1.45em;
+      line-height: 0.7;
+    }
+
+    .language-selector {
+      position: relative;
+      display: inline-block;
+    }
+
+    .language-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 11px;
+      border: 1px solid rgba(44, 40, 36, 0.1);
+      border-radius: 18px;
+      background: var(--bg-secondary);
+      color: var(--color-text-primary);
+      font: 600 0.8rem/1 var(--font-family);
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .language-toggle:hover,
+    .language-toggle:focus-visible {
+      background: #FFFFFF;
+      border-color: rgba(196, 89, 61, 0.35);
+      outline: none;
+    }
+
+    .language-code {
+      color: var(--color-accent);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    .language-chevron {
+      width: 10px;
+      height: 10px;
+      color: var(--color-text-secondary);
+      transition: transform var(--transition-fast);
+    }
+
+    .language-toggle[aria-expanded="true"] .language-chevron {
+      transform: rotate(180deg);
+    }
+
+    .language-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 2;
+      min-width: 150px;
+      padding: 6px;
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      background: #FFFFFF;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(-6px);
+      transition: opacity var(--transition-fast), transform var(--transition-fast), visibility var(--transition-fast);
+    }
+
+    .language-selector.is-open .language-menu {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .language-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      color: var(--color-text-secondary);
+      font-size: 0.82rem;
+      text-decoration: none;
+    }
+
+    .language-option:hover,
+    .language-option.active {
       background: rgba(196, 89, 61, 0.08);
-      color: #C4593D;
+      color: var(--color-accent);
+    }
+
+    .mobile-nav-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 4px;
+      width: 42px;
+      height: 36px;
+      padding: 7px 9px;
+      border: 1px solid rgba(44, 40, 36, 0.12);
+      border-radius: 9px;
+      background: var(--bg-secondary);
+      cursor: pointer;
+    }
+
+    .mobile-nav-toggle span {
+      display: block;
+      width: 21px;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--color-accent);
+      transform: rotate(-8deg);
+      transition: transform var(--transition-fast), opacity var(--transition-fast);
+    }
+
+    .mobile-nav-toggle:hover,
+    .mobile-nav-toggle:focus-visible {
+      background: #FFFFFF;
+      border-color: rgba(196, 89, 61, 0.35);
+      outline: none;
+    }
+
+    @media (max-width: 768px) {
+      .header-container {
+        position: relative;
+        padding: 0 24px;
+      }
+
+      .mobile-nav-toggle {
+        display: flex;
+        margin-left: auto;
+      }
+
+      .nav-menu {
+        position: absolute;
+        top: 70px;
+        left: 0;
+        right: 0;
+        z-index: 1;
+        height: auto;
+        margin: 0;
+        padding: 16px 24px 20px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        background: rgba(250, 250, 247, 0.98);
+        border-top: 1px solid rgba(44, 40, 36, 0.06);
+        box-shadow: var(--shadow-lg);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(-8px);
+        transition: opacity var(--transition-fast), transform var(--transition-fast), visibility var(--transition-fast);
+      }
+
+      .main-header.mobile-nav-open .nav-menu {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      .tools-selector,
+      .language-selector {
+        width: 100%;
+      }
+
+      .tools-toggle,
+      .language-toggle {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .tools-toggle {
+        padding: 10px 0;
+        font-size: 0.95rem;
+      }
+
+      .language-toggle {
+        padding: 8px 9px;
+      }
+
+      .language-name {
+        display: none;
+      }
+
+      .language-menu {
+        position: static;
+        width: 100%;
+        min-width: 0;
+        margin-top: 4px;
+        display: none;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: none;
+      }
+
+      .tools-menu {
+        position: static;
+        width: 100%;
+        max-height: min(62vh, 520px);
+        margin-top: 4px;
+        border-radius: 14px;
+        box-shadow: none;
+        padding: 18px;
+        display: none;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: none;
+      }
+
+      .language-selector.is-open .language-menu,
+      .tools-selector.is-open .tools-menu {
+        display: block;
+      }
+
+      .tools-selector.is-open .tools-menu {
+        transform: none;
+      }
+
+      .tools-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .tools-group {
+        padding: 0 0 24px;
+      }
+
+      .tools-group-title {
+        font-size: 1.15rem;
+        margin-bottom: 14px;
+      }
+
+      .tools-list {
+        gap: 12px;
+      }
+
+      .tools-item {
+        font-size: 1rem;
+      }
+
+      .tools-menu-footer {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+      }
+
+      .tools-all-link {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+      }
     }
   </style>
 </head>
@@ -200,7 +550,41 @@
 
 <%
   const homeHref = lang === 'fr' ? '/convertir-youtube-vers-mp3/' : lang === 'en' ? '/' : '/convertidor-de-youtube-a-mp3/';
-  const langLabel = lang === 'fr' ? 'Français' : lang === 'en' ? 'English' : 'Español';
+  const normalizePath = (value) => String(value || '/').replace(/\/+$/, '') || '/';
+  const currentPath = normalizePath(typeof canonical === 'string' ? new URL(canonical).pathname : homeHref);
+  const toolCatalog = [
+    { lang: 'en', group: 'URL Converter', groupHref: '/', label: 'URL to MP3', href: '/', hot: true },
+    { lang: 'en', group: 'MP3 Converter', groupHref: '/mp3-converter/link-to-mp3/', label: 'Link to MP3', href: '/mp3-converter/link-to-mp3/' },
+    { lang: 'en', group: 'MP3 Converter', groupHref: '/mp3-converter/link-to-mp3/', label: 'Video to MP3', href: '/mp3-converter/video-to-mp3/' },
+    { lang: 'en', group: 'MP3 Converter', groupHref: '/mp3-converter/link-to-mp3/', label: 'YouTube to MP3', href: '/mp3-converter/youtube-to-mp3/', hot: true },
+    { lang: 'en', group: 'WAV Converter', groupHref: '/wav-converter/youtube-to-wav/', label: 'YouTube to WAV', href: '/wav-converter/youtube-to-wav/' },
+    { lang: 'en', group: 'FLAC Converter', groupHref: '/flac-converter/youtube-to-flac/', label: 'YouTube to FLAC', href: '/flac-converter/youtube-to-flac/' },
+    { lang: 'en', group: 'OGG Converter', groupHref: '/ogg-converter/youtube-to-ogg/', label: 'YouTube to OGG', href: '/ogg-converter/youtube-to-ogg/' },
+    { lang: 'es', group: 'Convertidor MP3', groupHref: '/convertidor-de-youtube-a-mp3/', label: 'YouTube a MP3', href: '/convertidor-de-youtube-a-mp3/' },
+    { lang: 'es', group: 'Convertidor MP3', groupHref: '/convertidor-de-youtube-a-mp3/', label: 'MP3 YouTube', href: '/convertidor-mp3-youtube/' },
+    { lang: 'es', group: 'Convertidor MP3', groupHref: '/convertidor-de-youtube-a-mp3/', label: 'Alternativa a NoTube', href: '/convertidor-mp3-no-tube/' },
+    { lang: 'es', group: 'Descargar MP3', groupHref: '/descargar-videos-de-youtube-a-mp3-gratis-online/', label: 'Videos de YouTube a MP3', href: '/descargar-videos-de-youtube-a-mp3-gratis-online/' },
+    { lang: 'es', group: 'Descargar MP3', groupHref: '/descargar-videos-de-youtube-a-mp3-gratis-online/', label: 'Música de YouTube', href: '/descargar-musica-de-youtube/' },
+    { lang: 'es', group: 'Convertidores de audio', groupHref: '/youtube-a-wav/', label: 'YouTube a WAV', href: '/youtube-a-wav/' },
+    { lang: 'fr', group: 'Convertisseur MP3', groupHref: '/convertir-youtube-vers-mp3/', label: 'YouTube vers MP3', href: '/convertir-youtube-vers-mp3/' }
+  ];
+  const freeToolGroups = [];
+  toolCatalog.filter((tool) => tool.lang === lang).forEach((tool) => {
+    let group = freeToolGroups.find((candidate) => candidate.title === tool.group);
+    if (!group) {
+      group = { title: tool.group, href: tool.groupHref, items: [] };
+      freeToolGroups.push(group);
+    }
+    group.items.push({ ...tool, active: normalizePath(tool.href) === currentPath });
+  });
+  const freeToolsLabel = lang === 'es' ? 'Herramientas gratuitas' : lang === 'fr' ? 'Outils gratuits' : 'Free Tools';
+  const viewAllLabel = lang === 'es' ? 'Ver todas las herramientas' : lang === 'fr' ? 'Voir tous les outils' : 'View All Tools';
+  const languageOptions = [
+    { code: 'EN', label: 'English', lang: 'en', href: '/?lang=en' },
+    { code: 'ES', label: 'Español', lang: 'es', href: '/convertidor-de-youtube-a-mp3' },
+    { code: 'FR', label: 'Français', lang: 'fr', href: '/convertir-youtube-vers-mp3' }
+  ];
+  const currentLanguage = languageOptions.find((option) => option.lang === lang) || languageOptions[0];
 %>
 
   <header class="main-header">
@@ -218,27 +602,123 @@
         <span class="logo-text">Conve<span class="logo-text-alt">Tube</span></span>
       </a>
 
-      <nav class="nav-menu" aria-label="Main Navigation">
-        <div class="lang-selector">
-          <button class="lang-btn" aria-haspopup="listbox" aria-expanded="false" id="lang-menu-button">
-            <span class="lang-icon">🌐</span>
-            <span class="lang-label"><%= langLabel %></span>
-            <span class="lang-arrow">▼</span>
+      <nav class="nav-menu" id="main-navigation" aria-label="Main Navigation">
+        <div class="tools-selector" id="tools-selector">
+          <button class="tools-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="tools-menu" id="tools-menu-button">
+            <span><%= freeToolsLabel %></span>
+            <svg class="tools-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 10.5 8 5.5l5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
           </button>
-          <ul class="lang-dropdown" role="listbox" aria-labelledby="lang-menu-button" id="lang-menu">
-            <li role="option" aria-selected="<%= lang === 'es' %>">
-              <a href="/convertidor-de-youtube-a-mp3/" class="<%= lang === 'es' ? 'active' : '' %>">Español (ES)</a>
-            </li>
-            <li role="option" aria-selected="<%= lang === 'fr' %>">
-              <a href="/convertir-youtube-vers-mp3" class="<%= lang === 'fr' ? 'active' : '' %>">Français (FR)</a>
-            </li>
-            <li role="option" aria-selected="<%= lang === 'en' %>">
-              <a href="/" class="<%= lang === 'en' ? 'active' : '' %>">English (EN)</a>
-            </li>
-          </ul>
+          <div class="tools-menu" id="tools-menu" role="region" aria-labelledby="tools-menu-button" aria-hidden="true">
+            <div class="tools-grid">
+              <% freeToolGroups.forEach((group) => { %>
+                <section class="tools-group">
+                  <h2 class="tools-group-title"><a href="<%= group.href %>"><%= group.title %> <span class="tools-arrow" aria-hidden="true">→</span></a></h2>
+                  <ul class="tools-list">
+                    <% group.items.forEach((item) => { %>
+                      <li class="tools-item">
+                        <a href="<%= item.href %>" class="<%= item.active ? 'active' : '' %>"<% if (item.active) { %> aria-current="page"<% } %>><%= item.label %></a><% if (item.hot) { %> <span class="tools-hot">HOT</span><% } %>
+                      </li>
+                    <% }) %>
+                  </ul>
+                </section>
+              <% }) %>
+            </div>
+            <div class="tools-menu-footer">
+              <a class="tools-all-link" href="<%= homeHref %>"><%= viewAllLabel %> <span class="tools-arrow" aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </div>
+        <div class="language-selector" id="language-selector">
+          <button class="language-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="language-menu" id="language-menu-button">
+            <span class="language-code"><%= currentLanguage.code %></span>
+            <span class="language-name"><%= currentLanguage.label %></span>
+            <svg class="language-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="m3 6 5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="language-menu" id="language-menu" role="menu" aria-labelledby="language-menu-button" aria-hidden="true">
+            <% languageOptions.forEach((option) => { %>
+              <a class="language-option <%= option.lang === lang ? 'active' : '' %>" href="<%= option.href %>" role="menuitem"<% if (option.lang === lang) { %> aria-current="page"<% } %>>
+                <span class="language-code"><%= option.code %></span>
+                <span><%= option.label %></span>
+              </a>
+            <% }) %>
+          </div>
         </div>
       </nav>
+      <button class="mobile-nav-toggle" id="mobile-nav-toggle" type="button" aria-expanded="false" aria-controls="main-navigation" aria-label="Open navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
   </header>
+
+  <script>
+    (() => {
+      const selector = document.getElementById('tools-selector');
+      const button = document.getElementById('tools-menu-button');
+      const menu = document.getElementById('tools-menu');
+      const languageSelector = document.getElementById('language-selector');
+      const languageButton = document.getElementById('language-menu-button');
+      const languageMenu = document.getElementById('language-menu');
+      const header = document.querySelector('.main-header');
+      const mobileNavToggle = document.getElementById('mobile-nav-toggle');
+      if (!selector || !button || !menu || !languageSelector || !languageButton || !languageMenu || !header || !mobileNavToggle) return;
+
+      const setOpen = (open) => {
+        selector.classList.toggle('is-open', open);
+        button.setAttribute('aria-expanded', String(open));
+        menu.setAttribute('aria-hidden', String(!open));
+      };
+
+      const setLanguageOpen = (open) => {
+        languageSelector.classList.toggle('is-open', open);
+        languageButton.setAttribute('aria-expanded', String(open));
+        languageMenu.setAttribute('aria-hidden', String(!open));
+      };
+
+      const setMobileNavOpen = (open) => {
+        header.classList.toggle('mobile-nav-open', open);
+        mobileNavToggle.setAttribute('aria-expanded', String(open));
+        mobileNavToggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+        if (!open) {
+          setOpen(false);
+          setLanguageOpen(false);
+        }
+      };
+
+      mobileNavToggle.addEventListener('click', () => {
+        setMobileNavOpen(mobileNavToggle.getAttribute('aria-expanded') !== 'true');
+      });
+
+      button.addEventListener('click', () => {
+        setMobileNavOpen(true);
+        setLanguageOpen(false);
+        setOpen(button.getAttribute('aria-expanded') !== 'true');
+      });
+      languageButton.addEventListener('click', () => {
+        setMobileNavOpen(true);
+        setOpen(false);
+        setLanguageOpen(languageButton.getAttribute('aria-expanded') !== 'true');
+      });
+      document.addEventListener('click', (event) => {
+        if (!header.contains(event.target)) {
+          setMobileNavOpen(false);
+          return;
+        }
+        if (!selector.contains(event.target)) setOpen(false);
+        if (!languageSelector.contains(event.target)) setLanguageOpen(false);
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          setMobileNavOpen(false);
+          mobileNavToggle.focus();
+        }
+      });
+    })();
+  </script>
 
   <main id="main-content">

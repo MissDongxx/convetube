@@ -170,18 +170,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Show loading state on play button
-  function setPlayLoading(loading) {
-    isAudioLoading = loading;
-    if (loading) {
-      playSvg?.classList.add('hidden');
-      pauseSvg?.classList.add('hidden');
-      loadingSvg?.classList.remove('hidden');
-      playBtn?.classList.add('loading');
-    } else {
-      loadingSvg?.classList.add('hidden');
-      playBtn?.classList.remove('loading');
-    }
+  // Keep exactly one play-button icon visible at every point in the audio lifecycle.
+  function setPlayButtonState(state) {
+    const isLoading = state === 'loading';
+    const isPlaying = state === 'playing';
+    isAudioLoading = isLoading;
+
+    playSvg?.classList.toggle('hidden', isLoading || isPlaying);
+    pauseSvg?.classList.toggle('hidden', !isPlaying);
+    loadingSvg?.classList.toggle('hidden', !isLoading);
+    playBtn?.classList.toggle('loading', isLoading);
+    playBtn?.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
   }
 
   // Handle conversion submit
@@ -278,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Set download href — download works immediately via live streaming
             downloadBtn.href = `/api/download?${getSourceQuery(url)}&format=${outputFormat}&title=${encodeURIComponent(infoData.title)}`;
-            downloadBtn.setAttribute('download', `${sanitizeFilename(infoData.title)}.${outputFormat}`);
+            downloadBtn.setAttribute('download', getDownloadFilename(infoData.title));
             
             // Transition to Result view
             stateLoading.classList.remove('active');
@@ -306,6 +305,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return title.replace(/[^a-zA-Z0-9\s-_]/g, '').replace(/\s+/g, '_') || 'audio';
   }
 
+  function getDownloadFilename(title, format = outputFormat) {
+    const baseName = sanitizeFilename(title || 'audio');
+    const prefixedName = /^convetube[_-]/i.test(baseName) ? baseName : `ConveTube_${baseName}`;
+    return `${prefixedName}.${format}`;
+  }
+
   // Reset function
   function resetUI() {
     // Stop cache polling
@@ -322,10 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
     audio.pause();
     audio.src = '';
     audio.currentTime = 0;
-    playSvg?.classList.remove('hidden');
-    pauseSvg?.classList.add('hidden');
-    loadingSvg?.classList.add('hidden');
-    playBtn?.classList.remove('loading');
+    setPlayButtonState('paused');
     timeline.value = 0;
     timeCurrent.textContent = '0:00';
     timeline.style.background = 'rgba(44,40,36,0.1)';
@@ -360,11 +362,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isAudioLoading) return; // Don't allow clicks while loading
 
       if (audio.paused) {
-        setPlayLoading(true);
-        audio.play().catch(err => {
-          setPlayLoading(false);
-          console.log('Audio playback failed', err);
-        });
+        setPlayButtonState('loading');
+        const playRequest = audio.play();
+        if (playRequest?.catch) {
+          playRequest.catch(err => {
+            setPlayButtonState('paused');
+            console.warn('Audio playback failed', err);
+          });
+        }
       } else {
         audio.pause();
       }
@@ -372,22 +377,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Listen to native audio events to sync UI state instantly and eliminate flashing
     audio.addEventListener('play', () => {
-      setPlayLoading(false);
-      playSvg?.classList.add('hidden');
-      pauseSvg?.classList.remove('hidden');
+      setPlayButtonState('playing');
     });
 
     audio.addEventListener('pause', () => {
-      setPlayLoading(false);
-      playSvg?.classList.remove('hidden');
-      pauseSvg?.classList.add('hidden');
+      setPlayButtonState('paused');
     });
 
     // When audio can start playing, remove loading indicator
     audio.addEventListener('canplay', () => {
-      if (isAudioLoading) {
-        setPlayLoading(false);
-      }
+      if (isAudioLoading && audio.paused) setPlayButtonState('paused');
+    });
+
+    // Recover the play icon when the stream is unavailable or interrupted.
+    audio.addEventListener('error', () => {
+      setPlayButtonState('paused');
+      console.warn('Audio element error', audio.error?.code || 'unknown');
+    });
+
+    audio.addEventListener('abort', () => {
+      if (audio.paused) setPlayButtonState('paused');
     });
     
     // Loaded metadata event
@@ -425,9 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Reset on end
     audio.addEventListener('ended', () => {
-      playSvg?.classList.remove('hidden');
-      pauseSvg?.classList.add('hidden');
-      loadingSvg?.classList.add('hidden');
+      setPlayButtonState('paused');
       timeline.value = 0;
       timeCurrent.textContent = '0:00';
       timeline.style.background = 'rgba(44,40,36,0.1)';
@@ -493,8 +500,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const url = new URL(currentHref, window.location.origin);
         url.searchParams.set('downloadToken', token);
         
-        // Trigger the download programmatically (browser starts download via attachment header)
-        window.location.href = url.toString();
+        // Start the attachment in an isolated frame so the result view and audio element stay mounted.
+        const downloadFrame = document.createElement('iframe');
+        downloadFrame.hidden = true;
+        downloadFrame.title = '';
+        downloadFrame.src = url.toString();
+        document.body.appendChild(downloadFrame);
+        window.setTimeout(() => downloadFrame.remove(), 60000);
       } catch (err) {
         console.error('Failed to trigger download:', err);
       }
