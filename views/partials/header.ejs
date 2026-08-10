@@ -84,6 +84,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      min-height: 70px;
     }
 
     .logo {
@@ -194,6 +195,254 @@
       background: rgba(196, 89, 61, 0.08);
       color: #C4593D;
     }
+
+    /* Free Tools mega menu */
+    .free-tools-menu {
+      position: relative;
+      display: flex;
+      align-items: center;
+      z-index: 101;
+    }
+
+    .free-tools-trigger {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: #B53BE3;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 18px;
+      padding: 12px 4px;
+      font: 700 1.4rem/1 var(--font-family);
+      letter-spacing: -0.02em;
+      position: relative;
+      z-index: 3;
+    }
+
+    .free-tools-chevron {
+      width: 11px;
+      height: 11px;
+      border-left: 2px solid currentColor;
+      border-top: 2px solid currentColor;
+      transform: rotate(45deg) translateY(3px);
+      transition: transform 0.2s ease;
+    }
+
+    .free-tools-menu.is-open .free-tools-chevron {
+      transform: rotate(225deg) translate(-2px, -2px);
+    }
+
+    .free-tools-backdrop {
+      position: fixed;
+      inset: 70px 0 0;
+      z-index: 0;
+      background: rgba(27, 12, 44, 0.84);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .free-tools-menu.is-open .free-tools-backdrop {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .free-tools-panel {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: -8px;
+      width: min(1120px, calc(100vw - 32px));
+      padding: 48px 48px 28px;
+      border-radius: 24px;
+      background: #FFFFFF;
+      box-shadow: 0 24px 70px rgba(14, 8, 22, 0.25);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+      z-index: 2;
+    }
+
+    .free-tools-menu:hover .free-tools-panel,
+    .free-tools-menu:focus-within .free-tools-panel,
+    .free-tools-menu.is-open .free-tools-panel {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .free-tools-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 32px;
+    }
+
+    .free-tools-group h3 {
+      margin: 0 0 22px;
+      color: #B53BE3;
+      font-size: 1.4rem;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .free-tools-group h3 span {
+      margin-left: 8px;
+      font-size: 1.5rem;
+    }
+
+    .free-tools-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .free-tools-link,
+    .free-tools-disabled {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #302D32;
+      font-size: 1.05rem;
+      line-height: 1.25;
+      text-decoration: none;
+      transition: color 0.15s ease, transform 0.15s ease;
+    }
+
+    .free-tools-link:hover,
+    .free-tools-link:focus-visible {
+      color: #B53BE3;
+      transform: translateX(2px);
+    }
+
+    .free-tools-disabled {
+      color: #A6A1A9;
+      cursor: default;
+    }
+
+    .free-tools-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 3px 9px;
+      border-radius: 8px;
+      background: #F4484D;
+      color: #FFFFFF;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .free-tools-footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 34px;
+      padding-top: 24px;
+      border-top: 2px dashed #E2DEE5;
+    }
+
+    .free-tools-all {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 9px;
+      background: #F8EAFE;
+      color: #B53BE3;
+      font-size: 1rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .free-tools-all:hover,
+    .free-tools-all:focus-visible {
+      background: #F2D9FC;
+    }
+
+    @media (max-width: 900px) {
+      .free-tools-panel {
+        right: -16px;
+        padding: 34px 32px 24px;
+      }
+
+      .free-tools-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .main-header {
+        height: 64px;
+      }
+
+      .header-container {
+        min-height: 64px;
+      }
+
+      .logo-text {
+        font-size: 1.15rem;
+      }
+
+      .logo-icon {
+        width: 24px;
+        height: 24px;
+      }
+
+      .free-tools-trigger {
+        gap: 14px;
+        font-size: 1.15rem;
+      }
+
+      .free-tools-backdrop {
+        inset: 64px 0 0;
+      }
+
+      .free-tools-panel {
+        position: fixed;
+        top: 64px;
+        right: 0;
+        left: 0;
+        width: 100%;
+        max-height: calc(100vh - 64px);
+        overflow-y: auto;
+        padding: 28px 32px 24px;
+        border-radius: 0;
+        box-shadow: 0 18px 45px rgba(14, 8, 22, 0.2);
+      }
+
+      .free-tools-grid {
+        grid-template-columns: 1fr;
+        gap: 34px;
+      }
+
+      .free-tools-group h3 {
+        margin-bottom: 20px;
+        font-size: 1.35rem;
+      }
+
+      .free-tools-list {
+        gap: 22px;
+      }
+
+      .free-tools-link,
+      .free-tools-disabled {
+        font-size: 1.05rem;
+      }
+
+      .free-tools-footer {
+        margin-top: 34px;
+      }
+
+      .free-tools-all {
+        justify-content: center;
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -201,6 +450,44 @@
 <%
   const homeHref = lang === 'fr' ? '/convertir-youtube-vers-mp3/' : lang === 'en' ? '/' : '/convertidor-de-youtube-a-mp3/';
   const langLabel = lang === 'fr' ? 'Français' : lang === 'en' ? 'English' : 'Español';
+  const freeToolGroups = [
+    {
+      title: 'Audio Converter',
+      links: [
+        { label: 'URL to MP3', href: '/', hot: true },
+        { label: 'YouTube to MP3', href: '/mp3-converter/youtube-to-mp3/', hot: true },
+        { label: 'Link to MP3', href: '/mp3-converter/link-to-mp3/' },
+        { label: 'Video to MP3', href: '/mp3-converter/video-to-mp3/' },
+        { label: 'WAV Converter', href: '/wav-converter/youtube-to-wav/' },
+        { label: 'FLAC Converter', href: '/flac-converter/youtube-to-flac/' },
+        { label: 'OGG Converter', href: '/ogg-converter/youtube-to-ogg/' }
+      ]
+    },
+    {
+      title: 'Video Converter',
+      links: [
+        { label: 'Video to MP3', href: '/mp3-converter/video-to-mp3/' },
+        { label: 'YouTube to WAV', href: '/wav-converter/youtube-to-wav/' },
+        { label: 'URL to MP4', comingSoon: true },
+        { label: 'YouTube to MP4', comingSoon: true }
+      ]
+    },
+    {
+      title: 'AI & Transcript',
+      links: [
+        { label: 'Audio to Text', comingSoon: true },
+        { label: 'Speech to Text', comingSoon: true },
+        { label: 'Voice to Text', comingSoon: true },
+        { label: 'YouTube Transcript', comingSoon: true }
+      ]
+    },
+    {
+      title: 'Image Converter',
+      links: [
+        { label: 'JPG Converter', comingSoon: true }
+      ]
+    }
+  ];
 %>
 
   <header class="main-header">
@@ -219,26 +506,65 @@
       </a>
 
       <nav class="nav-menu" aria-label="Main Navigation">
-        <div class="lang-selector">
-          <button class="lang-btn" aria-haspopup="listbox" aria-expanded="false" id="lang-menu-button">
-            <span class="lang-icon">🌐</span>
-            <span class="lang-label"><%= langLabel %></span>
-            <span class="lang-arrow">▼</span>
+        <div class="free-tools-menu" id="free-tools-menu">
+          <button class="free-tools-trigger" type="button" aria-expanded="false" aria-controls="free-tools-panel" id="free-tools-trigger">
+            <span>Free Tools</span>
+            <span class="free-tools-chevron" aria-hidden="true"></span>
           </button>
-          <ul class="lang-dropdown" role="listbox" aria-labelledby="lang-menu-button" id="lang-menu">
-            <li role="option" aria-selected="<%= lang === 'es' %>">
-              <a href="/convertidor-de-youtube-a-mp3/" class="<%= lang === 'es' ? 'active' : '' %>">Español (ES)</a>
-            </li>
-            <li role="option" aria-selected="<%= lang === 'fr' %>">
-              <a href="/convertir-youtube-vers-mp3" class="<%= lang === 'fr' ? 'active' : '' %>">Français (FR)</a>
-            </li>
-            <li role="option" aria-selected="<%= lang === 'en' %>">
-              <a href="/" class="<%= lang === 'en' ? 'active' : '' %>">English (EN)</a>
-            </li>
-          </ul>
+          <div class="free-tools-backdrop" aria-hidden="true"></div>
+          <section class="free-tools-panel" id="free-tools-panel" aria-label="Free Tools directory">
+            <div class="free-tools-grid">
+              <% freeToolGroups.forEach((group) => { %>
+                <div class="free-tools-group">
+                  <h3><%= group.title %> <span aria-hidden="true">→</span></h3>
+                  <ul class="free-tools-list">
+                    <% group.links.forEach((tool) => { %>
+                      <li>
+                        <% if (tool.href) { %>
+                          <a class="free-tools-link" href="<%= tool.href %>"><%= tool.label %><% if (tool.hot) { %><span class="free-tools-badge">HOT</span><% } %></a>
+                        <% } else { %>
+                          <span class="free-tools-disabled" aria-disabled="true" title="Coming soon"><%= tool.label %></span>
+                        <% } %>
+                      </li>
+                    <% }) %>
+                  </ul>
+                </div>
+              <% }) %>
+            </div>
+            <div class="free-tools-footer">
+              <a class="free-tools-all" href="/">View All Tools <span aria-hidden="true">→</span></a>
+            </div>
+          </section>
         </div>
       </nav>
     </div>
   </header>
+
+  <script>
+    (() => {
+      const menu = document.getElementById('free-tools-menu');
+      const trigger = document.getElementById('free-tools-trigger');
+      if (!menu || !trigger) return;
+
+      const closeMenu = () => {
+        menu.classList.remove('is-open');
+        trigger.setAttribute('aria-expanded', 'false');
+      };
+
+      trigger.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const open = menu.classList.toggle('is-open');
+        trigger.setAttribute('aria-expanded', String(open));
+      });
+
+      menu.querySelector('.free-tools-backdrop')?.addEventListener('click', closeMenu);
+      document.addEventListener('click', (event) => {
+        if (!menu.contains(event.target)) closeMenu();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeMenu();
+      });
+    })();
+  </script>
 
   <main id="main-content">
