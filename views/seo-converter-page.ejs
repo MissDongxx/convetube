@@ -25,7 +25,7 @@
       <p class="hero-subtitle"><%= heroSubtitle %></p>
     </div>
 
-    <%- include('partials/converter', { lang: lang, genericUrl: genericUrl, defaultFormat: defaultFormat }) %>
+    <%- include('partials/converter', { lang: lang, genericUrl: genericUrl, defaultFormat: defaultFormat, inputMode: typeof inputMode !== 'undefined' ? inputMode : 'url' }) %>
   </div>
 
   <main class="seo-section container">

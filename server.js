@@ -51,10 +51,18 @@ if (!fs.existsSync(cacheDir)) {
 // Track active background conversions
 const activeTranscodes = new Map();
 
-const supportedAudioFormats = new Set(['mp3', 'wav', 'flac', 'ogg']);
-const getAudioFormat = (format) => supportedAudioFormats.has(format) ? format : 'mp3';
+const supportedOutputFormats = new Set(['mp3', 'wav', 'flac', 'ogg', 'mp4']);
+const getOutputFormat = (format) => supportedOutputFormats.has(format) ? format : 'mp3';
 
 const getTranscodeOptions = (format, quality = 'download') => {
+  if (format === 'mp4') {
+    return {
+      extension: 'mp4',
+      mimeType: 'video/mp4',
+      ffmpegArgs: [],
+    };
+  }
+
   if (format === 'wav') {
     return {
       extension: 'wav',
@@ -121,7 +129,7 @@ const getSourceFromRequest = (req) => {
 const getCachePath = (sourceKey, format) => path.join(cacheDir, `${sourceKey}.${format}`);
 
 const startBackgroundTranscode = (sourceUrl, sourceKey, requestedFormat = 'mp3') => {
-  const format = getAudioFormat(requestedFormat);
+  const format = getOutputFormat(requestedFormat);
   const options = getTranscodeOptions(format);
   const cachePath = getCachePath(sourceKey, format);
   const transcodeKey = `${sourceKey}:${format}`;
@@ -132,7 +140,37 @@ const startBackgroundTranscode = (sourceUrl, sourceKey, requestedFormat = 'mp3')
   const tempPath = path.join(cacheDir, `${sourceKey}.${format}.tmp`);
   const downloadPath = path.join(cacheDir, `${sourceKey}.${format}.download`);
   
-  console.log(`[Cache] Starting optimized background ${format.toUpperCase()} transcode for source: ${sourceKey}`);
+  console.log(`[Cache] Starting optimized background ${format.toUpperCase()} conversion for source: ${sourceKey}`);
+
+  if (format === 'mp4') {
+    const ytDlp = spawn('yt-dlp', [
+      ...getBaseYtDlpArgs(),
+      '-f', 'best[ext=mp4]/best',
+      '--no-playlist',
+      '-o', tempPath,
+      sourceUrl
+    ]);
+
+    activeTranscodes.set(transcodeKey, { ytDlp, tempPath });
+
+    ytDlp.on('close', (code) => {
+      activeTranscodes.delete(transcodeKey);
+      if (code === 0 && fs.existsSync(tempPath)) {
+        fs.renameSync(tempPath, cachePath);
+        console.log(`[Cache] Completed background conversion: ${sourceKey}.mp4`);
+      } else {
+        console.error(`[Cache] MP4 download failed with code ${code} for source: ${sourceKey}`);
+        if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+      }
+    });
+
+    ytDlp.on('error', (err) => {
+      console.error('[Cache] yt-dlp failed to start:', err);
+      activeTranscodes.delete(transcodeKey);
+      if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+    });
+    return;
+  }
   
   // Step 1: Download bestaudio to a local file.
   // Downloading to a local file bypasses YouTube's play-rate throttling on piped stdout.
@@ -634,6 +672,159 @@ app.get('/mp3-converter/youtube-to-mp3/', (req, res) => {
   });
 });
 
+app.get('/mp4-converter/youtube-to-mp4/', (req, res) => {
+  renderPage(res, 'seo-converter-page', {
+    lang: 'en',
+    title: 'YouTube to MP4 Converter Online | ConveTube',
+    description: 'Convert a supported YouTube link to MP4 online with a simple browser workflow. Review format compatibility, quality limits, file size, and common link errors.',
+    canonical: 'https://convetube.com/mp4-converter/youtube-to-mp4/',
+    applicationName: 'ConveTube YouTube to MP4 Converter',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['YouTube to MP4 conversion', 'MP4 video output', 'Browser-based conversion and download'],
+    keyword: 'youtube to mp4',
+    heading: 'YouTube to',
+    headingAccent: 'MP4 Converter',
+    heroSubtitle: 'Convert a supported YouTube video link to a compatible MP4 file from your browser.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP4 Converter', href: '/mp4-converter/youtube-to-mp4/' }, { label: 'YouTube to MP4' }],
+    introHeading: 'Convert YouTube to MP4 online',
+    introParagraphs: [
+      'Use this <strong>YouTube to MP4</strong> converter when you need a video file rather than audio only. Paste a supported public YouTube URL into the first-screen tool, start the conversion, and download the prepared MP4.',
+      'MP4 is widely supported by browsers, phones, computers, presentation tools, editors, televisions, and messaging apps. Available resolution and processing time still depend on the source video and the formats it provides.'
+    ],
+    stepsHeading: 'How to convert YouTube to MP4',
+    steps: [
+      { title: 'Copy the YouTube link', body: 'open the source video and copy its complete public URL.' },
+      { title: 'Paste the URL above', body: 'insert the link and keep MP4 selected as the output format.' },
+      { title: 'Prepare the video', body: 'start conversion and wait while the compatible video stream is processed.' },
+      { title: 'Download the MP4', body: 'review the result details and save the file to your device.' }
+    ],
+    benefitsHeading: 'MP4 quality, compatibility, and file size',
+    benefits: [
+      { icon: 'MP4', title: 'Broad playback support', body: 'MP4 works in common browsers, mobile devices, computers, editors, and smart displays.' },
+      { icon: 'SOURCE', title: 'Source-based quality', body: 'The converter uses a compatible MP4 stream supplied by the source; it does not invent missing resolution.' },
+      { icon: 'SIZE', title: 'Video-sized downloads', body: 'MP4 files include video and audio, so expect larger downloads than MP3, WAV, FLAC, or OGG.' },
+      { icon: 'WEB', title: 'Browser workflow', body: 'Paste, process, and download without installing a separate desktop converter.' }
+    ],
+    relatedTools: [
+      { href: '/mp4-converter/url-to-mp4/', label: 'URL to MP4', description: 'Convert another supported video link to MP4.' },
+      { href: '/mp3-converter/youtube-to-mp3/', label: 'YouTube to MP3', description: 'Extract a compact audio file when video is not needed.' },
+      { href: '/wav-converter/youtube-to-wav/', label: 'YouTube to WAV', description: 'Create an uncompressed audio file for editing workflows.' }
+    ],
+    faqHeading: 'YouTube to MP4 questions',
+    faqItems: [
+      { question: 'How do I convert YouTube to MP4?', answer: 'Paste a supported public YouTube URL into the converter, keep MP4 selected, start processing, and download the prepared video file.' },
+      { question: 'Can I download 1080p or 4K MP4?', answer: 'Resolution depends on the compatible MP4 stream available from the source. Some high-resolution videos separate audio and video, so the available result may be lower than the source maximum.' },
+      { question: 'Why did the YouTube link fail?', answer: 'Check that the full URL is valid and publicly reachable. Removed, private, region-restricted, live, or temporarily unavailable videos may not process.' },
+      { question: 'Which browsers support the MP4 converter?', answer: 'Current versions of Chrome, Edge, Firefox, and Safari can use the page. Download handling and playback support can vary by device and browser settings.' }
+    ],
+    genericUrl: false,
+    inputMode: 'url',
+    defaultFormat: 'mp4'
+  });
+});
+
+app.get('/mp4-converter/url-to-mp4/', (req, res) => {
+  renderPage(res, 'seo-converter-page', {
+    lang: 'en',
+    title: 'URL to MP4 Converter – Video Links | ConveTube',
+    description: 'Convert a supported video URL to MP4 online with a focused browser tool. Learn which links work, how quality affects file size, and how to fix common URL errors.',
+    canonical: 'https://convetube.com/mp4-converter/url-to-mp4/',
+    applicationName: 'ConveTube URL to MP4 Converter',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['URL to MP4 conversion', 'Compatible video-link input', 'Browser-based MP4 download'],
+    keyword: 'url to mp4',
+    heading: 'URL to',
+    headingAccent: 'MP4 Converter',
+    heroSubtitle: 'Paste a supported video URL and prepare a compatible MP4 file in your browser.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP4 Converter', href: '/mp4-converter/url-to-mp4/' }, { label: 'URL to MP4' }],
+    introHeading: 'Convert a URL to MP4 online',
+    introParagraphs: [
+      'This <strong>URL to MP4</strong> page provides a direct link-first workflow. Paste a supported HTTP or HTTPS video address, let ConveTube inspect the source, and download the compatible MP4 result.',
+      'A webpage address is not always a direct video source. Public availability, site support, stream format, duration, and network conditions can all affect whether the link can be processed.'
+    ],
+    stepsHeading: 'How to convert a URL to MP4',
+    steps: [
+      { title: 'Copy the video URL', body: 'copy the complete HTTP or HTTPS link from the supported source page.' },
+      { title: 'Paste the link', body: 'add it to the tool above with MP4 selected.' },
+      { title: 'Start conversion', body: 'allow the converter to inspect and prepare a compatible video stream.' },
+      { title: 'Save the MP4', body: 'download the prepared file after the result appears.' }
+    ],
+    benefitsHeading: 'Supported links, resolution, and file size',
+    benefits: [
+      { icon: 'URL', title: 'Link-first input', body: 'Begin with a supported video page URL instead of uploading a large local file.' },
+      { icon: 'MP4', title: 'Compatible output', body: 'MP4 is a practical format for browsers, mobile devices, presentation tools, and editors.' },
+      { icon: 'QUALITY', title: 'Source-defined resolution', body: 'The available quality depends on the video stream exposed by the source URL.' },
+      { icon: 'CHECK', title: 'Clear troubleshooting', body: 'A complete public link works better than a shortened, private, expired, or access-restricted address.' }
+    ],
+    relatedTools: [
+      { href: '/mp4-converter/youtube-to-mp4/', label: 'YouTube to MP4', description: 'Use the dedicated converter for a YouTube video URL.' },
+      { href: '/', label: 'URL to MP3', description: 'Convert a supported video URL to an audio-only MP3.' },
+      { href: '/mp3-converter/video-to-mp3/', label: 'Video to MP3', description: 'Extract audio when you do not need the video track.' }
+    ],
+    faqHeading: 'URL to MP4 questions',
+    faqItems: [
+      { question: 'How do I convert a URL to MP4?', answer: 'Paste a complete supported video URL into the tool, select MP4, start conversion, and download the resulting video file.' },
+      { question: 'What resolution can I choose?', answer: 'The tool prepares a compatible MP4 stream supplied by the source. Resolution options vary by site and video, and the source maximum may not be available as one MP4 stream.' },
+      { question: 'Why is my URL unsupported?', answer: 'The address may be private, expired, restricted, unavailable, or hosted by a site the converter cannot read. Confirm that the full public URL opens in your browser and retry.' },
+      { question: 'Can I use the converter on mobile?', answer: 'Yes. The page works in current mobile browsers, although long videos and large MP4 downloads may need more time, storage, and a stable connection.' }
+    ],
+    genericUrl: true,
+    inputMode: 'url',
+    defaultFormat: 'mp4'
+  });
+});
+
+app.get('/mp3-converter/m4a-to-mp3-online/', (req, res) => {
+  renderPage(res, 'seo-converter-page', {
+    lang: 'en',
+    title: 'M4A to MP3 Online Converter | ConveTube',
+    description: 'Use the M4A to MP3 online converter for a local audio file up to 100 MB. Get practical 320 kbps, file-size, compatibility, and batch-conversion guidance.',
+    canonical: 'https://convetube.com/mp3-converter/m4a-to-mp3-online/',
+    applicationName: 'ConveTube M4A to MP3 Online Converter',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['M4A file to MP3 conversion', '320 kbps MP3 output', 'Browser-based local file upload and download'],
+    keyword: 'm4a to mp3 online',
+    heading: 'M4A to MP3',
+    headingAccent: 'Online Converter',
+    heroSubtitle: 'Choose an M4A audio file and convert it to a broadly compatible MP3 from your browser.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP3 Converter', href: '/mp3-converter/m4a-to-mp3-online/' }, { label: 'M4A to MP3 Online' }],
+    introHeading: 'Convert M4A to MP3 online',
+    introParagraphs: [
+      'Use this <strong>M4A to MP3 online</strong> tool to turn one local M4A audio file into an MP3. Choose a file up to 100 MB, start the conversion, preview the result, and save it without installing a desktop application.',
+      'MP3 usually offers broader compatibility than M4A across older players, car stereos, presentation software, and editing tools. Transcoding does not improve the original recording, and file size depends on duration and source characteristics.'
+    ],
+    stepsHeading: 'How to convert M4A to MP3 online',
+    steps: [
+      { title: 'Choose an M4A file', body: 'select one local .m4a audio file no larger than 100 MB.' },
+      { title: 'Start conversion', body: 'submit the file and keep this browser tab open while it is processed.' },
+      { title: 'Preview the MP3', body: 'listen to the converted result before saving it.' },
+      { title: 'Download the file', body: 'save the MP3 to your phone, tablet, or computer.' }
+    ],
+    benefitsHeading: 'MP3 quality, limits, and compatibility',
+    benefits: [
+      { icon: '320K', title: '320 kbps output', body: 'The converter encodes the MP3 at 320 kbps while preserving the quality available in the source.' },
+      { icon: '100MB', title: 'Clear upload limit', body: 'Each conversion accepts one M4A file up to 100 MB.' },
+      { icon: 'MP3', title: 'Broad compatibility', body: 'MP3 plays in common browsers, phones, computers, vehicles, editors, and media players.' },
+      { icon: 'ONE', title: 'One file at a time', body: 'For multiple files, convert each item separately and verify every result before deleting the originals.' }
+    ],
+    relatedTools: [
+      { href: '/mp3-converter/youtube-to-mp3/', label: 'YouTube to MP3', description: 'Convert a supported YouTube link to MP3.' },
+      { href: '/mp3-converter/video-to-mp3/', label: 'Video to MP3', description: 'Extract audio from a supported video URL.' },
+      { href: '/', label: 'URL to MP3', description: 'Use the homepage for a general video-link-to-MP3 workflow.' }
+    ],
+    faqHeading: 'M4A to MP3 online questions',
+    faqItems: [
+      { question: 'How do I convert M4A to MP3 online?', answer: 'Choose one local M4A file up to 100 MB, start conversion, preview the result, and download the prepared MP3.' },
+      { question: 'Can I convert M4A to 320 kbps MP3?', answer: 'Yes. The converter encodes a 320 kbps MP3, although transcoding cannot add detail that is missing from the original M4A audio.' },
+      { question: 'Is the online converter free?', answer: 'The page provides the file conversion workflow without requiring a desktop installation or account. Standard file-size and server-capacity limits apply.' },
+      { question: 'How do I convert multiple M4A files?', answer: 'Convert one file at a time. Keep the originals until you have checked playback, duration, metadata, and any quality changes in every downloaded MP3.' }
+    ],
+    genericUrl: false,
+    inputMode: 'file',
+    defaultFormat: 'mp3'
+  });
+});
+
 // EN Homepage: URL to MP3
 app.get('/', (req, res) => {
   const requestedLanguage = String(req.query.lang || '').toLowerCase();
@@ -891,6 +1082,21 @@ app.get('/sitemap.xml', (req, res) => {
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://convetube.com/mp4-converter/youtube-to-mp4/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/mp4-converter/url-to-mp4/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/mp3-converter/m4a-to-mp3-online/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>`);
 });
 
@@ -979,10 +1185,71 @@ app.post('/api/contact', async (req, res) => {
   }
 });
 
-// 0. Check if cached MP3 is ready
+// Convert an uploaded M4A file with the same ffmpeg pipeline used by URL tools.
+app.post('/api/file-convert', express.raw({ type: 'application/octet-stream', limit: '100mb' }), (req, res) => {
+  const encodedName = String(req.headers['x-file-name'] || 'audio.m4a');
+  let originalName = 'audio.m4a';
+  try {
+    originalName = decodeURIComponent(encodedName);
+  } catch {
+    originalName = encodedName;
+  }
+
+  if (!Buffer.isBuffer(req.body) || req.body.length === 0 || !/\.m4a$/i.test(originalName)) {
+    return res.status(400).json({ error: 'A non-empty M4A file is required' });
+  }
+
+  const uploadDir = fs.mkdtempSync(path.join(cacheDir, 'm4a-upload-'));
+  const inputPath = path.join(uploadDir, 'source.m4a');
+  const outputPath = path.join(uploadDir, 'converted.mp3');
+  fs.writeFileSync(inputPath, req.body);
+
+  const cleanup = () => {
+    try {
+      fs.rmSync(uploadDir, { recursive: true, force: true });
+    } catch (error) {
+      console.error('[Upload] Cleanup failed:', error.message);
+    }
+  };
+
+  const ffmpeg = spawn('ffmpeg', [
+    '-i', inputPath,
+    ...getTranscodeOptions('mp3').ffmpegArgs,
+    '-threads', '0',
+    '-y',
+    outputPath
+  ]);
+
+  let stderr = '';
+  ffmpeg.stderr.on('data', (chunk) => { stderr += chunk; });
+  ffmpeg.on('error', (error) => {
+    console.error('[Upload] ffmpeg failed to start:', error.message);
+    cleanup();
+    if (!res.headersSent) res.status(500).json({ error: 'Failed to start file conversion' });
+  });
+  ffmpeg.on('close', (code) => {
+    if (code !== 0 || !fs.existsSync(outputPath)) {
+      console.error(`[Upload] M4A conversion failed with code ${code}: ${stderr.slice(-500)}`);
+      cleanup();
+      if (!res.headersSent) res.status(422).json({ error: 'The M4A file could not be converted' });
+      return;
+    }
+
+    const baseName = path.basename(originalName, path.extname(originalName));
+    const filename = getDownloadFilename(baseName, 'mp3');
+    res.download(outputPath, filename, cleanup);
+  });
+
+  req.on('aborted', () => {
+    ffmpeg.kill();
+    cleanup();
+  });
+});
+
+// 0. Check if the requested cached output is ready
 app.get('/api/cache-status', (req, res) => {
   const source = getSourceFromRequest(req);
-  const format = getAudioFormat(req.query.format);
+  const format = getOutputFormat(req.query.format);
   if (!source) {
     return res.status(400).json({ error: 'A valid video URL is required' });
   }
@@ -1001,7 +1268,7 @@ app.get('/api/cache-status', (req, res) => {
 // 1. Fetch Video Metadata
 app.get('/api/info', async (req, res) => {
   const source = getSourceFromRequest(req);
-  const format = getAudioFormat(req.query.format);
+  const format = getOutputFormat(req.query.format);
   if (!source) {
     return res.status(400).json({ error: 'A valid video URL is required' });
   }
@@ -1052,10 +1319,10 @@ app.get('/api/info', async (req, res) => {
   }
 });
 
-// 2. Stream Audio Live
+// 2. Stream the requested media output
 app.get('/api/stream', (req, res) => {
   const source = getSourceFromRequest(req);
-  const format = getAudioFormat(req.query.format);
+  const format = getOutputFormat(req.query.format);
   const options = getTranscodeOptions(format, 'stream');
   if (!source) {
     return res.status(400).send('A valid video URL is required');
@@ -1069,6 +1336,19 @@ app.get('/api/stream', (req, res) => {
   }
 
   res.setHeader('Content-Type', options.mimeType);
+
+  if (format === 'mp4') {
+    const ytDlp = spawn('yt-dlp', [
+      ...getBaseYtDlpArgs(),
+      '-f', 'best[ext=mp4]/best',
+      '--no-playlist',
+      '-o', '-',
+      source.url
+    ]);
+    ytDlp.stdout.pipe(res);
+    req.on('close', () => ytDlp.kill());
+    return;
+  }
   
   // Stream audio directly using yt-dlp and ffmpeg pipeline
   const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', '-', source.url];
@@ -1093,11 +1373,11 @@ app.get('/api/stream', (req, res) => {
   });
 });
 
-// 3. Convert & Download High-Quality MP3 (320kbps)
+// 3. Convert and download the requested output format
 app.get('/api/download', (req, res) => {
   const source = getSourceFromRequest(req);
   const rawTitle = req.query.title || 'audio';
-  const format = getAudioFormat(req.query.format);
+  const format = getOutputFormat(req.query.format);
   const options = getTranscodeOptions(format);
   if (!source) {
     return res.status(400).send('A valid video URL is required');
@@ -1126,6 +1406,19 @@ app.get('/api/download', (req, res) => {
 
   res.setHeader('Content-Type', options.mimeType);
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+  if (format === 'mp4') {
+    const ytDlp = spawn('yt-dlp', [
+      ...getBaseYtDlpArgs(),
+      '-f', 'best[ext=mp4]/best',
+      '--no-playlist',
+      '-o', '-',
+      source.url
+    ]);
+    ytDlp.stdout.pipe(res);
+    req.on('close', () => ytDlp.kill());
+    return;
+  }
 
   // Stream requested audio format directly
   const ytDlpArgs = [...getBaseYtDlpArgs(), '-f', 'bestaudio', '-o', '-', source.url];

@@ -35,7 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const converterBox = document.querySelector('.converter-box');
   const formatSelect = document.getElementById('format-select');
   const genericUrlMode = converterBox?.dataset.genericUrl === 'true';
-  const supportedFormats = ['mp3', 'wav', 'flac', 'ogg'];
+  const fileInputMode = converterBox?.dataset.inputMode === 'file';
+  const supportedFormats = ['mp3', 'wav', 'flac', 'ogg', 'mp4'];
   const defaultFormat = supportedFormats.includes(converterBox?.dataset.format) ? converterBox.dataset.format : 'mp3';
   let outputFormat = defaultFormat;
   
@@ -45,16 +46,19 @@ document.addEventListener('DOMContentLoaded', () => {
   let cacheReady = false;
   let cachePollingTimer = null;
   let isAudioLoading = false;
+  let localObjectUrl = null;
   
   // Status text mapping based on language
   const pageLang = document.documentElement.lang || 'es';
   const isFr = pageLang.startsWith('fr');
   const isEn = pageLang.startsWith('en');
-  const invalidUrlText = isFr
-    ? 'Veuillez saisir une URL YouTube valide.'
-    : isEn
-      ? 'Please enter a valid YouTube URL.'
-      : 'Por favor, introduce una URL de YouTube válida.';
+  const invalidUrlText = fileInputMode
+    ? (isFr ? 'Sélectionnez un fichier M4A valide de 100 Mo maximum.' : isEn ? 'Choose a valid M4A file up to 100 MB.' : 'Selecciona un archivo M4A válido de hasta 100 MB.')
+    : isFr
+      ? 'Veuillez saisir une URL YouTube valide.'
+      : isEn
+        ? 'Please enter a valid YouTube URL.'
+        : 'Por favor, introduce una URL de YouTube válida.';
 
   function getSelectedFormat() {
     return supportedFormats.includes(formatSelect?.value) ? formatSelect.value : 'mp3';
@@ -66,6 +70,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getStatusSteps(format = outputFormat) {
     const label = getFormatLabel(format);
+    if (fileInputMode) {
+      return isFr
+        ? ['Lecture du fichier...', 'Téléversement sécurisé...', `Conversion en ${label}...`, 'Finalisation...']
+        : isEn
+          ? ['Reading file...', 'Uploading securely...', `Converting to ${label}...`, 'Finishing...']
+          : ['Leyendo archivo...', 'Subiendo de forma segura...', `Convirtiendo a ${label}...`, 'Finalizando...'];
+    }
     if (isFr) {
       return ['Analyse du lien...', 'Récupération de la piste...', `Transcodage en ${label}...`, 'Finalisation...'];
     }
@@ -183,10 +194,81 @@ document.addEventListener('DOMContentLoaded', () => {
     playBtn?.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
   }
 
+  async function convertLocalFile(file) {
+    errorMsg.classList.remove('visible');
+    syncSelectedFormat();
+    const statusSteps = getStatusSteps(outputFormat);
+    stateInput.classList.remove('active');
+    stateLoading.classList.add('active');
+
+    let progress = 8;
+    const progressInterval = setInterval(() => {
+      progress = Math.min(92, progress + Math.max(1, (92 - progress) * 0.08));
+      progressBarFill.style.width = `${Math.round(progress)}%`;
+      progressPercent.textContent = `${Math.round(progress)}%`;
+      loadingStatus.textContent = progress < 30 ? statusSteps[0] : progress < 60 ? statusSteps[1] : progress < 88 ? statusSteps[2] : statusSteps[3];
+    }, 180);
+
+    try {
+      const response = await fetch('/api/file-convert?format=mp3', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          'X-File-Name': encodeURIComponent(file.name)
+        },
+        body: file
+      });
+      if (!response.ok) {
+        const details = await response.json().catch(() => ({}));
+        throw new Error(details.error || 'File conversion failed');
+      }
+
+      const convertedBlob = await response.blob();
+      if (localObjectUrl) URL.revokeObjectURL(localObjectUrl);
+      localObjectUrl = URL.createObjectURL(convertedBlob);
+      clearInterval(progressInterval);
+      progressBarFill.style.width = '100%';
+      progressPercent.textContent = '100%';
+      loadingStatus.textContent = statusSteps[3];
+
+      videoTitle.textContent = file.name.replace(/\.m4a$/i, '') || 'Converted M4A audio';
+      videoChannel.textContent = `M4A file • ${(file.size / (1024 * 1024)).toFixed(1)} MB`;
+      audio.src = localObjectUrl;
+      audio.preload = 'metadata';
+      audio.load();
+      downloadBtn.href = localObjectUrl;
+      downloadBtn.dataset.localBlob = 'true';
+      downloadBtn.setAttribute('download', getDownloadFilename(file.name.replace(/\.m4a$/i, ''), 'mp3'));
+
+      window.setTimeout(() => {
+        stateLoading.classList.remove('active');
+        stateResult.classList.add('active');
+      }, 250);
+    } catch (error) {
+      clearInterval(progressInterval);
+      resetUI();
+      errorMsg.textContent = error.message || invalidUrlText;
+      errorMsg.classList.add('visible');
+    }
+  }
+
   // Handle conversion submit
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      if (fileInputMode) {
+        const file = input.files?.[0];
+        const validFile = file && /\.m4a$/i.test(file.name) && file.size > 0 && file.size <= 100 * 1024 * 1024;
+        if (!validFile) {
+          errorMsg.textContent = invalidUrlText;
+          errorMsg.classList.add('visible');
+          return;
+        }
+        await convertLocalFile(file);
+        return;
+      }
+
       const url = input.value.trim();
       const isValidSource = genericUrlMode ? isValidHttpUrl(url) : ytRegex.test(url);
 
@@ -277,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Set download href — download works immediately via live streaming
             downloadBtn.href = `/api/download?${getSourceQuery(url)}&format=${outputFormat}&title=${encodeURIComponent(infoData.title)}`;
+            delete downloadBtn.dataset.localBlob;
             downloadBtn.setAttribute('download', getDownloadFilename(infoData.title));
             
             // Transition to Result view
@@ -322,6 +405,10 @@ document.addEventListener('DOMContentLoaded', () => {
     currentSourceKey = null;
     currentSourceUrl = null;
     isAudioLoading = false;
+    if (localObjectUrl) {
+      URL.revokeObjectURL(localObjectUrl);
+      localObjectUrl = null;
+    }
 
     // Reset player
     audio.pause();
@@ -343,6 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Reset download button
     if (downloadBtn) {
       downloadBtn.classList.remove('preparing');
+      delete downloadBtn.dataset.localBlob;
       if (downloadLabel) downloadLabel.textContent = getDownloadText();
     }
     
@@ -477,6 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (downloadBtn) {
     downloadBtn.addEventListener('click', (e) => {
       if (!downloadLabel) return;
+      if (downloadBtn.dataset.localBlob === 'true') return;
 
       // Prevent duplicate downloads if already in progress
       if (downloadBtn.classList.contains('downloading-active')) {

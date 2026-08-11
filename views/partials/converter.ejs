@@ -1,13 +1,14 @@
 <%
-const allowedFormats = ['mp3', 'wav', 'flac', 'ogg'];
+const allowedFormats = ['mp3', 'wav', 'flac', 'ogg', 'mp4'];
 const outputFormat = typeof defaultFormat !== 'undefined' && allowedFormats.includes(defaultFormat) ? defaultFormat : 'mp3';
 const formatLabel = outputFormat.toUpperCase();
 const isGenericUrl = typeof genericUrl !== 'undefined' && genericUrl;
+const isFileInput = typeof inputMode !== 'undefined' && inputMode === 'file';
 const translations = {
   es: {
-    placeholder: isGenericUrl ? 'Pega cualquier URL de video aquí...' : 'Pega el enlace de YouTube aquí... (ej. https://www.youtube.com/watch?v=...)',
+    placeholder: isFileInput ? 'Selecciona un archivo M4A...' : isGenericUrl ? 'Pega cualquier URL de video aquí...' : 'Pega el enlace de YouTube aquí... (ej. https://www.youtube.com/watch?v=...)',
     button: 'Convertir',
-    invalidUrl: isGenericUrl ? 'Por favor, introduce una URL de video válida.' : 'Por favor, introduce una URL de YouTube válida.',
+    invalidUrl: isFileInput ? 'Selecciona un archivo M4A válido de hasta 100 MB.' : isGenericUrl ? 'Por favor, introduce una URL de video válida.' : 'Por favor, introduce una URL de YouTube válida.',
     analyzing: 'Analizando enlace...',
     downloading: 'Descargando flujo de audio...',
     converting: `Convirtiendo a ${formatLabel}${outputFormat === 'mp3' ? ' (320kbps)' : ''}...`,
@@ -21,9 +22,9 @@ const translations = {
     mockDuration: '00:00'
   },
   fr: {
-    placeholder: isGenericUrl ? 'Collez une URL vidéo ici...' : 'Collez le lien YouTube ici... (ex. https://www.youtube.com/watch?v=...)',
+    placeholder: isFileInput ? 'Sélectionnez un fichier M4A...' : isGenericUrl ? 'Collez une URL vidéo ici...' : 'Collez le lien YouTube ici... (ex. https://www.youtube.com/watch?v=...)',
     button: 'Convertir',
-    invalidUrl: isGenericUrl ? 'Veuillez saisir une URL vidéo valide.' : 'Veuillez saisir une URL YouTube valide.',
+    invalidUrl: isFileInput ? 'Sélectionnez un fichier M4A valide de 100 Mo maximum.' : isGenericUrl ? 'Veuillez saisir une URL vidéo valide.' : 'Veuillez saisir une URL YouTube valide.',
     analyzing: 'Analyse du lien...',
     downloading: 'Téléchargement du flux audio...',
     converting: `Conversion en ${formatLabel}${outputFormat === 'mp3' ? ' (320kbps)' : ''}...`,
@@ -37,9 +38,9 @@ const translations = {
     mockDuration: '00:00'
   },
   en: {
-    placeholder: isGenericUrl ? 'Paste any video URL here...' : 'Paste the YouTube link here... (e.g. https://www.youtube.com/watch?v=...)',
+    placeholder: isFileInput ? 'Choose an M4A file up to 100 MB...' : isGenericUrl ? 'Paste any video URL here...' : 'Paste the YouTube link here... (e.g. https://www.youtube.com/watch?v=...)',
     button: 'Convert',
-    invalidUrl: isGenericUrl ? 'Please enter a valid video URL.' : 'Please enter a valid YouTube URL.',
+    invalidUrl: isFileInput ? 'Choose a valid M4A file up to 100 MB.' : isGenericUrl ? 'Please enter a valid video URL.' : 'Please enter a valid YouTube URL.',
     analyzing: 'Analyzing link...',
     downloading: 'Downloading audio stream...',
     converting: `Converting to ${formatLabel}${outputFormat === 'mp3' ? ' (320kbps)' : ''}...`,
@@ -49,7 +50,7 @@ const translations = {
     convertAnother: 'Convert another video',
     playing: 'Playing',
     paused: 'Paused',
-    mockTitle: isGenericUrl ? 'Video Audio' : 'YouTube Video Audio',
+    mockTitle: isFileInput ? 'M4A Audio File' : isGenericUrl ? 'Video Audio' : 'YouTube Video Audio',
     mockDuration: '00:00'
   }
 };
@@ -57,7 +58,7 @@ const translations = {
 const texts = translations[lang] || translations.es;
 %>
 
-<div class="converter-box glass-panel" data-format="<%= outputFormat %>" data-generic-url="<%= isGenericUrl ? 'true' : 'false' %>">
+<div class="converter-box glass-panel" data-format="<%= outputFormat %>" data-generic-url="<%= isGenericUrl ? 'true' : 'false' %>" data-input-mode="<%= isFileInput ? 'file' : 'url' %>">
   <!-- State 1: Input Form -->
   <div id="state-input" class="converter-state active">
     <form id="convert-form" class="convert-form" novalidate>
@@ -65,21 +66,21 @@ const texts = translations[lang] || translations.es;
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M10 4C6.68629 4 4 6.68629 4 10C4 13.3137 6.68629 16 10 16C13.3137 16 16 13.3137 16 10C16 6.68629 13.3137 4 10 4ZM2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10C18 11.8487 17.3729 13.551 16.3199 14.9056L21.7071 20.2929C22.0976 20.6834 22.0976 21.3166 21.7071 21.7071C21.317 22.0972 20.6843 22.0976 20.293 21.7075L14.9056 16.3199C13.551 17.3729 11.8487 18 10 18C5.58172 18 2 14.4183 2 10Z" fill="var(--color-text-secondary)"/>
         </svg>
-        <input
-          type="url"
-          id="video-url"
-          class="input-field"
-          placeholder="<%= texts.placeholder %>"
-          required
-          autocomplete="off"
-        />
+        <% if (isFileInput) { %>
+          <input type="file" id="video-url" class="input-field file-input-field" accept=".m4a,audio/mp4,audio/x-m4a" required />
+        <% } else { %>
+          <input type="url" id="video-url" class="input-field" placeholder="<%= texts.placeholder %>" required autocomplete="off" />
+        <% } %>
         <label class="format-select-label" for="format-select">
-          <span class="sr-only">Audio format</span>
-          <select id="format-select" class="format-select" aria-label="Audio format">
+          <span class="sr-only">Output format</span>
+          <select id="format-select" class="format-select" aria-label="Output format">
             <option value="mp3" <%= outputFormat === 'mp3' ? 'selected' : '' %>>MP3</option>
-            <option value="wav" <%= outputFormat === 'wav' ? 'selected' : '' %>>WAV</option>
-            <option value="flac" <%= outputFormat === 'flac' ? 'selected' : '' %>>FLAC</option>
-            <option value="ogg" <%= outputFormat === 'ogg' ? 'selected' : '' %>>OGG</option>
+            <% if (!isFileInput) { %>
+              <option value="wav" <%= outputFormat === 'wav' ? 'selected' : '' %>>WAV</option>
+              <option value="flac" <%= outputFormat === 'flac' ? 'selected' : '' %>>FLAC</option>
+              <option value="ogg" <%= outputFormat === 'ogg' ? 'selected' : '' %>>OGG</option>
+              <option value="mp4" <%= outputFormat === 'mp4' ? 'selected' : '' %>>MP4</option>
+            <% } %>
           </select>
         </label>
       </div>
@@ -139,11 +140,15 @@ const texts = translations[lang] || translations.es;
         </div>
       </div>
 
-      <!-- Custom Audio Player -->
-      <div class="custom-audio-player">
-        <audio id="audio-element" preload="none"></audio>
+      <!-- Media preview -->
+      <div class="custom-audio-player <%= outputFormat === 'mp4' ? 'video-output-player' : '' %>">
+        <% if (outputFormat === 'mp4') { %>
+          <video id="audio-element" class="native-video-preview" preload="metadata" controls playsinline></video>
+        <% } else { %>
+          <audio id="audio-element" preload="none"></audio>
+        <% } %>
 
-        <div class="player-controls">
+        <div class="player-controls" <%= outputFormat === 'mp4' ? 'hidden' : '' %>>
           <button id="player-play-btn" class="player-btn play" aria-label="Play">
             <svg class="play-svg" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5V19L19 12L8 5Z" />
@@ -254,6 +259,23 @@ const texts = translations[lang] || translations.es;
     padding-right: 112px;
   }
 
+  .file-input-field {
+    padding-top: 14px;
+    cursor: pointer;
+  }
+
+  .file-input-field::file-selector-button {
+    margin-right: 12px;
+    border: 0;
+    border-radius: 999px;
+    padding: 8px 14px;
+    background: #F5F0EB;
+    color: var(--color-text-primary);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
   .format-select-label {
     position: absolute;
     right: 8px;
@@ -299,6 +321,19 @@ const texts = translations[lang] || translations.es;
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+  }
+
+  .native-video-preview {
+    display: block;
+    width: 100%;
+    max-height: 420px;
+    border-radius: 14px;
+    background: #171513;
+  }
+
+  .video-output-player {
+    padding: 0;
+    background: transparent;
   }
 
   .error-msg {
