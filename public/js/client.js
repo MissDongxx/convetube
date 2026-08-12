@@ -36,6 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const formatSelect = document.getElementById('format-select');
   const genericUrlMode = converterBox?.dataset.genericUrl === 'true';
   const fileInputMode = converterBox?.dataset.inputMode === 'file';
+  const supportedInputFormats = ['m4a', 'aac', 'flac', 'mkv'];
+  const fileInputFormat = supportedInputFormats.includes(converterBox?.dataset.inputFormat) ? converterBox.dataset.inputFormat : 'm4a';
+  const fileInputLabel = fileInputFormat.toUpperCase();
+  const fileInputPattern = new RegExp(`\\.${fileInputFormat}$`, 'i');
   const supportedFormats = ['mp3', 'wav', 'flac', 'ogg', 'mp4'];
   const defaultFormat = supportedFormats.includes(converterBox?.dataset.format) ? converterBox.dataset.format : 'mp3';
   let outputFormat = defaultFormat;
@@ -53,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const isFr = pageLang.startsWith('fr');
   const isEn = pageLang.startsWith('en');
   const invalidUrlText = fileInputMode
-    ? (isFr ? 'Sélectionnez un fichier M4A valide de 100 Mo maximum.' : isEn ? 'Choose a valid M4A file up to 100 MB.' : 'Selecciona un archivo M4A válido de hasta 100 MB.')
+    ? (isFr ? `Sélectionnez un fichier ${fileInputLabel} valide de 100 Mo maximum.` : isEn ? `Choose a valid ${fileInputLabel} file up to 100 MB.` : `Selecciona un archivo ${fileInputLabel} válido de hasta 100 MB.`)
     : isFr
       ? 'Veuillez saisir une URL YouTube valide.'
       : isEn
@@ -210,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 180);
 
     try {
-      const response = await fetch('/api/file-convert?format=mp3', {
+      const response = await fetch(`/api/file-convert?format=mp3&input=${fileInputFormat}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/octet-stream',
@@ -231,14 +235,14 @@ document.addEventListener('DOMContentLoaded', () => {
       progressPercent.textContent = '100%';
       loadingStatus.textContent = statusSteps[3];
 
-      videoTitle.textContent = file.name.replace(/\.m4a$/i, '') || 'Converted M4A audio';
-      videoChannel.textContent = `M4A file • ${(file.size / (1024 * 1024)).toFixed(1)} MB`;
+      videoTitle.textContent = file.name.replace(fileInputPattern, '') || `Converted ${fileInputLabel} file`;
+      videoChannel.textContent = `${fileInputLabel} file • ${(file.size / (1024 * 1024)).toFixed(1)} MB`;
       audio.src = localObjectUrl;
       audio.preload = 'metadata';
       audio.load();
       downloadBtn.href = localObjectUrl;
       downloadBtn.dataset.localBlob = 'true';
-      downloadBtn.setAttribute('download', getDownloadFilename(file.name.replace(/\.m4a$/i, ''), 'mp3'));
+      downloadBtn.setAttribute('download', getDownloadFilename(file.name.replace(fileInputPattern, ''), 'mp3'));
 
       window.setTimeout(() => {
         stateLoading.classList.remove('active');
@@ -259,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (fileInputMode) {
         const file = input.files?.[0];
-        const validFile = file && /\.m4a$/i.test(file.name) && file.size > 0 && file.size <= 100 * 1024 * 1024;
+        const validFile = file && fileInputPattern.test(file.name) && file.size > 0 && file.size <= 100 * 1024 * 1024;
         if (!validFile) {
           errorMsg.textContent = invalidUrlText;
           errorMsg.classList.add('visible');

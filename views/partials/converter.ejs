@@ -4,11 +4,19 @@ const outputFormat = typeof defaultFormat !== 'undefined' && allowedFormats.incl
 const formatLabel = outputFormat.toUpperCase();
 const isGenericUrl = typeof genericUrl !== 'undefined' && genericUrl;
 const isFileInput = typeof inputMode !== 'undefined' && inputMode === 'file';
+const fileInputFormats = {
+  m4a: { label: 'M4A', accept: '.m4a,audio/mp4,audio/x-m4a' },
+  aac: { label: 'AAC', accept: '.aac,audio/aac,audio/x-aac' },
+  flac: { label: 'FLAC', accept: '.flac,audio/flac,audio/x-flac' },
+  mkv: { label: 'MKV', accept: '.mkv,video/x-matroska,video/mkv' }
+};
+const selectedInputFormat = typeof inputFormat !== 'undefined' && fileInputFormats[inputFormat] ? inputFormat : 'm4a';
+const inputFormatConfig = fileInputFormats[selectedInputFormat];
 const translations = {
   es: {
-    placeholder: isFileInput ? 'Selecciona un archivo M4A...' : isGenericUrl ? 'Pega cualquier URL de video aquí...' : 'Pega el enlace de YouTube aquí... (ej. https://www.youtube.com/watch?v=...)',
+    placeholder: isFileInput ? `Selecciona un archivo ${inputFormatConfig.label}...` : isGenericUrl ? 'Pega cualquier URL de video aquí...' : 'Pega el enlace de YouTube aquí... (ej. https://www.youtube.com/watch?v=...)',
     button: 'Convertir',
-    invalidUrl: isFileInput ? 'Selecciona un archivo M4A válido de hasta 100 MB.' : isGenericUrl ? 'Por favor, introduce una URL de video válida.' : 'Por favor, introduce una URL de YouTube válida.',
+    invalidUrl: isFileInput ? `Selecciona un archivo ${inputFormatConfig.label} válido de hasta 100 MB.` : isGenericUrl ? 'Por favor, introduce una URL de video válida.' : 'Por favor, introduce una URL de YouTube válida.',
     analyzing: 'Analizando enlace...',
     downloading: 'Descargando flujo de audio...',
     converting: `Convirtiendo a ${formatLabel}${outputFormat === 'mp3' ? ' (320kbps)' : ''}...`,
@@ -22,9 +30,9 @@ const translations = {
     mockDuration: '00:00'
   },
   fr: {
-    placeholder: isFileInput ? 'Sélectionnez un fichier M4A...' : isGenericUrl ? 'Collez une URL vidéo ici...' : 'Collez le lien YouTube ici... (ex. https://www.youtube.com/watch?v=...)',
+    placeholder: isFileInput ? `Sélectionnez un fichier ${inputFormatConfig.label}...` : isGenericUrl ? 'Collez une URL vidéo ici...' : 'Collez le lien YouTube ici... (ex. https://www.youtube.com/watch?v=...)',
     button: 'Convertir',
-    invalidUrl: isFileInput ? 'Sélectionnez un fichier M4A valide de 100 Mo maximum.' : isGenericUrl ? 'Veuillez saisir une URL vidéo valide.' : 'Veuillez saisir une URL YouTube valide.',
+    invalidUrl: isFileInput ? `Sélectionnez un fichier ${inputFormatConfig.label} valide de 100 Mo maximum.` : isGenericUrl ? 'Veuillez saisir une URL vidéo valide.' : 'Veuillez saisir une URL YouTube valide.',
     analyzing: 'Analyse du lien...',
     downloading: 'Téléchargement du flux audio...',
     converting: `Conversion en ${formatLabel}${outputFormat === 'mp3' ? ' (320kbps)' : ''}...`,
@@ -38,9 +46,9 @@ const translations = {
     mockDuration: '00:00'
   },
   en: {
-    placeholder: isFileInput ? 'Choose an M4A file up to 100 MB...' : isGenericUrl ? 'Paste any video URL here...' : 'Paste the YouTube link here... (e.g. https://www.youtube.com/watch?v=...)',
+    placeholder: isFileInput ? `Choose a ${inputFormatConfig.label} file up to 100 MB...` : isGenericUrl ? 'Paste any video URL here...' : 'Paste the YouTube link here... (e.g. https://www.youtube.com/watch?v=...)',
     button: 'Convert',
-    invalidUrl: isFileInput ? 'Choose a valid M4A file up to 100 MB.' : isGenericUrl ? 'Please enter a valid video URL.' : 'Please enter a valid YouTube URL.',
+    invalidUrl: isFileInput ? `Choose a valid ${inputFormatConfig.label} file up to 100 MB.` : isGenericUrl ? 'Please enter a valid video URL.' : 'Please enter a valid YouTube URL.',
     analyzing: 'Analyzing link...',
     downloading: 'Downloading audio stream...',
     converting: `Converting to ${formatLabel}${outputFormat === 'mp3' ? ' (320kbps)' : ''}...`,
@@ -50,7 +58,7 @@ const translations = {
     convertAnother: 'Convert another video',
     playing: 'Playing',
     paused: 'Paused',
-    mockTitle: isFileInput ? 'M4A Audio File' : isGenericUrl ? 'Video Audio' : 'YouTube Video Audio',
+    mockTitle: isFileInput ? `${inputFormatConfig.label} File` : isGenericUrl ? 'Video Audio' : 'YouTube Video Audio',
     mockDuration: '00:00'
   }
 };
@@ -58,7 +66,7 @@ const translations = {
 const texts = translations[lang] || translations.es;
 %>
 
-<div class="converter-box glass-panel" data-format="<%= outputFormat %>" data-generic-url="<%= isGenericUrl ? 'true' : 'false' %>" data-input-mode="<%= isFileInput ? 'file' : 'url' %>">
+<div class="converter-box glass-panel" data-format="<%= outputFormat %>" data-generic-url="<%= isGenericUrl ? 'true' : 'false' %>" data-input-mode="<%= isFileInput ? 'file' : 'url' %>" data-input-format="<%= selectedInputFormat %>">
   <!-- State 1: Input Form -->
   <div id="state-input" class="converter-state active">
     <form id="convert-form" class="convert-form" novalidate>
@@ -67,7 +75,7 @@ const texts = translations[lang] || translations.es;
           <path d="M10 4C6.68629 4 4 6.68629 4 10C4 13.3137 6.68629 16 10 16C13.3137 16 16 13.3137 16 10C16 6.68629 13.3137 4 10 4ZM2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10C18 11.8487 17.3729 13.551 16.3199 14.9056L21.7071 20.2929C22.0976 20.6834 22.0976 21.3166 21.7071 21.7071C21.317 22.0972 20.6843 22.0976 20.293 21.7075L14.9056 16.3199C13.551 17.3729 11.8487 18 10 18C5.58172 18 2 14.4183 2 10Z" fill="var(--color-text-secondary)"/>
         </svg>
         <% if (isFileInput) { %>
-          <input type="file" id="video-url" class="input-field file-input-field" accept=".m4a,audio/mp4,audio/x-m4a" required />
+          <input type="file" id="video-url" class="input-field file-input-field" accept="<%= inputFormatConfig.accept %>" required />
         <% } else { %>
           <input type="url" id="video-url" class="input-field" placeholder="<%= texts.placeholder %>" required autocomplete="off" />
         <% } %>

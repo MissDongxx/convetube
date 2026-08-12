@@ -825,6 +825,162 @@ app.get('/mp3-converter/m4a-to-mp3-online/', (req, res) => {
   });
 });
 
+app.get('/mp3-converter/aac-to-mp3/', (req, res) => {
+  renderPage(res, 'seo-converter-page', {
+    lang: 'en',
+    title: 'AAC to MP3 Converter Online | ConveTube',
+    description: 'Convert AAC to MP3 online from a local file up to 100 MB. Create a 320 kbps MP3 and learn about compatibility, source quality, and common conversion errors.',
+    canonical: 'https://convetube.com/mp3-converter/aac-to-mp3/',
+    applicationName: 'ConveTube AAC to MP3 Converter',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['AAC file to MP3 conversion', '320 kbps MP3 output', 'Browser-based file upload and download'],
+    keyword: 'aac to mp3',
+    heading: 'AAC to MP3',
+    headingAccent: 'Converter',
+    heroSubtitle: 'Choose an AAC audio file and create a broadly compatible MP3 from your browser.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP3 Converter', href: '/mp3-converter/aac-to-mp3/' }, { label: 'AAC to MP3' }],
+    introHeading: 'Convert an AAC audio file to MP3',
+    introParagraphs: [
+      'Use this <strong>AAC to MP3</strong> tool when an app, player, editor, or device does not accept your AAC file. Choose one local file up to 100 MB, start the conversion, preview the result, and download the MP3.',
+      'AAC and MP3 are both lossy audio formats. Transcoding changes the container and codec compatibility but does not restore detail missing from the source, so keep the original file until you have checked the result.'
+    ],
+    stepsHeading: 'How to change AAC audio into MP3',
+    steps: [
+      { title: 'Choose an AAC file', body: 'select one local .aac file no larger than 100 MB.' },
+      { title: 'Start the conversion', body: 'submit the file and keep this browser tab open while it is processed.' },
+      { title: 'Preview the result', body: 'listen to the prepared MP3 and check its duration before saving.' },
+      { title: 'Download MP3', body: 'save the converted audio to your phone, tablet, or computer.' }
+    ],
+    benefitsHeading: 'AAC compatibility, output quality, and limits',
+    benefits: [
+      { icon: 'AAC', title: 'Focused file input', body: 'The first-screen tool accepts one AAC audio file per conversion.' },
+      { icon: '320K', title: 'Practical MP3 output', body: 'The converter encodes a 320 kbps MP3 while retaining only the detail present in the source.' },
+      { icon: 'MP3', title: 'Broad playback support', body: 'MP3 works with common phones, computers, vehicles, editors, browsers, and media players.' },
+      { icon: '100MB', title: 'Clear upload limit', body: 'Each conversion accepts one non-empty AAC file up to 100 MB.' }
+    ],
+    relatedTools: [
+      { href: '/mp3-converter/flac-to-mp3/', label: 'FLAC File Converter', description: 'Create a smaller MP3 from a local lossless audio file.' },
+      { href: '/mp3-converter/m4a-to-mp3-online/', label: 'M4A File Converter', description: 'Prepare an MP3 from an M4A audio file.' },
+      { href: '/mp3-converter/mkv-to-mp3/', label: 'MKV Audio Extractor', description: 'Extract an MP3 audio track from an MKV video file.' }
+    ],
+    faqHeading: 'AAC file conversion questions',
+    faqItems: [
+      { question: 'How does this AAC file converter work?', answer: 'Choose one local AAC file up to 100 MB, start conversion, preview the prepared audio, and download the MP3 result.' },
+      { question: 'Does converting AAC improve audio quality?', answer: 'No. Encoding a new MP3 cannot add detail that is absent from the AAC source and may introduce a small additional quality loss.' },
+      { question: 'Why use MP3 instead of AAC?', answer: 'MP3 can be easier to play in older car stereos, hardware players, editors, presentation tools, and software with limited AAC support.' },
+      { question: 'Why did my AAC file fail?', answer: 'Confirm that the file is non-empty, uses the .aac extension, is no larger than 100 MB, and contains a readable audio stream. Damaged or mislabeled files may fail.' }
+    ],
+    genericUrl: false,
+    inputMode: 'file',
+    inputFormat: 'aac',
+    defaultFormat: 'mp3'
+  });
+});
+
+app.get('/mp3-converter/flac-to-mp3/', (req, res) => {
+  renderPage(res, 'seo-converter-page', {
+    lang: 'en',
+    title: 'FLAC to MP3 Converter Online | ConveTube',
+    description: 'Convert FLAC to MP3 online from a local file up to 100 MB. Reduce storage needs with a 320 kbps MP3 while understanding quality, metadata, and playback.',
+    canonical: 'https://convetube.com/mp3-converter/flac-to-mp3/',
+    applicationName: 'ConveTube FLAC to MP3 Converter',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['FLAC file to MP3 conversion', '320 kbps MP3 output', 'Browser-based file upload and download'],
+    keyword: 'flac to mp3',
+    heading: 'FLAC to MP3',
+    headingAccent: 'Converter',
+    heroSubtitle: 'Choose a FLAC audio file and make a smaller MP3 for everyday playback.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP3 Converter', href: '/mp3-converter/flac-to-mp3/' }, { label: 'FLAC to MP3' }],
+    introHeading: 'Make a compact MP3 from a FLAC file',
+    introParagraphs: [
+      'Use this <strong>FLAC to MP3</strong> tool when you need a smaller audio file or wider device support. Choose one local FLAC file up to 100 MB, convert it in the browser, preview the MP3, and save the result.',
+      'FLAC preserves the source audio without lossy compression, while MP3 trades some detail for smaller files. Keep the FLAC original for archiving or editing and use the MP3 as a convenient listening copy.'
+    ],
+    stepsHeading: 'How to prepare an MP3 from FLAC',
+    steps: [
+      { title: 'Choose a FLAC file', body: 'select one local .flac audio file no larger than 100 MB.' },
+      { title: 'Convert the audio', body: 'start processing and leave this browser tab open until it finishes.' },
+      { title: 'Check the MP3', body: 'preview the audio and verify its playback and duration.' },
+      { title: 'Save the result', body: 'download the MP3 while keeping the original FLAC as your lossless copy.' }
+    ],
+    benefitsHeading: 'FLAC source quality, MP3 size, and metadata',
+    benefits: [
+      { icon: 'FLAC', title: 'Lossless source input', body: 'Begin with a FLAC file that preserves the audio data available in the original source.' },
+      { icon: 'SIZE', title: 'Smaller listening copy', body: 'MP3 generally uses much less storage than FLAC for the same recording duration.' },
+      { icon: '320K', title: '320 kbps encoding', body: 'The converter creates a high-bitrate MP3 suited to broad everyday playback.' },
+      { icon: 'META', title: 'Verify file details', body: 'Check title, artwork, tags, duration, and gapless playback because metadata behavior can vary after transcoding.' }
+    ],
+    relatedTools: [
+      { href: '/flac-converter/youtube-to-flac/', label: 'YouTube to FLAC', description: 'Prepare lossless-format audio from a supported YouTube link.' },
+      { href: '/mp3-converter/aac-to-mp3/', label: 'AAC File Converter', description: 'Create a compatible MP3 from an AAC audio file.' },
+      { href: '/mp3-converter/m4a-to-mp3-online/', label: 'M4A File Converter', description: 'Convert one M4A audio file in the browser.' }
+    ],
+    faqHeading: 'FLAC file conversion questions',
+    faqItems: [
+      { question: 'How does this FLAC file converter work?', answer: 'Choose a local FLAC file up to 100 MB, start the conversion, preview the new audio, and download the prepared MP3.' },
+      { question: 'Will the MP3 sound identical to FLAC?', answer: 'Not exactly. MP3 uses lossy compression, so the result is smaller but does not preserve every bit of the lossless FLAC source.' },
+      { question: 'Should I delete the FLAC after conversion?', answer: 'Keep the FLAC if you value a lossless archive or expect to edit or re-encode the recording later. Use the MP3 as a portable copy.' },
+      { question: 'Will FLAC metadata transfer to MP3?', answer: 'Some metadata may be retained or rewritten, but tags and artwork can differ between formats. Verify the downloaded file in your preferred library before removing anything.' }
+    ],
+    genericUrl: false,
+    inputMode: 'file',
+    inputFormat: 'flac',
+    defaultFormat: 'mp3'
+  });
+});
+
+app.get('/mp3-converter/mkv-to-mp3/', (req, res) => {
+  renderPage(res, 'seo-converter-page', {
+    lang: 'en',
+    title: 'MKV to MP3 Audio Converter | ConveTube',
+    description: 'Convert MKV to MP3 from a local video up to 100 MB. Extract the available audio track as a 320 kbps MP3 and review track selection, quality, and errors.',
+    canonical: 'https://convetube.com/mp3-converter/mkv-to-mp3/',
+    applicationName: 'ConveTube MKV to MP3 Audio Converter',
+    applicationCategory: 'MultimediaApplication',
+    featureList: ['MKV audio extraction to MP3', '320 kbps MP3 output', 'Browser-based file upload and download'],
+    keyword: 'mkv to mp3',
+    heading: 'MKV to MP3',
+    headingAccent: 'Audio Converter',
+    heroSubtitle: 'Choose an MKV video and extract its available audio track as a portable MP3.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP3 Converter', href: '/mp3-converter/mkv-to-mp3/' }, { label: 'MKV to MP3' }],
+    introHeading: 'Extract an MP3 audio track from MKV',
+    introParagraphs: [
+      'Use this <strong>MKV to MP3</strong> tool when you need the sound from a local Matroska video without keeping the picture. Choose one MKV file up to 100 MB, start processing, preview the extracted audio, and download the MP3.',
+      'An MKV container can hold video, audio, subtitles, and multiple tracks. The converter uses the first readable audio stream, so files with several languages or commentary tracks should be checked after conversion.'
+    ],
+    stepsHeading: 'How to extract MP3 audio from MKV',
+    steps: [
+      { title: 'Choose an MKV video', body: 'select one local .mkv file no larger than 100 MB.' },
+      { title: 'Start extraction', body: 'submit the file and keep the browser tab open during processing.' },
+      { title: 'Preview the audio', body: 'listen to the MP3 and confirm that the intended track was selected.' },
+      { title: 'Download MP3', body: 'save the extracted audio file to your device.' }
+    ],
+    benefitsHeading: 'MKV tracks, MP3 output, and file limits',
+    benefits: [
+      { icon: 'MKV', title: 'Video-container input', body: 'The tool reads a local MKV container and prepares audio without including the video track.' },
+      { icon: 'TRACK', title: 'Check track selection', body: 'Files with multiple audio streams may default to the first readable track, so preview the result.' },
+      { icon: 'MP3', title: 'Portable audio output', body: 'The extracted track is encoded as a 320 kbps MP3 for broad playback support.' },
+      { icon: '100MB', title: 'One file up to 100 MB', body: 'Large or long MKV videos may exceed the browser upload limit and need a local desktop workflow.' }
+    ],
+    relatedTools: [
+      { href: '/mp3-converter/video-to-mp3/', label: 'Video Link to MP3', description: 'Extract audio from a supported online video URL.' },
+      { href: '/mp3-converter/aac-to-mp3/', label: 'AAC File Converter', description: 'Prepare a compatible MP3 from an AAC file.' },
+      { href: '/mp3-converter/m4a-to-mp3-online/', label: 'M4A File Converter', description: 'Convert a local M4A audio file to MP3.' }
+    ],
+    faqHeading: 'MKV audio extraction questions',
+    faqItems: [
+      { question: 'How does this MKV audio extractor work?', answer: 'Choose one local MKV file up to 100 MB, start processing, preview the extracted track, and download the MP3 result.' },
+      { question: 'Does the MP3 include the video?', answer: 'No. MP3 is an audio-only format, so the downloaded result contains the selected audio stream without the MKV video or subtitles.' },
+      { question: 'Which audio track is extracted?', answer: 'The conversion pipeline uses the first readable audio stream. Preview the result when the MKV contains multiple languages, commentary, or alternate mixes.' },
+      { question: 'Why did my MKV conversion fail?', answer: 'The file may exceed 100 MB, be damaged, use an unreadable audio codec, contain no audio stream, or carry an extension that does not match its contents.' }
+    ],
+    genericUrl: false,
+    inputMode: 'file',
+    inputFormat: 'mkv',
+    defaultFormat: 'mp3'
+  });
+});
+
 // EN Homepage: URL to MP3
 app.get('/', (req, res) => {
   const requestedLanguage = String(req.query.lang || '').toLowerCase();
@@ -1097,6 +1253,21 @@ app.get('/sitemap.xml', (req, res) => {
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://convetube.com/mp3-converter/aac-to-mp3/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/mp3-converter/flac-to-mp3/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/mp3-converter/mkv-to-mp3/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>`);
 });
 
@@ -1185,7 +1356,7 @@ app.post('/api/contact', async (req, res) => {
   }
 });
 
-// Convert an uploaded M4A file with the same ffmpeg pipeline used by URL tools.
+// Convert one supported local media file with the same ffmpeg pipeline used by URL tools.
 app.post('/api/file-convert', express.raw({ type: 'application/octet-stream', limit: '100mb' }), (req, res) => {
   const encodedName = String(req.headers['x-file-name'] || 'audio.m4a');
   let originalName = 'audio.m4a';
@@ -1195,12 +1366,14 @@ app.post('/api/file-convert', express.raw({ type: 'application/octet-stream', li
     originalName = encodedName;
   }
 
-  if (!Buffer.isBuffer(req.body) || req.body.length === 0 || !/\.m4a$/i.test(originalName)) {
-    return res.status(400).json({ error: 'A non-empty M4A file is required' });
+  const inputExtension = path.extname(originalName).slice(1).toLowerCase();
+  const supportedInputExtensions = new Set(['m4a', 'aac', 'flac', 'mkv']);
+  if (!Buffer.isBuffer(req.body) || req.body.length === 0 || !supportedInputExtensions.has(inputExtension)) {
+    return res.status(400).json({ error: 'A non-empty M4A, AAC, FLAC, or MKV file is required' });
   }
 
-  const uploadDir = fs.mkdtempSync(path.join(cacheDir, 'm4a-upload-'));
-  const inputPath = path.join(uploadDir, 'source.m4a');
+  const uploadDir = fs.mkdtempSync(path.join(cacheDir, `${inputExtension}-upload-`));
+  const inputPath = path.join(uploadDir, `source.${inputExtension}`);
   const outputPath = path.join(uploadDir, 'converted.mp3');
   fs.writeFileSync(inputPath, req.body);
 
@@ -1229,9 +1402,9 @@ app.post('/api/file-convert', express.raw({ type: 'application/octet-stream', li
   });
   ffmpeg.on('close', (code) => {
     if (code !== 0 || !fs.existsSync(outputPath)) {
-      console.error(`[Upload] M4A conversion failed with code ${code}: ${stderr.slice(-500)}`);
+      console.error(`[Upload] ${inputExtension.toUpperCase()} conversion failed with code ${code}: ${stderr.slice(-500)}`);
       cleanup();
-      if (!res.headersSent) res.status(422).json({ error: 'The M4A file could not be converted' });
+      if (!res.headersSent) res.status(422).json({ error: `The ${inputExtension.toUpperCase()} file could not be converted` });
       return;
     }
 
