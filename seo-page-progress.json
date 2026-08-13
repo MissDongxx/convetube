@@ -2,30 +2,198 @@
   "plan": "SEO关键词归类与页面规划-V5",
   "timezone": "Asia/Shanghai",
   "dailyBatchSize": 3,
-  "nextOrder": 13,
+  "nextOrder": 16,
   "pages": [
-    { "order": 1, "path": "/mp3-converter/link-to-mp3/", "primaryKeyword": "link to mp3", "status": "completed", "completedAt": "2026-08-10" },
-    { "order": 2, "path": "/mp3-converter/video-to-mp3/", "primaryKeyword": "video to mp3", "status": "completed", "completedAt": "2026-08-10" },
-    { "order": 3, "path": "/wav-converter/youtube-to-wav/", "primaryKeyword": "youtube to wav", "status": "completed", "completedAt": "2026-08-10" },
-    { "order": 4, "path": "/flac-converter/youtube-to-flac/", "primaryKeyword": "youtube to flac", "status": "completed", "batch": 2, "completedAt": "2026-08-10", "deployedAt": "2026-08-10T04:41:24.298Z" },
-    { "order": 5, "path": "/ogg-converter/youtube-to-ogg/", "primaryKeyword": "youtube to ogg", "status": "completed", "batch": 2, "note": "发布前核对搜索量", "completedAt": "2026-08-10", "deployedAt": "2026-08-10T04:41:24.298Z" },
-    { "order": 6, "path": "/mp3-converter/youtube-to-mp3/", "primaryKeyword": "youtube to mp3", "status": "completed", "batch": 2, "completedAt": "2026-08-10", "deployedAt": "2026-08-10T04:41:24.298Z" },
-    { "order": 7, "path": "/mp4-converter/youtube-to-mp4/", "primaryKeyword": "youtube to mp4", "status": "completed", "batch": 3, "completedAt": "2026-08-11", "deployedAt": "2026-08-11T03:37:57.880Z" },
-    { "order": 8, "path": "/mp4-converter/url-to-mp4/", "primaryKeyword": "url to mp4", "status": "completed", "batch": 3, "completedAt": "2026-08-11", "deployedAt": "2026-08-11T03:37:57.880Z" },
-    { "order": 9, "path": "/mp3-converter/m4a-to-mp3-online/", "primaryKeyword": "m4a to mp3 online", "status": "completed", "batch": 3, "note": "发布前核对搜索量", "completedAt": "2026-08-11", "deployedAt": "2026-08-11T03:37:57.880Z" },
-    { "order": 10, "path": "/mp3-converter/aac-to-mp3/", "primaryKeyword": "aac to mp3", "status": "completed", "batch": 4, "completedAt": "2026-08-12", "deployedAt": "2026-08-12T03:57:19.521Z" },
-    { "order": 11, "path": "/mp3-converter/flac-to-mp3/", "primaryKeyword": "flac to mp3", "status": "completed", "batch": 4, "completedAt": "2026-08-12", "deployedAt": "2026-08-12T03:57:19.521Z" },
-    { "order": 12, "path": "/mp3-converter/mkv-to-mp3/", "primaryKeyword": "mkv to mp3", "status": "completed", "batch": 4, "completedAt": "2026-08-12", "deployedAt": "2026-08-12T03:57:19.521Z" },
-    { "order": 13, "path": "/mp3-converter/mov-to-mp3/", "primaryKeyword": "mov to mp3", "status": "planned", "batch": 3 },
-    { "order": 14, "path": "/mp4-converter/mkv-to-mp4/", "primaryKeyword": "mkv to mp4", "status": "planned", "batch": 3 },
-    { "order": 15, "path": "/mp4-converter/mov-to-mp4/", "primaryKeyword": "mov to mp4", "status": "planned", "batch": 3, "note": "功能页，暂不押排名" },
-    { "order": 16, "path": "/mp3-converter/mp4-to-mp3/", "primaryKeyword": "mp4 to mp3", "status": "planned", "batch": 3 },
-    { "order": 17, "path": "/mp3-converter/wav-to-mp3/", "primaryKeyword": "wav to mp3", "status": "planned", "batch": 3, "note": "功能页，暂不押排名" },
-    { "order": 18, "path": "/mp3-converter/wma-to-mp3/", "primaryKeyword": "wma to mp3", "status": "planned", "batch": 3 },
-    { "order": 19, "path": "/audio-converter/audio-extractor/", "primaryKeyword": "audio extractor", "status": "planned", "batch": 4, "note": "功能页，暂不押排名" },
-    { "order": 20, "path": "/audio-converter/audio-to-text/", "primaryKeyword": "audio to text", "status": "planned", "batch": 4 },
-    { "order": 21, "path": "/audio-converter/mp3-to-text/", "primaryKeyword": "mp3 to text", "status": "planned", "batch": 4 },
-    { "order": 22, "path": "/audio-converter/speech-to-text/", "primaryKeyword": "speech to text", "status": "planned", "batch": 4 },
-    { "order": 23, "path": "/video-converter/video-to-text/", "primaryKeyword": "video to text", "status": "planned", "batch": 4, "note": "独立转录意图，先做功能说明" }
+    {
+      "order": 1,
+      "path": "/mp3-converter/link-to-mp3/",
+      "primaryKeyword": "link to mp3",
+      "status": "completed",
+      "completedAt": "2026-08-10"
+    },
+    {
+      "order": 2,
+      "path": "/mp3-converter/video-to-mp3/",
+      "primaryKeyword": "video to mp3",
+      "status": "completed",
+      "completedAt": "2026-08-10"
+    },
+    {
+      "order": 3,
+      "path": "/wav-converter/youtube-to-wav/",
+      "primaryKeyword": "youtube to wav",
+      "status": "completed",
+      "completedAt": "2026-08-10"
+    },
+    {
+      "order": 4,
+      "path": "/flac-converter/youtube-to-flac/",
+      "primaryKeyword": "youtube to flac",
+      "status": "completed",
+      "batch": 2,
+      "completedAt": "2026-08-10",
+      "deployedAt": "2026-08-10T04:41:24.298Z"
+    },
+    {
+      "order": 5,
+      "path": "/ogg-converter/youtube-to-ogg/",
+      "primaryKeyword": "youtube to ogg",
+      "status": "completed",
+      "batch": 2,
+      "note": "发布前核对搜索量",
+      "completedAt": "2026-08-10",
+      "deployedAt": "2026-08-10T04:41:24.298Z"
+    },
+    {
+      "order": 6,
+      "path": "/mp3-converter/youtube-to-mp3/",
+      "primaryKeyword": "youtube to mp3",
+      "status": "completed",
+      "batch": 2,
+      "completedAt": "2026-08-10",
+      "deployedAt": "2026-08-10T04:41:24.298Z"
+    },
+    {
+      "order": 7,
+      "path": "/mp4-converter/youtube-to-mp4/",
+      "primaryKeyword": "youtube to mp4",
+      "status": "completed",
+      "batch": 3,
+      "completedAt": "2026-08-11",
+      "deployedAt": "2026-08-11T03:37:57.880Z"
+    },
+    {
+      "order": 8,
+      "path": "/mp4-converter/url-to-mp4/",
+      "primaryKeyword": "url to mp4",
+      "status": "completed",
+      "batch": 3,
+      "completedAt": "2026-08-11",
+      "deployedAt": "2026-08-11T03:37:57.880Z"
+    },
+    {
+      "order": 9,
+      "path": "/mp3-converter/m4a-to-mp3-online/",
+      "primaryKeyword": "m4a to mp3 online",
+      "status": "completed",
+      "batch": 3,
+      "note": "发布前核对搜索量",
+      "completedAt": "2026-08-11",
+      "deployedAt": "2026-08-11T03:37:57.880Z"
+    },
+    {
+      "order": 10,
+      "path": "/mp3-converter/aac-to-mp3/",
+      "primaryKeyword": "aac to mp3",
+      "status": "completed",
+      "batch": 4,
+      "completedAt": "2026-08-12",
+      "deployedAt": "2026-08-12T03:57:19.521Z"
+    },
+    {
+      "order": 11,
+      "path": "/mp3-converter/flac-to-mp3/",
+      "primaryKeyword": "flac to mp3",
+      "status": "completed",
+      "batch": 4,
+      "completedAt": "2026-08-12",
+      "deployedAt": "2026-08-12T03:57:19.521Z"
+    },
+    {
+      "order": 12,
+      "path": "/mp3-converter/mkv-to-mp3/",
+      "primaryKeyword": "mkv to mp3",
+      "status": "completed",
+      "batch": 4,
+      "completedAt": "2026-08-12",
+      "deployedAt": "2026-08-12T03:57:19.521Z"
+    },
+    {
+      "order": 13,
+      "path": "/mp3-converter/mov-to-mp3/",
+      "primaryKeyword": "mov to mp3",
+      "status": "completed",
+      "batch": 5,
+      "completedAt": "2026-08-13",
+      "deployedAt": "2026-08-13T02:11:44.951Z"
+    },
+    {
+      "order": 14,
+      "path": "/mp4-converter/mkv-to-mp4/",
+      "primaryKeyword": "mkv to mp4",
+      "status": "completed",
+      "batch": 5,
+      "completedAt": "2026-08-13",
+      "deployedAt": "2026-08-13T02:11:44.951Z"
+    },
+    {
+      "order": 15,
+      "path": "/mp4-converter/mov-to-mp4/",
+      "primaryKeyword": "mov to mp4",
+      "status": "completed",
+      "batch": 5,
+      "note": "功能页，暂不押排名",
+      "completedAt": "2026-08-13",
+      "deployedAt": "2026-08-13T02:11:44.951Z"
+    },
+    {
+      "order": 16,
+      "path": "/mp3-converter/mp4-to-mp3/",
+      "primaryKeyword": "mp4 to mp3",
+      "status": "planned",
+      "batch": 3
+    },
+    {
+      "order": 17,
+      "path": "/mp3-converter/wav-to-mp3/",
+      "primaryKeyword": "wav to mp3",
+      "status": "planned",
+      "batch": 3,
+      "note": "功能页，暂不押排名"
+    },
+    {
+      "order": 18,
+      "path": "/mp3-converter/wma-to-mp3/",
+      "primaryKeyword": "wma to mp3",
+      "status": "planned",
+      "batch": 3
+    },
+    {
+      "order": 19,
+      "path": "/audio-converter/audio-extractor/",
+      "primaryKeyword": "audio extractor",
+      "status": "planned",
+      "batch": 4,
+      "note": "功能页，暂不押排名"
+    },
+    {
+      "order": 20,
+      "path": "/audio-converter/audio-to-text/",
+      "primaryKeyword": "audio to text",
+      "status": "planned",
+      "batch": 4
+    },
+    {
+      "order": 21,
+      "path": "/audio-converter/mp3-to-text/",
+      "primaryKeyword": "mp3 to text",
+      "status": "planned",
+      "batch": 4
+    },
+    {
+      "order": 22,
+      "path": "/audio-converter/speech-to-text/",
+      "primaryKeyword": "speech to text",
+      "status": "planned",
+      "batch": 4
+    },
+    {
+      "order": 23,
+      "path": "/video-converter/video-to-text/",
+      "primaryKeyword": "video to text",
+      "status": "planned",
+      "batch": 4,
+      "note": "独立转录意图，先做功能说明"
+    }
   ]
 }
