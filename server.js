@@ -981,6 +981,162 @@ app.get('/mp3-converter/mkv-to-mp3/', (req, res) => {
   });
 });
 
+const renderLocalConversionPage = (res, page) => {
+  renderPage(res, 'seo-converter-page', {
+    lang: 'en',
+    applicationCategory: 'MultimediaApplication',
+    ...page,
+    genericUrl: false,
+    inputMode: 'file'
+  });
+};
+
+app.get('/mp3-converter/mov-to-mp3/', (req, res) => {
+  renderLocalConversionPage(res, {
+    title: 'MOV to MP3 Converter Online | ConveTube',
+    description: 'Convert MOV to MP3 online from a local QuickTime video up to 100 MB. Extract the audio track, preview the result, and download a compatible MP3.',
+    canonical: 'https://convetube.com/mp3-converter/mov-to-mp3/',
+    applicationName: 'ConveTube MOV to MP3 Converter',
+    featureList: ['MOV video to MP3 audio extraction', '320 kbps MP3 output', 'Browser-based local file conversion'],
+    keyword: 'mov to mp3',
+    heading: 'MOV to MP3',
+    headingAccent: 'Converter',
+    heroSubtitle: 'Choose a MOV video and extract its audio as a portable MP3 in your browser.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP3 Converter', href: '/mp3-converter/mov-to-mp3/' }, { label: 'MOV to MP3' }],
+    introHeading: 'Convert a MOV video to MP3',
+    introParagraphs: [
+      'Use this <strong>MOV to MP3</strong> tool when you need the sound from a local QuickTime video without keeping the picture. Choose one MOV file up to 100 MB, start the conversion, preview the audio, and download the MP3.',
+      'MOV files can contain video, audio, and multiple tracks. MP3 keeps the audio track only and is easier to play in common phones, cars, browsers, editors, and media players. Keep the original MOV until you have checked the downloaded file.'
+    ],
+    stepsHeading: 'How to convert MOV to MP3',
+    steps: [
+      { title: 'Choose a MOV file', body: 'select one local .mov video no larger than 100 MB.' },
+      { title: 'Start conversion', body: 'submit the file and keep this browser tab open while the audio is extracted.' },
+      { title: 'Preview the MP3', body: 'listen to the result and check that the expected audio track and duration are present.' },
+      { title: 'Download the audio', body: 'save the MP3 to your phone, computer, editing app, or media library.' }
+    ],
+    benefitsHeading: 'MOV input, MP3 output, and compatibility',
+    benefits: [
+      { icon: 'MOV', title: 'QuickTime video input', body: 'The first-screen tool accepts one local MOV file per conversion.' },
+      { icon: 'MP3', title: 'Audio-only result', body: 'The converter removes the video track and creates a 320 kbps MP3 for broad playback.' },
+      { icon: '100MB', title: 'Clear file limit', body: 'Each upload must be non-empty and no larger than 100 MB.' },
+      { icon: 'CHECK', title: 'Preview before saving', body: 'Check duration and playback because MOV containers may include more than one audio track.' }
+    ],
+    relatedTools: [
+      { href: '/mp3-converter/mkv-to-mp3/', label: 'MKV to MP3', description: 'Extract audio from a local Matroska video.' },
+      { href: '/mp4-converter/mov-to-mp4/', label: 'MOV to MP4', description: 'Create a more broadly compatible video file from MOV.' },
+      { href: '/mp3-converter/video-to-mp3/', label: 'Video to MP3', description: 'Convert a supported online video URL to MP3.' }
+    ],
+    faqHeading: 'MOV to MP3 questions',
+    faqItems: [
+      { question: 'How do I convert MOV to MP3?', answer: 'Choose one local MOV file up to 100 MB, start conversion, preview the extracted audio, and download the MP3 result.' },
+      { question: 'Does MOV to MP3 keep the video?', answer: 'No. MP3 is an audio-only format, so the downloaded file contains the readable audio track without the MOV picture.' },
+      { question: 'Can I convert an iPhone MOV video?', answer: 'Yes, if the local MOV file is non-empty, readable, and no larger than 100 MB. Keep the original until playback is confirmed.' },
+      { question: 'Why did my MOV conversion fail?', answer: 'The file may exceed 100 MB, be damaged, contain no readable audio stream, or use an extension that does not match its contents.' }
+    ],
+    inputFormat: 'mov',
+    defaultFormat: 'mp3'
+  });
+});
+
+app.get('/mp4-converter/mkv-to-mp4/', (req, res) => {
+  renderLocalConversionPage(res, {
+    title: 'MKV to MP4 Converter Online | ConveTube',
+    description: 'Convert MKV to MP4 online from a local video up to 100 MB. Create a compatible MP4 for sharing, playback, and editing with practical format guidance.',
+    canonical: 'https://convetube.com/mp4-converter/mkv-to-mp4/',
+    applicationName: 'ConveTube MKV to MP4 Converter',
+    featureList: ['MKV video to MP4 conversion', 'Browser-based local video upload', 'MP4 output for broad playback compatibility'],
+    keyword: 'mkv to mp4',
+    heading: 'MKV to MP4',
+    headingAccent: 'Converter',
+    heroSubtitle: 'Choose an MKV video and prepare an MP4 that is easier to share and play.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP4 Converter', href: '/mp4-converter/mkv-to-mp4/' }, { label: 'MKV to MP4' }],
+    introHeading: 'Convert MKV to MP4 online',
+    introParagraphs: [
+      'Use this <strong>MKV to MP4</strong> tool when a player, editor, phone, or sharing service does not accept a Matroska video. Choose one local MKV file up to 100 MB, convert it in the browser, preview the MP4, and save the result.',
+      'MKV is a flexible container that may include several video, audio, subtitle, or chapter tracks. MP4 is commonly supported across browsers, phones, TVs, editors, and social platforms, but track selection and codec compatibility should be checked after conversion.'
+    ],
+    stepsHeading: 'How to convert MKV to MP4',
+    steps: [
+      { title: 'Choose an MKV file', body: 'select one local .mkv video no larger than 100 MB.' },
+      { title: 'Start the conversion', body: 'submit the file and keep this browser tab open during processing.' },
+      { title: 'Preview the MP4', body: 'check video playback, audio sync, duration, and the selected tracks.' },
+      { title: 'Download the result', body: 'save the MP4 for playback, sharing, or import into an editor.' }
+    ],
+    benefitsHeading: 'MKV tracks, MP4 compatibility, and limits',
+    benefits: [
+      { icon: 'MKV', title: 'Flexible container input', body: 'The tool accepts one local MKV video file and processes its readable media tracks.' },
+      { icon: 'MP4', title: 'Broad playback support', body: 'MP4 is a practical delivery format for browsers, phones, televisions, editors, and sharing workflows.' },
+      { icon: 'TRACK', title: 'Review track selection', body: 'If the MKV has multiple tracks, preview the output to confirm the intended video and audio.' },
+      { icon: '100MB', title: 'One file up to 100 MB', body: 'Large videos may exceed the browser upload limit and need a local desktop workflow.' }
+    ],
+    relatedTools: [
+      { href: '/mp4-converter/mov-to-mp4/', label: 'MOV to MP4', description: 'Convert a local QuickTime video to MP4.' },
+      { href: '/mp4-converter/url-to-mp4/', label: 'URL to MP4', description: 'Prepare an MP4 from a supported video URL.' },
+      { href: '/mp3-converter/mkv-to-mp3/', label: 'MKV to MP3', description: 'Extract only the audio track from an MKV video.' }
+    ],
+    faqHeading: 'MKV to MP4 questions',
+    faqItems: [
+      { question: 'How do I convert MKV to MP4?', answer: 'Choose one local MKV file up to 100 MB, start conversion, preview the prepared video, and download the MP4.' },
+      { question: 'Will MKV subtitles be included in MP4?', answer: 'Subtitle and chapter behavior depends on the source tracks and output compatibility. Preview the MP4 and verify the tracks you need.' },
+      { question: 'Does converting MKV to MP4 reduce quality?', answer: 'The output may be re-encoded for MP4 compatibility, so keep the original MKV if you need a lossless source or want to re-edit later.' },
+      { question: 'Why did my MKV to MP4 conversion fail?', answer: 'The file may exceed 100 MB, be damaged, use an unreadable codec, lack a valid media stream, or carry an extension that does not match its contents.' }
+    ],
+    inputFormat: 'mkv',
+    videoOutput: true,
+    defaultFormat: 'mp4'
+  });
+});
+
+app.get('/mp4-converter/mov-to-mp4/', (req, res) => {
+  renderLocalConversionPage(res, {
+    title: 'MOV to MP4 Converter – Convert QuickTime Video Online | ConveTube',
+    description: 'Convert MOV to MP4 online from a local QuickTime video up to 100 MB. Improve compatibility for sharing, playback, and editing with a simple browser tool.',
+    canonical: 'https://convetube.com/mp4-converter/mov-to-mp4/',
+    applicationName: 'ConveTube MOV to MP4 Converter',
+    featureList: ['MOV video to MP4 conversion', 'Browser-based local file upload', 'MP4 output for broad device compatibility'],
+    keyword: 'mov to mp4',
+    heading: 'MOV to MP4',
+    headingAccent: 'Converter',
+    heroSubtitle: 'Choose a QuickTime MOV video and create an MP4 for wider playback and sharing support.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP4 Converter', href: '/mp4-converter/mov-to-mp4/' }, { label: 'MOV to MP4' }],
+    introHeading: 'Convert MOV to MP4 online',
+    introParagraphs: [
+      'Use this <strong>MOV to MP4</strong> converter when a device, browser, editor, or sharing service needs a more widely supported video container. Choose one local MOV file up to 100 MB, start processing, preview the MP4, and download it.',
+      'MOV is common in Apple and QuickTime workflows, while MP4 is a practical delivery format for phones, browsers, TVs, editors, and online sharing. Conversion can change codecs or metadata, so keep the original MOV until the new file is checked.'
+    ],
+    stepsHeading: 'How to convert MOV to MP4',
+    steps: [
+      { title: 'Choose a MOV file', body: 'select one local .mov video no larger than 100 MB.' },
+      { title: 'Start conversion', body: 'submit the file and keep this browser tab open while it is processed.' },
+      { title: 'Check compatibility', body: 'preview the MP4 and verify picture quality, audio sync, duration, and orientation.' },
+      { title: 'Download MP4', body: 'save the converted video for sharing, playback, or editing.' }
+    ],
+    benefitsHeading: 'MOV versus MP4 for everyday video',
+    benefits: [
+      { icon: 'MOV', title: 'QuickTime source support', body: 'The first-screen tool accepts one local MOV file per conversion.' },
+      { icon: 'MP4', title: 'Easier distribution', body: 'MP4 is widely recognized by browsers, mobile devices, televisions, editors, and social platforms.' },
+      { icon: 'SYNC', title: 'Check audio sync', body: 'Preview the result after conversion because a new container or codec can affect track handling.' },
+      { icon: '100MB', title: 'Clear upload limit', body: 'Each upload must be non-empty and no larger than 100 MB.' }
+    ],
+    relatedTools: [
+      { href: '/mp4-converter/mkv-to-mp4/', label: 'MKV to MP4', description: 'Convert a local Matroska video to MP4.' },
+      { href: '/mp4-converter/url-to-mp4/', label: 'URL to MP4', description: 'Prepare MP4 output from a supported video URL.' },
+      { href: '/mp3-converter/mov-to-mp3/', label: 'MOV to MP3', description: 'Extract audio from a MOV video as MP3.' }
+    ],
+    faqHeading: 'MOV to MP4 questions',
+    faqItems: [
+      { question: 'How do I convert MOV to MP4?', answer: 'Choose one local MOV file up to 100 MB, start conversion, preview the output, and download the MP4.' },
+      { question: 'Can I convert an iPhone MOV video?', answer: 'Yes, provided the MOV file is readable, non-empty, and no larger than 100 MB. Check orientation and audio sync in the preview.' },
+      { question: 'Does MOV to MP4 reduce video quality?', answer: 'The output can be re-encoded for compatibility, so quality and file size depend on the source. Keep the original MOV for editing or archiving.' },
+      { question: 'Why did my MOV to MP4 conversion fail?', answer: 'The file may exceed 100 MB, be damaged, use an unsupported codec, lack a readable stream, or have a mismatched extension.' }
+    ],
+    inputFormat: 'mov',
+    videoOutput: true,
+    defaultFormat: 'mp4'
+  });
+});
+
 // EN Homepage: URL to MP3
 app.get('/', (req, res) => {
   const requestedLanguage = String(req.query.lang || '').toLowerCase();
@@ -1268,6 +1424,21 @@ app.get('/sitemap.xml', (req, res) => {
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://convetube.com/mp3-converter/mov-to-mp3/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/mp4-converter/mkv-to-mp4/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/mp4-converter/mov-to-mp4/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>`);
 });
 
@@ -1367,14 +1538,16 @@ app.post('/api/file-convert', express.raw({ type: 'application/octet-stream', li
   }
 
   const inputExtension = path.extname(originalName).slice(1).toLowerCase();
-  const supportedInputExtensions = new Set(['m4a', 'aac', 'flac', 'mkv']);
+  const supportedInputExtensions = new Set(['m4a', 'aac', 'flac', 'mkv', 'mov']);
+  const format = getOutputFormat(req.query.format);
+  const outputOptions = getTranscodeOptions(format);
   if (!Buffer.isBuffer(req.body) || req.body.length === 0 || !supportedInputExtensions.has(inputExtension)) {
-    return res.status(400).json({ error: 'A non-empty M4A, AAC, FLAC, or MKV file is required' });
+    return res.status(400).json({ error: 'A non-empty M4A, AAC, FLAC, MKV, or MOV file is required' });
   }
 
   const uploadDir = fs.mkdtempSync(path.join(cacheDir, `${inputExtension}-upload-`));
   const inputPath = path.join(uploadDir, `source.${inputExtension}`);
-  const outputPath = path.join(uploadDir, 'converted.mp3');
+  const outputPath = path.join(uploadDir, `converted.${outputOptions.extension}`);
   fs.writeFileSync(inputPath, req.body);
 
   const cleanup = () => {
@@ -1387,7 +1560,7 @@ app.post('/api/file-convert', express.raw({ type: 'application/octet-stream', li
 
   const ffmpeg = spawn('ffmpeg', [
     '-i', inputPath,
-    ...getTranscodeOptions('mp3').ffmpegArgs,
+    ...outputOptions.ffmpegArgs,
     '-threads', '0',
     '-y',
     outputPath
@@ -1409,7 +1582,7 @@ app.post('/api/file-convert', express.raw({ type: 'application/octet-stream', li
     }
 
     const baseName = path.basename(originalName, path.extname(originalName));
-    const filename = getDownloadFilename(baseName, 'mp3');
+    const filename = getDownloadFilename(baseName, outputOptions.extension);
     res.download(outputPath, filename, cleanup);
   });
 

@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const formatSelect = document.getElementById('format-select');
   const genericUrlMode = converterBox?.dataset.genericUrl === 'true';
   const fileInputMode = converterBox?.dataset.inputMode === 'file';
-  const supportedInputFormats = ['m4a', 'aac', 'flac', 'mkv'];
+  const supportedInputFormats = ['m4a', 'aac', 'flac', 'mkv', 'mov'];
   const fileInputFormat = supportedInputFormats.includes(converterBox?.dataset.inputFormat) ? converterBox.dataset.inputFormat : 'm4a';
   const fileInputLabel = fileInputFormat.toUpperCase();
   const fileInputPattern = new RegExp(`\\.${fileInputFormat}$`, 'i');
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 180);
 
     try {
-      const response = await fetch(`/api/file-convert?format=mp3&input=${fileInputFormat}`, {
+      const response = await fetch(`/api/file-convert?format=${encodeURIComponent(outputFormat)}&input=${fileInputFormat}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/octet-stream',
@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
       audio.load();
       downloadBtn.href = localObjectUrl;
       downloadBtn.dataset.localBlob = 'true';
-      downloadBtn.setAttribute('download', getDownloadFilename(file.name.replace(fileInputPattern, ''), 'mp3'));
+      downloadBtn.setAttribute('download', getDownloadFilename(file.name.replace(fileInputPattern, ''), outputFormat));
 
       window.setTimeout(() => {
         stateLoading.classList.remove('active');
