@@ -140,14 +140,14 @@
       "order": 16,
       "path": "/mp3-converter/mp4-to-mp3/",
       "primaryKeyword": "mp4 to mp3",
-      "status": "planned",
+      "status": "pending",
       "batch": 3
     },
     {
       "order": 17,
       "path": "/mp3-converter/wav-to-mp3/",
       "primaryKeyword": "wav to mp3",
-      "status": "planned",
+      "status": "pending",
       "batch": 3,
       "note": "功能页，暂不押排名"
     },
@@ -155,7 +155,7 @@
       "order": 18,
       "path": "/mp3-converter/wma-to-mp3/",
       "primaryKeyword": "wma to mp3",
-      "status": "planned",
+      "status": "pending",
       "batch": 3
     },
     {

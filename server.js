@@ -1039,6 +1039,150 @@ app.get('/mp3-converter/mov-to-mp3/', (req, res) => {
   });
 });
 
+app.get('/mp3-converter/mp4-to-mp3/', (req, res) => {
+  renderLocalConversionPage(res, {
+    title: 'Convert MP4 to MP3 Online – Extract Audio | ConveTube',
+    description: 'Convert an MP4 video to MP3 online from a local file up to 100 MB. Extract the audio track, preview the result, and download a compact MP3.',
+    canonical: 'https://convetube.com/mp3-converter/mp4-to-mp3/',
+    applicationName: 'ConveTube MP4 to MP3 Converter',
+    featureList: ['MP4 video to MP3 audio extraction', '320 kbps MP3 output', 'Browser-based local file conversion'],
+    keyword: 'mp4 to mp3',
+    heading: 'MP4 to MP3',
+    headingAccent: 'Audio Extractor',
+    heroSubtitle: 'Choose an MP4 video and extract its audio as a portable MP3 in your browser.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP3 Converter', href: '/mp3-converter/mp4-to-mp3/' }, { label: 'MP4 to MP3' }],
+    introHeading: 'Extract audio from an MP4 video',
+    introParagraphs: [
+      'Use this <strong>MP4 to MP3</strong> tool when you need the audio from a local video without keeping the picture. Choose one MP4 file up to 100 MB, start processing, preview the extracted track, and download the MP3.',
+      'MP4 can contain video, audio, captions, and metadata. MP3 keeps the readable audio stream only, which makes the result easier to play in music apps, cars, phones, editors, and other audio players. Keep the original MP4 until you have checked the downloaded file.'
+    ],
+    stepsHeading: 'How to convert MP4 to MP3',
+    steps: [
+      { title: 'Choose an MP4 video', body: 'select one local .mp4 file no larger than 100 MB.' },
+      { title: 'Start audio extraction', body: 'submit the file and keep the browser tab open while the audio is prepared.' },
+      { title: 'Preview the MP3', body: 'listen to the result and check its duration, volume, and expected audio track.' },
+      { title: 'Download the audio', body: 'save the MP3 for listening, editing, or importing into another app.' }
+    ],
+    benefitsHeading: 'MP4 input, MP3 output, and file limits',
+    benefits: [
+      { icon: 'MP4', title: 'Video-file input', body: 'The first-screen tool accepts one local MP4 file per conversion.' },
+      { icon: 'MP3', title: 'Audio-only result', body: 'The video track is removed and the readable audio is encoded as a 320 kbps MP3.' },
+      { icon: 'CHECK', title: 'Preview before saving', body: 'Check playback and duration because an MP4 can contain multiple audio tracks or unusual codecs.' },
+      { icon: '100MB', title: 'One file up to 100 MB', body: 'Large or long videos may exceed the browser upload limit and need a local desktop workflow.' }
+    ],
+    relatedTools: [
+      { href: '/mp3-converter/video-to-mp3/', label: 'Video Link to MP3', description: 'Extract audio from a supported online video URL.' },
+      { href: '/mp3-converter/mkv-to-mp3/', label: 'MKV to MP3', description: 'Extract audio from a local Matroska video.' },
+      { href: '/mp4-converter/youtube-to-mp4/', label: 'YouTube to MP4', description: 'Prepare an MP4 from a supported YouTube link.' }
+    ],
+    faqHeading: 'MP4 audio extraction questions',
+    faqItems: [
+      { question: 'How do I convert MP4 to MP3?', answer: 'Choose one local MP4 file up to 100 MB, start conversion, preview the extracted audio, and download the MP3 result.' },
+      { question: 'Does MP4 to MP3 keep the video?', answer: 'No. MP3 is an audio-only format, so the downloaded file contains the readable audio track without the MP4 picture.' },
+      { question: 'Can I extract audio from an MP4 on my phone?', answer: 'Yes. Use a current mobile browser, choose an MP4 stored on the device, and keep the file within the 100 MB upload limit.' },
+      { question: 'Why did my MP4 conversion fail?', answer: 'The file may exceed 100 MB, be damaged, contain no readable audio stream, use an unsupported codec, or have an extension that does not match its contents.' }
+    ],
+    inputFormat: 'mp4',
+    defaultFormat: 'mp3'
+  });
+});
+
+app.get('/mp3-converter/wav-to-mp3/', (req, res) => {
+  renderLocalConversionPage(res, {
+    title: 'WAV Audio to MP3 Converter – Reduce File Size Online | ConveTube',
+    description: 'Convert a WAV audio file to MP3 online from a local file up to 100 MB. Review bitrate, metadata, compatibility, and the lossless original before downloading.',
+    canonical: 'https://convetube.com/mp3-converter/wav-to-mp3/',
+    applicationName: 'ConveTube WAV Audio to MP3 Converter',
+    featureList: ['WAV audio to MP3 conversion', '320 kbps MP3 output', 'Browser-based local file conversion'],
+    keyword: 'wav to mp3',
+    heading: 'WAV Audio to MP3',
+    headingAccent: 'Converter',
+    heroSubtitle: 'Turn a WAV recording into a smaller MP3 for everyday playback and sharing.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP3 Converter', href: '/mp3-converter/wav-to-mp3/' }, { label: 'WAV to MP3' }],
+    introHeading: 'Convert a WAV file to MP3 online',
+    introParagraphs: [
+      'Use this <strong>WAV to MP3</strong> converter when a lossless WAV recording is larger than you need for listening, sending, or storing. Choose one local WAV file up to 100 MB, convert it in the browser, preview the result, and download the MP3.',
+      'WAV is useful for editing and archiving because it keeps uncompressed audio, while MP3 uses compression for a smaller file and broad playback support. Keep the original WAV when you may need future editing or a lossless master.'
+    ],
+    stepsHeading: 'How to convert WAV to MP3',
+    steps: [
+      { title: 'Choose a WAV file', body: 'select one local .wav recording no larger than 100 MB.' },
+      { title: 'Start conversion', body: 'submit the file and keep this browser tab open while the MP3 is encoded.' },
+      { title: 'Check the audio', body: 'preview the MP3 and compare its duration, channel balance, and volume with the source.' },
+      { title: 'Download MP3', body: 'save the smaller audio file for playback, sharing, or compatible imports.' }
+    ],
+    benefitsHeading: 'WAV versus MP3 for practical audio files',
+    benefits: [
+      { icon: 'WAV', title: 'Lossless source', body: 'WAV keeps the source recording available for editing and future exports.' },
+      { icon: 'MP3', title: 'Smaller delivery file', body: 'The converter creates a 320 kbps MP3 for easier storage and broad device support.' },
+      { icon: 'META', title: 'Review metadata', body: 'Metadata transfer can vary by source and player, so check the downloaded file before cataloging it.' },
+      { icon: '100MB', title: 'One file up to 100 MB', body: 'Long recordings may exceed the browser upload limit and need a local desktop workflow.' }
+    ],
+    relatedTools: [
+      { href: '/mp3-converter/flac-to-mp3/', label: 'FLAC to MP3', description: 'Create a compact MP3 from another lossless audio format.' },
+      { href: '/mp3-converter/m4a-to-mp3-online/', label: 'M4A to MP3 Online', description: 'Convert a local M4A file in the browser.' },
+      { href: '/wav-converter/youtube-to-wav/', label: 'YouTube to WAV', description: 'Prepare uncompressed WAV audio from a supported video link.' }
+    ],
+    faqHeading: 'WAV conversion questions',
+    faqItems: [
+      { question: 'How do I convert WAV to MP3?', answer: 'Choose one local WAV file up to 100 MB, start conversion, preview the encoded audio, and download the MP3 result.' },
+      { question: 'What happens to WAV quality after conversion?', answer: 'MP3 uses lossy compression, so it is smaller than WAV and may discard detail. Keep the WAV original when lossless editing matters.' },
+      { question: 'Will WAV metadata transfer to MP3?', answer: 'Metadata transfer depends on the source and player. Check the downloaded MP3 and add tags in a music library when needed.' },
+      { question: 'Why did my WAV conversion fail?', answer: 'The file may exceed 100 MB, be damaged, contain an unsupported encoding, or have an extension that does not match its contents.' }
+    ],
+    inputFormat: 'wav',
+    defaultFormat: 'mp3'
+  });
+});
+
+app.get('/mp3-converter/wma-to-mp3/', (req, res) => {
+  renderLocalConversionPage(res, {
+    title: 'WMA Audio to MP3 Converter – Browser File Tool | ConveTube',
+    description: 'Convert a WMA audio file to MP3 online from a local file up to 100 MB. Create a compatible MP3, preview the result, and download it in your browser.',
+    canonical: 'https://convetube.com/mp3-converter/wma-to-mp3/',
+    applicationName: 'ConveTube WMA Audio to MP3 Converter',
+    featureList: ['WMA audio to MP3 conversion', '320 kbps MP3 output', 'Browser-based local file conversion'],
+    keyword: 'wma to mp3',
+    heading: 'WMA Audio to MP3',
+    headingAccent: 'Converter',
+    heroSubtitle: 'Convert a WMA recording into a broadly compatible MP3 from your browser.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP3 Converter', href: '/mp3-converter/wma-to-mp3/' }, { label: 'WMA to MP3' }],
+    introHeading: 'Convert WMA audio to MP3',
+    introParagraphs: [
+      'Use this <strong>WMA to MP3</strong> tool when a player, phone, editor, or sharing service works better with MP3. Choose one local WMA file up to 100 MB, start the browser conversion, preview the audio, and download the result.',
+      'WMA files are common in older Windows media libraries, while MP3 is recognized by more current devices and applications. Conversion can change compression and metadata, so keep the original WMA until the MP3 has been checked.'
+    ],
+    stepsHeading: 'How to convert WMA to MP3',
+    steps: [
+      { title: 'Choose a WMA file', body: 'select one local .wma recording no larger than 100 MB.' },
+      { title: 'Start conversion', body: 'submit the file and keep the browser tab open while the audio is processed.' },
+      { title: 'Preview the MP3', body: 'listen to the output and check duration, volume, and playback on the page.' },
+      { title: 'Download the result', body: 'save the MP3 for a phone, media player, editor, or sharing workflow.' }
+    ],
+    benefitsHeading: 'WMA input, MP3 compatibility, and limits',
+    benefits: [
+      { icon: 'WMA', title: 'Legacy audio input', body: 'The first-screen tool accepts one local WMA file per conversion.' },
+      { icon: 'MP3', title: 'Broad playback support', body: 'The output is a 320 kbps MP3 that works with a wide range of current players and apps.' },
+      { icon: 'CHECK', title: 'Preview before saving', body: 'Confirm that the readable audio track and expected duration survived the format change.' },
+      { icon: '100MB', title: 'One file up to 100 MB', body: 'Large recordings may exceed the browser upload limit and need a local desktop workflow.' }
+    ],
+    relatedTools: [
+      { href: '/mp3-converter/wav-to-mp3/', label: 'WAV to MP3', description: 'Reduce a lossless WAV recording to a smaller MP3.' },
+      { href: '/mp3-converter/flac-to-mp3/', label: 'FLAC to MP3', description: 'Create a portable MP3 from a local FLAC file.' },
+      { href: '/mp3-converter/m4a-to-mp3-online/', label: 'M4A to MP3 Online', description: 'Convert another common audio file in the browser.' }
+    ],
+    faqHeading: 'WMA conversion questions',
+    faqItems: [
+      { question: 'How do I convert WMA to MP3?', answer: 'Choose one local WMA file up to 100 MB, start conversion, preview the audio, and download the MP3 result.' },
+      { question: 'Why convert WMA to MP3?', answer: 'MP3 is supported by more current phones, browsers, media players, editors, and sharing services than many older WMA workflows.' },
+      { question: 'Does WMA to MP3 keep the original file?', answer: 'The conversion creates a new MP3 and does not replace the local WMA file. Keep the original if you may need its source quality or metadata.' },
+      { question: 'Why did my WMA conversion fail?', answer: 'The file may exceed 100 MB, be damaged, use an unsupported codec or protection scheme, or have an extension that does not match its contents.' }
+    ],
+    inputFormat: 'wma',
+    defaultFormat: 'mp3'
+  });
+});
+
 app.get('/mp4-converter/mkv-to-mp4/', (req, res) => {
   renderLocalConversionPage(res, {
     title: 'MKV to MP4 Converter Online | ConveTube',
@@ -1430,6 +1574,21 @@ app.get('/sitemap.xml', (req, res) => {
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://convetube.com/mp3-converter/mp4-to-mp3/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/mp3-converter/wav-to-mp3/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/mp3-converter/wma-to-mp3/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://convetube.com/mp4-converter/mkv-to-mp4/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -1538,11 +1697,11 @@ app.post('/api/file-convert', express.raw({ type: 'application/octet-stream', li
   }
 
   const inputExtension = path.extname(originalName).slice(1).toLowerCase();
-  const supportedInputExtensions = new Set(['m4a', 'aac', 'flac', 'mkv', 'mov']);
+  const supportedInputExtensions = new Set(['m4a', 'aac', 'flac', 'wav', 'wma', 'mp4', 'mkv', 'mov']);
   const format = getOutputFormat(req.query.format);
   const outputOptions = getTranscodeOptions(format);
   if (!Buffer.isBuffer(req.body) || req.body.length === 0 || !supportedInputExtensions.has(inputExtension)) {
-    return res.status(400).json({ error: 'A non-empty M4A, AAC, FLAC, MKV, or MOV file is required' });
+    return res.status(400).json({ error: 'A non-empty M4A, AAC, FLAC, WAV, WMA, MP4, MKV, or MOV file is required' });
   }
 
   const uploadDir = fs.mkdtempSync(path.join(cacheDir, `${inputExtension}-upload-`));
