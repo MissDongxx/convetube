@@ -2,7 +2,7 @@
   "plan": "SEO关键词归类与页面规划-V5",
   "timezone": "Asia/Shanghai",
   "dailyBatchSize": 3,
-  "nextOrder": 16,
+  "nextOrder": 19,
   "pages": [
     {
       "order": 1,
@@ -140,23 +140,29 @@
       "order": 16,
       "path": "/mp3-converter/mp4-to-mp3/",
       "primaryKeyword": "mp4 to mp3",
-      "status": "pending",
-      "batch": 3
+      "status": "completed",
+      "batch": 3,
+      "completedAt": "2026-08-14",
+      "deployedAt": "2026-08-14T01:08:31.704Z"
     },
     {
       "order": 17,
       "path": "/mp3-converter/wav-to-mp3/",
       "primaryKeyword": "wav to mp3",
-      "status": "pending",
+      "status": "completed",
       "batch": 3,
-      "note": "功能页，暂不押排名"
+      "note": "功能页，暂不押排名",
+      "completedAt": "2026-08-14",
+      "deployedAt": "2026-08-14T01:08:31.704Z"
     },
     {
       "order": 18,
       "path": "/mp3-converter/wma-to-mp3/",
       "primaryKeyword": "wma to mp3",
-      "status": "pending",
-      "batch": 3
+      "status": "completed",
+      "batch": 3,
+      "completedAt": "2026-08-14",
+      "deployedAt": "2026-08-14T01:08:31.704Z"
     },
     {
       "order": 19,
