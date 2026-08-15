@@ -2,7 +2,7 @@
   "plan": "SEO关键词归类与页面规划-V5",
   "timezone": "Asia/Shanghai",
   "dailyBatchSize": 3,
-  "nextOrder": 19,
+  "nextOrder": 22,
   "pages": [
     {
       "order": 1,
@@ -171,7 +171,8 @@
       "status": "completed",
       "batch": 4,
       "note": "功能页，暂不押排名",
-      "completedAt": "2026-08-15"
+      "completedAt": "2026-08-15",
+      "deployedAt": "2026-08-15T02:13:51.555Z"
     },
     {
       "order": 20,
@@ -179,7 +180,8 @@
       "primaryKeyword": "audio to text",
       "status": "completed",
       "batch": 4,
-      "completedAt": "2026-08-15"
+      "completedAt": "2026-08-15",
+      "deployedAt": "2026-08-15T02:13:51.555Z"
     },
     {
       "order": 21,
@@ -187,7 +189,8 @@
       "primaryKeyword": "mp3 to text",
       "status": "completed",
       "batch": 4,
-      "completedAt": "2026-08-15"
+      "completedAt": "2026-08-15",
+      "deployedAt": "2026-08-15T02:13:51.555Z"
     },
     {
       "order": 22,
