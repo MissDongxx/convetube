@@ -1460,6 +1460,150 @@ app.get('/youtube-to-wav', (req, res) => {
   res.redirect(301, '/wav-converter/youtube-to-wav/');
 });
 
+app.get('/audio-converter/audio-extractor/', (req, res) => {
+  renderLocalConversionPage(res, {
+    title: 'Audio Extractor – Extract Audio from Video Online | ConveTube',
+    description: 'Use an audio extractor to pull a readable MP3 track from a local MP4 video up to 100 MB. Preview the result and save the audio online.',
+    canonical: 'https://convetube.com/audio-converter/audio-extractor/',
+    applicationName: 'ConveTube Audio Extractor',
+    featureList: ['Audio extraction from local MP4 video', '320 kbps MP3 output', 'Browser-based file preview and download'],
+    keyword: 'audio extractor',
+    heading: 'Audio Extractor',
+    headingAccent: 'from Video',
+    heroSubtitle: 'Choose a local MP4 video and extract its readable audio as a portable MP3.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'Audio Converter', href: '/audio-converter/audio-extractor/' }, { label: 'Audio Extractor' }],
+    introHeading: 'Extract audio from a video file',
+    introParagraphs: [
+      'An <strong>audio extractor</strong> separates the sound track from a video container so you can listen, edit, archive, or share the audio without carrying the picture. Use the first-screen tool with one local MP4 file up to 100 MB, preview the MP3, and download the result.',
+      'MP4 files may contain more than one audio stream, captions, or unusual codecs. The converter uses the first readable audio stream, so keep the source video until you have checked the duration, language, and playback of the extracted file.'
+    ],
+    stepsHeading: 'How to use this audio extractor',
+    steps: [
+      { title: 'Choose a video', body: 'select one local .mp4 file no larger than 100 MB.' },
+      { title: 'Extract the audio', body: 'submit the video and keep the browser tab open while the MP3 is prepared.' },
+      { title: 'Review the track', body: 'preview the result and check that the intended audio stream and duration are present.' },
+      { title: 'Download MP3', body: 'save the audio for listening, editing, captions, or another media workflow.' }
+    ],
+    benefitsHeading: 'Audio extraction, formats, and file limits',
+    benefits: [
+      { icon: 'VIDEO', title: 'Video-file input', body: 'The first-screen tool accepts one local MP4 video per conversion.' },
+      { icon: 'AUDIO', title: 'Audio-only output', body: 'The video track is removed and the readable audio is encoded as a 320 kbps MP3.' },
+      { icon: 'TRACK', title: 'Preview the selected stream', body: 'Check the result when the source contains multiple languages, commentary, or alternate mixes.' },
+      { icon: '100MB', title: 'One file up to 100 MB', body: 'Large or long videos may exceed the browser upload limit and need a local desktop workflow.' }
+    ],
+    relatedTools: [
+      { href: '/mp3-converter/video-to-mp3/', label: 'Video to MP3', description: 'Extract audio from a supported online video URL.' },
+      { href: '/mp3-converter/mp4-to-mp3/', label: 'MP4 to MP3', description: 'Use the dedicated MP4 audio conversion workflow.' },
+      { href: '/mp3-converter/mkv-to-mp3/', label: 'MKV to MP3', description: 'Extract audio from a local Matroska video.' }
+    ],
+    faqHeading: 'Audio extractor questions',
+    faqItems: [
+      { question: 'What does an audio extractor do?', answer: 'An audio extractor reads a video file and creates an audio-only file from its readable audio stream. This page prepares the result as a 320 kbps MP3.' },
+      { question: 'How do I extract audio from a video?', answer: 'Choose one local MP4 file up to 100 MB, start the conversion, preview the audio track, and download the MP3 result.' },
+      { question: 'Which audio track is extracted?', answer: 'The conversion pipeline uses the first readable audio stream. Preview the result when the video contains multiple languages, commentary, or alternate mixes.' },
+      { question: 'Why did my audio extraction fail?', answer: 'The file may exceed 100 MB, be damaged, contain no readable audio stream, use an unsupported codec, or have an extension that does not match its contents.' }
+    ],
+    inputFormat: 'mp4',
+    defaultFormat: 'mp3'
+  });
+});
+
+app.get('/audio-converter/audio-to-text/', (req, res) => {
+  renderLocalConversionPage(res, {
+    title: 'Audio to Text Workflow – Prepare Audio for Transcription | ConveTube',
+    description: 'Prepare a local M4A recording for an audio to text workflow. Convert it to a compact MP3, review the audio, and continue with transcription.',
+    canonical: 'https://convetube.com/audio-converter/audio-to-text/',
+    applicationName: 'ConveTube Audio to Text Workflow',
+    featureList: ['M4A audio preparation for transcription workflows', '320 kbps MP3 output', 'Browser-based file preview and download'],
+    keyword: 'audio to text',
+    heading: 'Audio to Text',
+    headingAccent: 'Workflow',
+    heroSubtitle: 'Prepare a local audio recording as MP3 before sending it to a transcription step.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'Audio Converter', href: '/audio-converter/audio-to-text/' }, { label: 'Audio to Text' }],
+    introHeading: 'Prepare audio for an audio to text workflow',
+    introParagraphs: [
+      'An <strong>audio to text</strong> workflow starts with a clear, correctly formatted recording. Use the first-screen converter to prepare one local M4A file up to 100 MB as a broadly compatible MP3, listen for missing speech or background noise, then move the checked file into your transcription step.',
+      'Audio quality affects transcript quality: clean speech, steady volume, and limited background noise make words easier to recognize. The conversion result on this page is an audio file for the next transcription stage; it does not display a text transcript in the audio preview.'
+    ],
+    stepsHeading: 'How to prepare audio for text conversion',
+    steps: [
+      { title: 'Choose a recording', body: 'select one local .m4a file no larger than 100 MB.' },
+      { title: 'Create a compatible audio copy', body: 'submit the recording and wait while the MP3 preparation finishes.' },
+      { title: 'Check speech quality', body: 'preview the result and listen for clipping, silence, overlapping speakers, or missing sections.' },
+      { title: 'Continue to transcription', body: 'download the checked MP3 and use it with the audio transcription tool or workflow you prefer.' }
+    ],
+    benefitsHeading: 'Audio preparation, quality, and formats',
+    benefits: [
+      { icon: 'M4A', title: 'Common audio input', body: 'The first-screen tool accepts one local M4A recording per conversion.' },
+      { icon: 'MP3', title: 'Broadly compatible copy', body: 'The output is a 320 kbps MP3 that is easy to preview, transfer, and import into many transcription tools.' },
+      { icon: 'VOICE', title: 'Review speech first', body: 'Listening before transcription helps catch silence, distortion, low volume, or speaker overlap.' },
+      { icon: '100MB', title: 'One file up to 100 MB', body: 'Long recordings may exceed the browser upload limit and may need to be split in a local editor.' }
+    ],
+    relatedTools: [
+      { href: '/audio-converter/mp3-to-text/', label: 'MP3 to Text Workflow', description: 'Prepare an existing MP3 before a transcription step.' },
+      { href: '/mp3-converter/m4a-to-mp3-online/', label: 'M4A to MP3 Online', description: 'Convert a local M4A file with the dedicated MP3 page.' },
+      { href: '/mp3-converter/wav-to-mp3/', label: 'WAV to MP3', description: 'Create a smaller MP3 copy from a WAV recording.' }
+    ],
+    faqHeading: 'Audio to text questions',
+    faqItems: [
+      { question: 'How do I start an audio to text workflow?', answer: 'Prepare a readable recording, convert it to a compatible audio file if needed, review the speech quality, and then send the checked file to a transcription step.' },
+      { question: 'Does this page create a text transcript?', answer: 'The first-screen ConveTube tool prepares and previews audio as an MP3. Use the downloaded file with the transcription tool or workflow that will generate the text.' },
+      { question: 'Which audio format is best for transcription?', answer: 'A clear recording in a format accepted by your transcription tool is the practical choice. MP3 is broadly compatible, while keeping the original M4A preserves a source copy.' },
+      { question: 'Why might an audio to text result be inaccurate?', answer: 'Low volume, clipping, background noise, strong accents, overlapping speakers, silence, and unclear microphones can reduce recognition quality. Review the audio before transcribing.' }
+    ],
+    inputFormat: 'm4a',
+    defaultFormat: 'mp3'
+  });
+});
+
+app.get('/audio-converter/mp3-to-text/', (req, res) => {
+  renderLocalConversionPage(res, {
+    title: 'MP3 to Text Workflow – Prepare an MP3 for Transcription | ConveTube',
+    description: 'Prepare an MP3 recording for an MP3 to text workflow. Normalize a local file up to 100 MB, preview the speech, and continue with transcription.',
+    canonical: 'https://convetube.com/audio-converter/mp3-to-text/',
+    applicationName: 'ConveTube MP3 to Text Workflow',
+    featureList: ['MP3 audio preparation for transcription workflows', 'Browser-based MP3 preview', 'Local file processing up to 100 MB'],
+    keyword: 'mp3 to text',
+    heading: 'MP3 to Text',
+    headingAccent: 'Workflow',
+    heroSubtitle: 'Review and prepare an MP3 recording before moving it into a text transcription step.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'Audio Converter', href: '/audio-converter/mp3-to-text/' }, { label: 'MP3 to Text' }],
+    introHeading: 'Turn an MP3 recording into a transcription-ready file',
+    introParagraphs: [
+      'An <strong>MP3 to text</strong> task normally has two stages: prepare the audio, then generate and review a transcript. Use this page to upload one local MP3 file up to 100 MB, create a fresh compatible audio copy, and preview the recording before the text stage.',
+      'Keep the original MP3 until the transcript has been checked. A recording with clear speech, consistent volume, and minimal background noise gives downstream speech recognition a better signal than a clipped or incomplete source.'
+    ],
+    stepsHeading: 'How to prepare an MP3 for text conversion',
+    steps: [
+      { title: 'Choose an MP3 file', body: 'select one local .mp3 recording no larger than 100 MB.' },
+      { title: 'Prepare the audio', body: 'submit the file and keep the browser tab open while the compatible MP3 copy is created.' },
+      { title: 'Listen before transcribing', body: 'preview the output and verify speech, duration, volume, and any important pauses.' },
+      { title: 'Start the text step', body: 'download the checked audio and pass it to the transcription tool or workflow you use.' }
+    ],
+    benefitsHeading: 'MP3 input, speech quality, and practical limits',
+    benefits: [
+      { icon: 'MP3', title: 'Direct MP3 input', body: 'The first-screen tool accepts one local MP3 recording per conversion.' },
+      { icon: 'CHECK', title: 'Preview before text conversion', body: 'Confirm that the source contains the expected speech and that the recording is not clipped or silent.' },
+      { icon: 'VOICE', title: 'Keep the original copy', body: 'Retain the source MP3 so you can compare transcript errors against the audio later.' },
+      { icon: '100MB', title: 'One file up to 100 MB', body: 'Long recordings may need to be split locally before they fit the browser upload limit.' }
+    ],
+    relatedTools: [
+      { href: '/audio-converter/audio-to-text/', label: 'Audio to Text Workflow', description: 'Prepare an M4A recording before transcription.' },
+      { href: '/audio-converter/audio-extractor/', label: 'Audio Extractor', description: 'Pull an MP3 track from a local MP4 video.' },
+      { href: '/mp3-converter/wav-to-mp3/', label: 'WAV to MP3', description: 'Prepare a compact copy from a lossless WAV source.' }
+    ],
+    faqHeading: 'MP3 to text questions',
+    faqItems: [
+      { question: 'How do I convert MP3 to text?', answer: 'Prepare and preview the MP3 first, then send the checked audio file to a transcription step that generates the text. This page handles the local audio preparation and preview stage.' },
+      { question: 'Can I upload an MP3 here?', answer: 'Yes. Choose one non-empty MP3 file up to 100 MB, start the preparation step, preview the output, and download the compatible audio copy.' },
+      { question: 'What improves MP3 transcription quality?', answer: 'Clear microphones, steady volume, limited background noise, separated speakers, and an intact recording generally make downstream speech recognition easier.' },
+      { question: 'Why did my MP3 preparation fail?', answer: 'The file may exceed 100 MB, be damaged, contain an unsupported encoding, or use an extension that does not match its contents.' }
+    ],
+    inputFormat: 'mp3',
+    defaultFormat: 'mp3'
+  });
+});
+
 // Sitemap.xml
 app.get('/sitemap.xml', (req, res) => {
   res.set('Content-Type', 'application/xml');
@@ -1589,6 +1733,21 @@ app.get('/sitemap.xml', (req, res) => {
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://convetube.com/audio-converter/audio-extractor/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/audio-converter/audio-to-text/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/audio-converter/mp3-to-text/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://convetube.com/mp4-converter/mkv-to-mp4/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -1697,11 +1856,11 @@ app.post('/api/file-convert', express.raw({ type: 'application/octet-stream', li
   }
 
   const inputExtension = path.extname(originalName).slice(1).toLowerCase();
-  const supportedInputExtensions = new Set(['m4a', 'aac', 'flac', 'wav', 'wma', 'mp4', 'mkv', 'mov']);
+  const supportedInputExtensions = new Set(['mp3', 'm4a', 'aac', 'flac', 'wav', 'wma', 'mp4', 'mkv', 'mov']);
   const format = getOutputFormat(req.query.format);
   const outputOptions = getTranscodeOptions(format);
   if (!Buffer.isBuffer(req.body) || req.body.length === 0 || !supportedInputExtensions.has(inputExtension)) {
-    return res.status(400).json({ error: 'A non-empty M4A, AAC, FLAC, WAV, WMA, MP4, MKV, or MOV file is required' });
+    return res.status(400).json({ error: 'A non-empty MP3, M4A, AAC, FLAC, WAV, WMA, MP4, MKV, or MOV file is required' });
   }
 
   const uploadDir = fs.mkdtempSync(path.join(cacheDir, `${inputExtension}-upload-`));

@@ -168,23 +168,26 @@
       "order": 19,
       "path": "/audio-converter/audio-extractor/",
       "primaryKeyword": "audio extractor",
-      "status": "planned",
+      "status": "completed",
       "batch": 4,
-      "note": "功能页，暂不押排名"
+      "note": "功能页，暂不押排名",
+      "completedAt": "2026-08-15"
     },
     {
       "order": 20,
       "path": "/audio-converter/audio-to-text/",
       "primaryKeyword": "audio to text",
-      "status": "planned",
-      "batch": 4
+      "status": "completed",
+      "batch": 4,
+      "completedAt": "2026-08-15"
     },
     {
       "order": 21,
       "path": "/audio-converter/mp3-to-text/",
       "primaryKeyword": "mp3 to text",
-      "status": "planned",
-      "batch": 4
+      "status": "completed",
+      "batch": 4,
+      "completedAt": "2026-08-15"
     },
     {
       "order": 22,

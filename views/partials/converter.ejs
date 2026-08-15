@@ -6,6 +6,7 @@ const isGenericUrl = typeof genericUrl !== 'undefined' && genericUrl;
 const isFileInput = typeof inputMode !== 'undefined' && inputMode === 'file';
 const isVideoOutput = typeof videoOutput !== 'undefined' && videoOutput === true;
 const fileInputFormats = {
+  mp3: { label: 'MP3', accept: '.mp3,audio/mpeg,audio/mp3' },
   m4a: { label: 'M4A', accept: '.m4a,audio/mp4,audio/x-m4a' },
   aac: { label: 'AAC', accept: '.aac,audio/aac,audio/x-aac' },
   flac: { label: 'FLAC', accept: '.flac,audio/flac,audio/x-flac' },
