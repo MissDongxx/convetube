@@ -1604,6 +1604,102 @@ app.get('/audio-converter/mp3-to-text/', (req, res) => {
   });
 });
 
+app.get('/audio-converter/speech-to-text/', (req, res) => {
+  renderLocalConversionPage(res, {
+    title: 'Speech to Text Workflow – Prepare Audio for Transcription | ConveTube',
+    description: 'Prepare a local speech recording for a speech to text workflow. Review the audio, create a compatible MP3 copy, and continue with transcription.',
+    canonical: 'https://convetube.com/audio-converter/speech-to-text/',
+    applicationName: 'ConveTube Speech to Text Workflow',
+    featureList: ['Speech recording preparation for transcription workflows', 'Browser-based WAV preview', 'Local file processing up to 100 MB'],
+    keyword: 'speech to text',
+    heading: 'Speech to',
+    headingAccent: 'Text',
+    heroSubtitle: 'Prepare a clear local speech recording before sending it to a text transcription step.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'Audio Converter', href: '/audio-converter/speech-to-text/' }, { label: 'Speech to Text' }],
+    introHeading: 'Prepare speech for a speech to text workflow',
+    introParagraphs: [
+      'A <strong>speech to text</strong> workflow works best when the recording is complete, audible, and easy to process. Upload one local WAV file up to 100 MB in the first-screen tool, create a compatible MP3 copy, and listen to the result before the transcription stage.',
+      'Keep the original recording as your reference. Steady volume, a close microphone, limited room noise, and distinct pauses help downstream recognition separate words and speakers more reliably.'
+    ],
+    stepsHeading: 'How to prepare speech for text conversion',
+    steps: [
+      { title: 'Choose a recording', body: 'select one local .wav speech recording no larger than 100 MB.' },
+      { title: 'Create an audio copy', body: 'submit the recording and wait while the browser prepares the MP3 file.' },
+      { title: 'Review the speech', body: 'preview the result and check volume, clipping, pauses, background noise, and missing sections.' },
+      { title: 'Continue to transcription', body: 'download the checked file and pass it to the speech recognition or transcription workflow you use.' }
+    ],
+    benefitsHeading: 'Speech input, audio quality, and formats',
+    benefits: [
+      { icon: 'WAV', title: 'Lossless speech input', body: 'The first-screen tool accepts one local WAV recording per preparation step.' },
+      { icon: 'MP3', title: 'Compatible working copy', body: 'The output is a 320 kbps MP3 that is easy to preview, transfer, and import into many transcription tools.' },
+      { icon: 'VOICE', title: 'Listen before transcribing', body: 'A quick review can reveal low volume, clipping, room noise, silence, or overlapping speakers.' },
+      { icon: '100MB', title: 'One file up to 100 MB', body: 'Long recordings may need to be split locally before they fit the browser upload limit.' }
+    ],
+    relatedTools: [
+      { href: '/audio-converter/audio-to-text/', label: 'Audio to Text Workflow', description: 'Prepare an M4A recording before a transcription step.' },
+      { href: '/audio-converter/mp3-to-text/', label: 'MP3 to Text Workflow', description: 'Review an existing MP3 before generating text.' },
+      { href: '/audio-converter/audio-extractor/', label: 'Audio Extractor', description: 'Pull an MP3 track from a local MP4 video.' }
+    ],
+    faqHeading: 'Speech to text questions',
+    faqItems: [
+      { question: 'How do I prepare speech for text conversion?', answer: 'Upload a readable speech recording, prepare a compatible audio copy, review the sound, and then send the checked file to a transcription step.' },
+      { question: 'Does this page generate a text transcript?', answer: 'The ConveTube tool prepares and previews the audio as an MP3. Use the downloaded file with the transcription tool or workflow that generates the text.' },
+      { question: 'What audio improves speech recognition?', answer: 'Clear speech, stable volume, a close microphone, limited background noise, and separated speakers generally make downstream recognition easier.' },
+      { question: 'Why did my speech preparation fail?', answer: 'The file may exceed 100 MB, be damaged, contain no readable audio stream, use an unsupported codec, or have an extension that does not match its contents.' }
+    ],
+    inputFormat: 'wav',
+    defaultFormat: 'mp3'
+  });
+});
+
+app.get('/video-converter/video-to-text/', (req, res) => {
+  renderLocalConversionPage(res, {
+    title: 'Video to Text Workflow – Extract Audio for Transcription | ConveTube',
+    description: 'Prepare a local video for a video to text workflow. Extract and review the audio, then continue with a transcription step in your browser.',
+    canonical: 'https://convetube.com/video-converter/video-to-text/',
+    applicationName: 'ConveTube Video to Text Workflow',
+    featureList: ['Video audio extraction for transcription workflows', 'Browser-based MP4 preview', 'Local file processing up to 100 MB'],
+    keyword: 'video to text',
+    heading: 'Video to',
+    headingAccent: 'Text',
+    heroSubtitle: 'Extract a reviewable audio track from a local video before moving it into a text transcription step.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'Video Converter', href: '/video-converter/video-to-text/' }, { label: 'Video to Text' }],
+    introHeading: 'Prepare video audio for a video to text workflow',
+    introParagraphs: [
+      'A <strong>video to text</strong> task usually starts by isolating the speech from the video track. Upload one local MP4 file up to 100 MB, extract its readable audio as MP3, and review the result before sending it to a transcription stage.',
+      'The extracted file does not contain the picture or on-screen text. Keep the original video for visual context, speaker identification, and checking names, slides, captions, or moments that audio alone cannot describe.'
+    ],
+    stepsHeading: 'How to prepare a video for text conversion',
+    steps: [
+      { title: 'Choose a video', body: 'select one local .mp4 video no larger than 100 MB.' },
+      { title: 'Extract the audio', body: 'submit the video and wait while the readable audio track is prepared as MP3.' },
+      { title: 'Review the result', body: 'preview the audio and check speech, timing, speaker overlap, and sections that need visual reference.' },
+      { title: 'Continue to transcription', body: 'download the checked audio and send it to the video transcription workflow you use.' }
+    ],
+    benefitsHeading: 'Video input, extracted audio, and format limits',
+    benefits: [
+      { icon: 'MP4', title: 'Video-file input', body: 'The first-screen tool accepts one local MP4 video per preparation step.' },
+      { icon: 'MP3', title: 'Audio-only working copy', body: 'The output removes the video track and creates a 320 kbps MP3 for downstream review.' },
+      { icon: 'CHECK', title: 'Keep visual context', body: 'Retain the original video when names, slides, captions, or non-speech events matter to the final text.' },
+      { icon: '100MB', title: 'One file up to 100 MB', body: 'Large or long videos may need to be split locally before browser upload.' }
+    ],
+    relatedTools: [
+      { href: '/audio-converter/speech-to-text/', label: 'Speech to Text Workflow', description: 'Prepare a WAV speech recording before transcription.' },
+      { href: '/audio-converter/audio-to-text/', label: 'Audio to Text Workflow', description: 'Prepare an audio recording for a text step.' },
+      { href: '/mp3-converter/video-to-mp3/', label: 'Video to MP3', description: 'Convert a supported online video URL to MP3.' }
+    ],
+    faqHeading: 'Video to text questions',
+    faqItems: [
+      { question: 'How do I prepare a video for text conversion?', answer: 'Upload a readable video, extract and preview its audio, keep the original for visual checks, and then send the checked audio to a transcription step.' },
+      { question: 'Does this page create a text transcript?', answer: 'The first-screen ConveTube tool extracts and previews audio as an MP3. A separate transcription tool or workflow is used to generate the text.' },
+      { question: 'What happens to the video track?', answer: 'The downloaded MP3 contains the readable audio stream without the picture. Keep the original video when visual context is needed for review.' },
+      { question: 'Why did my video preparation fail?', answer: 'The file may exceed 100 MB, be damaged, contain no readable audio stream, use an unsupported codec, or have an extension that does not match its contents.' }
+    ],
+    inputFormat: 'mp4',
+    defaultFormat: 'mp3'
+  });
+});
+
 // Sitemap.xml
 app.get('/sitemap.xml', (req, res) => {
   res.set('Content-Type', 'application/xml');
@@ -1744,6 +1840,16 @@ app.get('/sitemap.xml', (req, res) => {
   </url>
   <url>
     <loc>https://convetube.com/audio-converter/mp3-to-text/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/audio-converter/speech-to-text/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/video-converter/video-to-text/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

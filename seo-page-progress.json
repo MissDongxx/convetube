@@ -196,14 +196,14 @@
       "order": 22,
       "path": "/audio-converter/speech-to-text/",
       "primaryKeyword": "speech to text",
-      "status": "planned",
+      "status": "pending",
       "batch": 4
     },
     {
       "order": 23,
       "path": "/video-converter/video-to-text/",
       "primaryKeyword": "video to text",
-      "status": "planned",
+      "status": "pending",
       "batch": 4,
       "note": "独立转录意图，先做功能说明"
     }
