@@ -2,7 +2,7 @@
   "plan": "SEO关键词归类与页面规划-V5",
   "timezone": "Asia/Shanghai",
   "dailyBatchSize": 3,
-  "nextOrder": 22,
+  "nextOrder": 24,
   "pages": [
     {
       "order": 1,
@@ -196,16 +196,20 @@
       "order": 22,
       "path": "/audio-converter/speech-to-text/",
       "primaryKeyword": "speech to text",
-      "status": "pending",
-      "batch": 4
+      "status": "completed",
+      "batch": 4,
+      "completedAt": "2026-08-16",
+      "deployedAt": "2026-08-16T01:45:30.817Z"
     },
     {
       "order": 23,
       "path": "/video-converter/video-to-text/",
       "primaryKeyword": "video to text",
-      "status": "pending",
+      "status": "completed",
       "batch": 4,
-      "note": "独立转录意图，先做功能说明"
+      "note": "独立转录意图，先做功能说明",
+      "completedAt": "2026-08-16",
+      "deployedAt": "2026-08-16T01:45:30.817Z"
     }
   ]
 }
