@@ -2,7 +2,7 @@
   "plan": "SEO关键词归类与页面规划-V5",
   "timezone": "Asia/Shanghai",
   "dailyBatchSize": 3,
-  "nextOrder": 24,
+  "nextOrder": 27,
   "pages": [
     {
       "order": 1,
@@ -215,25 +215,31 @@
       "order": 24,
       "path": "/flac-converter/mp3-to-flac/",
       "primaryKeyword": "mp3 to flac",
-      "status": "pending",
+      "status": "completed",
       "batch": 6,
-      "note": "功能页，主关键词用于页面识别与内链，不作为本期主攻词"
+      "note": "功能页，主关键词用于页面识别与内链，不作为本期主攻词",
+      "completedAt": "2026-08-18",
+      "deployedAt": "2026-08-18T02:18:46Z"
     },
     {
       "order": 25,
       "path": "/m4a-converter/mp3-to-m4a/",
       "primaryKeyword": "mp3 to m4a",
-      "status": "pending",
+      "status": "completed",
       "batch": 6,
-      "note": "功能页，主关键词用于页面识别与内链，不作为本期主攻词"
+      "note": "功能页，主关键词用于页面识别与内链，不作为本期主攻词",
+      "completedAt": "2026-08-18",
+      "deployedAt": "2026-08-18T02:18:46Z"
     },
     {
       "order": 26,
       "path": "/flac-converter/mp4-to-flac/",
       "primaryKeyword": "mp4 to flac",
-      "status": "pending",
+      "status": "completed",
       "batch": 6,
-      "note": "功能页，主关键词用于页面识别与内链，不作为本期主攻词"
+      "note": "功能页，主关键词用于页面识别与内链，不作为本期主攻词",
+      "completedAt": "2026-08-18",
+      "deployedAt": "2026-08-18T02:18:46Z"
     }
   ]
 }
