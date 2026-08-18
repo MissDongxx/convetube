@@ -1,5 +1,5 @@
 <%
-const allowedFormats = ['mp3', 'wav', 'flac', 'ogg', 'mp4'];
+const allowedFormats = ['mp3', 'm4a', 'wav', 'flac', 'ogg', 'mp4'];
 const outputFormat = typeof defaultFormat !== 'undefined' && allowedFormats.includes(defaultFormat) ? defaultFormat : 'mp3';
 const formatLabel = outputFormat.toUpperCase();
 const isGenericUrl = typeof genericUrl !== 'undefined' && genericUrl;

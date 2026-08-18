@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const fileInputFormat = supportedInputFormats.includes(converterBox?.dataset.inputFormat) ? converterBox.dataset.inputFormat : 'm4a';
   const fileInputLabel = fileInputFormat.toUpperCase();
   const fileInputPattern = new RegExp(`\\.${fileInputFormat}$`, 'i');
-  const supportedFormats = ['mp3', 'wav', 'flac', 'ogg', 'mp4'];
+  const supportedFormats = ['mp3', 'm4a', 'wav', 'flac', 'ogg', 'mp4'];
   const defaultFormat = supportedFormats.includes(converterBox?.dataset.format) ? converterBox.dataset.format : 'mp3';
   let outputFormat = defaultFormat;
   

@@ -51,7 +51,7 @@ if (!fs.existsSync(cacheDir)) {
 // Track active background conversions
 const activeTranscodes = new Map();
 
-const supportedOutputFormats = new Set(['mp3', 'wav', 'flac', 'ogg', 'mp4']);
+const supportedOutputFormats = new Set(['mp3', 'm4a', 'wav', 'flac', 'ogg', 'mp4']);
 const getOutputFormat = (format) => supportedOutputFormats.has(format) ? format : 'mp3';
 
 const getTranscodeOptions = (format, quality = 'download') => {
@@ -68,6 +68,14 @@ const getTranscodeOptions = (format, quality = 'download') => {
       extension: 'wav',
       mimeType: 'audio/wav',
       ffmpegArgs: ['-f', 'wav', '-acodec', 'pcm_s16le', '-ar', '44100'],
+    };
+  }
+
+  if (format === 'm4a') {
+    return {
+      extension: 'm4a',
+      mimeType: 'audio/mp4',
+      ffmpegArgs: ['-f', 'ipod', '-acodec', 'aac', '-b:a', '256k', '-movflags', '+faststart'],
     };
   }
 
@@ -991,6 +999,150 @@ const renderLocalConversionPage = (res, page) => {
   });
 };
 
+app.get('/flac-converter/mp3-to-flac/', (req, res) => {
+  renderLocalConversionPage(res, {
+    title: 'MP3 to FLAC Converter Online – Audio Format Guide | ConveTube',
+    description: 'Convert an MP3 file to FLAC online from your browser. Create a lossless-format copy, compare file size and quality, and download the result up to 100 MB.',
+    canonical: 'https://convetube.com/flac-converter/mp3-to-flac/',
+    applicationName: 'ConveTube MP3 to FLAC Converter',
+    featureList: ['MP3 file to FLAC conversion', 'Browser-based local file processing', 'FLAC output with source-quality guidance'],
+    keyword: 'mp3 to flac',
+    heading: 'MP3 to',
+    headingAccent: 'FLAC Converter',
+    heroSubtitle: 'Create a FLAC copy from a local MP3 file and understand what the format change means for audio quality.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP3 to FLAC' }],
+    introHeading: 'Convert an MP3 file to FLAC',
+    introParagraphs: [
+      'Use this <strong>MP3 to FLAC</strong> converter when a workflow requires a FLAC container or a lossless-format file. Choose one local MP3 up to 100 MB, run the conversion in the first-screen tool, preview the result, and download the FLAC copy.',
+      'Converting MP3 to FLAC does not restore detail already removed by MP3 compression. The output can be useful for format compatibility or a consistent archive, but keep the original MP3 and prefer a lossless source when you need editing headroom.'
+    ],
+    stepsHeading: 'How to convert MP3 to FLAC',
+    steps: [
+      { title: 'Choose an MP3 file', body: 'select one local .mp3 file that is non-empty and no larger than 100 MB.' },
+      { title: 'Start the conversion', body: 'submit the file and keep the browser tab open while the FLAC copy is prepared.' },
+      { title: 'Preview the result', body: 'listen to the converted audio and compare its duration with the original MP3.' },
+      { title: 'Download FLAC', body: 'save the FLAC file for a compatible editor, library, or format-specific workflow.' }
+    ],
+    benefitsHeading: 'MP3 input, FLAC output, and quality notes',
+    benefits: [
+      { icon: 'MP3', title: 'Simple MP3 input', body: 'The first-screen tool accepts one local MP3 file per conversion.' },
+      { icon: 'FLAC', title: 'Lossless-format output', body: 'FLAC uses lossless encoding, but it cannot recreate detail that was absent from the MP3 source.' },
+      { icon: 'CHECK', title: 'Preview before saving', body: 'Check playback and duration before adding the converted file to another library or project.' },
+      { icon: '100MB', title: 'One file up to 100 MB', body: 'Large files may exceed the browser upload limit and may need to be processed locally.' }
+    ],
+    relatedTools: [
+      { href: '/mp3-converter/flac-to-mp3/', label: 'FLAC to MP3', description: 'Create a compact MP3 from a local FLAC file.' },
+      { href: '/flac-converter/youtube-to-flac/', label: 'YouTube to FLAC', description: 'Prepare FLAC audio from a supported video link.' },
+      { href: '/mp3-converter/aac-to-mp3/', label: 'AAC to MP3', description: 'Convert another common audio file to MP3.' }
+    ],
+    faqHeading: 'MP3 to FLAC questions',
+    faqItems: [
+      { question: 'How do I convert MP3 to FLAC?', answer: 'Choose one local MP3 file up to 100 MB, start the conversion, preview the result, and download the FLAC copy.' },
+      { question: 'Does MP3 to FLAC improve audio quality?', answer: 'No. FLAC preserves the converted signal without additional lossy compression, but it cannot restore detail already removed by the MP3 source.' },
+      { question: 'Why is the FLAC file larger than the MP3?', answer: 'FLAC is lossless and usually needs more storage than a compressed MP3, even when both contain the same audible source material.' },
+      { question: 'Why did my MP3 to FLAC conversion fail?', answer: 'The file may exceed 100 MB, be damaged, contain an unsupported encoding, or use an extension that does not match its contents.' }
+    ],
+    inputFormat: 'mp3',
+    defaultFormat: 'flac'
+  });
+});
+
+app.get('/m4a-converter/mp3-to-m4a/', (req, res) => {
+  renderLocalConversionPage(res, {
+    title: 'MP3 to M4A Converter Online – Convert Audio Files | ConveTube',
+    description: 'Convert an MP3 file to M4A online in your browser. Create an AAC-based M4A copy, review compatibility and quality trade-offs, and download it up to 100 MB.',
+    canonical: 'https://convetube.com/m4a-converter/mp3-to-m4a/',
+    applicationName: 'ConveTube MP3 to M4A Converter',
+    featureList: ['MP3 file to M4A conversion', 'AAC-based M4A output', 'Browser-based local file processing up to 100 MB'],
+    keyword: 'mp3 to m4a',
+    heading: 'MP3 to',
+    headingAccent: 'M4A Converter',
+    heroSubtitle: 'Convert a local MP3 file to an AAC-based M4A copy for compatible libraries, devices, and media workflows.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP3 to M4A' }],
+    introHeading: 'Convert MP3 to M4A online',
+    introParagraphs: [
+      'This <strong>MP3 to M4A</strong> tool creates an M4A audio file from one local MP3. Choose a file up to 100 MB, start the conversion in the browser, preview the result, and download it when the file is ready.',
+      'M4A commonly uses AAC audio in an MP4-based container. The conversion changes the format and may involve another lossy encode, so keep the original MP3 and compare the result before replacing your source file.'
+    ],
+    stepsHeading: 'How to convert MP3 to M4A',
+    steps: [
+      { title: 'Choose an MP3 file', body: 'select one local .mp3 file that is non-empty and no larger than 100 MB.' },
+      { title: 'Convert to M4A', body: 'submit the file and wait while the browser prepares an AAC-based M4A copy.' },
+      { title: 'Check compatibility', body: 'preview the output and confirm that the duration and playback match the intended workflow.' },
+      { title: 'Download the M4A', body: 'save the converted file for a supported phone, media library, editor, or player.' }
+    ],
+    benefitsHeading: 'M4A format, compatibility, and quality',
+    benefits: [
+      { icon: 'MP3', title: 'Local MP3 input', body: 'The first-screen tool accepts one MP3 file per conversion and keeps the workflow simple.' },
+      { icon: 'M4A', title: 'AAC-based output', body: 'The M4A result is designed for devices and libraries that support the MP4 audio container.' },
+      { icon: 'CHECK', title: 'Preview before saving', body: 'Listen to the result and check duration before adding it to a music or editing workflow.' },
+      { icon: '100MB', title: 'One file up to 100 MB', body: 'Long recordings may need to be split locally if they exceed the browser upload limit.' }
+    ],
+    relatedTools: [
+      { href: '/mp3-converter/m4a-to-mp3-online/', label: 'M4A to MP3 Online', description: 'Convert a local M4A file to a widely compatible MP3.' },
+      { href: '/mp3-converter/video-to-mp3/', label: 'Video to MP3', description: 'Extract audio from a supported online video URL.' },
+      { href: '/mp3-converter/flac-to-mp3/', label: 'FLAC to MP3', description: 'Create a smaller MP3 from a lossless audio source.' }
+    ],
+    faqHeading: 'MP3 to M4A questions',
+    faqItems: [
+      { question: 'How do I convert MP3 to M4A?', answer: 'Choose one local MP3 file up to 100 MB, start the conversion, preview the M4A result, and download it from the browser.' },
+      { question: 'Is M4A smaller than MP3?', answer: 'File size depends on bitrate, duration, and encoder settings. M4A can be efficient, but a new conversion should be compared with the original file.' },
+      { question: 'Which devices support M4A?', answer: 'Many modern phones, computers, browsers, music apps, and media libraries support AAC-based M4A, but check the requirements of your target device or editor.' },
+      { question: 'Will MP3 metadata be preserved?', answer: 'Metadata support depends on the source and conversion pipeline. Keep the original MP3 and verify title, artwork, and other tags after downloading.' }
+    ],
+    inputFormat: 'mp3',
+    defaultFormat: 'm4a'
+  });
+});
+
+app.get('/flac-converter/mp4-to-flac/', (req, res) => {
+  renderLocalConversionPage(res, {
+    title: 'MP4 to FLAC Converter Online – Extract Audio | ConveTube',
+    description: 'Convert an MP4 video to FLAC online from a local file. Extract its readable audio, keep lossless FLAC output, preview the result, and download up to 100 MB.',
+    canonical: 'https://convetube.com/flac-converter/mp4-to-flac/',
+    applicationName: 'ConveTube MP4 to FLAC Converter',
+    featureList: ['MP4 video to FLAC audio extraction', 'Lossless FLAC output', 'Browser-based local file conversion up to 100 MB'],
+    keyword: 'mp4 to flac',
+    heading: 'MP4 to',
+    headingAccent: 'FLAC Converter',
+    heroSubtitle: 'Extract the readable audio from a local MP4 video and save it as a FLAC file for compatible audio workflows.',
+    breadcrumbItems: [{ label: 'Home', href: '/' }, { label: 'MP4 to FLAC' }],
+    introHeading: 'Extract audio from MP4 to FLAC',
+    introParagraphs: [
+      'Use this <strong>MP4 to FLAC</strong> converter when you need audio from a local video without keeping its picture. Choose one MP4 file up to 100 MB, extract the readable audio with the first-screen tool, preview the FLAC result, and download it.',
+      'FLAC uses lossless encoding for the extracted signal, but it cannot recover information that was absent from the source audio. Keep the original MP4 for visual context and check the selected audio track when the file contains multiple streams.'
+    ],
+    stepsHeading: 'How to convert MP4 to FLAC',
+    steps: [
+      { title: 'Choose an MP4 video', body: 'select one local .mp4 file that is non-empty and no larger than 100 MB.' },
+      { title: 'Extract the audio', body: 'submit the video and wait while the readable audio track is encoded as FLAC.' },
+      { title: 'Review the track', body: 'preview the result and check duration, language, and playback when multiple streams are present.' },
+      { title: 'Download FLAC', body: 'save the audio-only file for editing, archiving, or another format-specific workflow.' }
+    ],
+    benefitsHeading: 'MP4 input, FLAC output, and track details',
+    benefits: [
+      { icon: 'MP4', title: 'Video-file input', body: 'The first-screen tool accepts one local MP4 video per conversion.' },
+      { icon: 'FLAC', title: 'Audio-only output', body: 'The downloaded FLAC contains the readable audio stream without the MP4 picture.' },
+      { icon: 'TRACK', title: 'Review the selected stream', body: 'Preview the result when the source contains multiple languages, commentary, or alternate mixes.' },
+      { icon: '100MB', title: 'One file up to 100 MB', body: 'Large or long videos may need to be split locally before browser upload.' }
+    ],
+    relatedTools: [
+      { href: '/mp4-converter/mkv-to-mp4/', label: 'MKV to MP4', description: 'Create a broadly compatible video copy from an MKV file.' },
+      { href: '/mp3-converter/mp4-to-mp3/', label: 'MP4 to MP3', description: 'Extract a compact MP3 audio copy from a local MP4.' },
+      { href: '/flac-converter/youtube-to-flac/', label: 'YouTube to FLAC', description: 'Prepare FLAC audio from a supported video link.' }
+    ],
+    faqHeading: 'MP4 to FLAC questions',
+    faqItems: [
+      { question: 'How do I convert MP4 to FLAC?', answer: 'Choose one local MP4 file up to 100 MB, start the conversion, preview the extracted audio, and download the FLAC result.' },
+      { question: 'Does MP4 to FLAC keep the video?', answer: 'No. FLAC is an audio format, so the downloaded file contains the readable audio stream without the MP4 picture.' },
+      { question: 'Which audio track is extracted?', answer: 'The conversion pipeline uses the first readable audio stream. Preview the result when the MP4 contains multiple languages, commentary, or alternate mixes.' },
+      { question: 'Why did my MP4 to FLAC conversion fail?', answer: 'The file may exceed 100 MB, be damaged, contain no readable audio stream, use an unsupported codec, or have an extension that does not match its contents.' }
+    ],
+    inputFormat: 'mp4',
+    defaultFormat: 'flac'
+  });
+});
+
 app.get('/mp3-converter/mov-to-mp3/', (req, res) => {
   renderLocalConversionPage(res, {
     title: 'MOV to MP3 Converter Online | ConveTube',
@@ -1767,6 +1919,21 @@ app.get('/sitemap.xml', (req, res) => {
     <loc>https://convetube.com/flac-converter/youtube-to-flac/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/flac-converter/mp3-to-flac/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/m4a-converter/mp3-to-m4a/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://convetube.com/flac-converter/mp4-to-flac/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://convetube.com/ogg-converter/youtube-to-ogg/</loc>
